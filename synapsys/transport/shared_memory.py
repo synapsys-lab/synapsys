@@ -53,7 +53,9 @@ class SharedMemoryTransport(TransportStrategy):
         else:
             self._shm = shared_memory.SharedMemory(name=name)
 
-        self._buf = np.ndarray((total,), dtype=np.float64, buffer=self._shm.buf)
+        self._buf: np.ndarray = np.ndarray(
+            (total,), dtype=np.float64, buffer=self._shm.buf
+        )
         self._create = create
 
     def write(self, channel: str, data: np.ndarray) -> None:
