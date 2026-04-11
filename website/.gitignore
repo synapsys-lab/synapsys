@@ -1,0 +1,16 @@
+# Docusaurus build output
+build/
+
+# Node modules
+node_modules/
+
+# npm / yarn lock files are committed, but not these:
+.npm
+.yarn
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

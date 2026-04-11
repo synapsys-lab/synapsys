@@ -1,0 +1,109 @@
+{
+  "version.label": {
+    "message": "Versão"
+  },
+  "sidebar.docsSidebar.doc.Introduction": {
+    "message": "Introdução",
+    "description": "Sidebar label for intro"
+  },
+  "sidebar.docsSidebar.category.Getting Started": {
+    "message": "Primeiros Passos",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Installation": {
+    "message": "Instalação",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.Quick Start": {
+    "message": "Início Rápido",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.Architecture": {
+    "message": "Arquitetura",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.User Guide": {
+    "message": "Guia do Usuário",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.category.Core — LTI Systems": {
+    "message": "Núcleo — Sistemas LTI",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Transfer Function": {
+    "message": "Função de Transferência",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.State Space": {
+    "message": "Espaço de Estados",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.Discrete-Time Systems": {
+    "message": "Sistemas Discretos",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.Algorithms": {
+    "message": "Algoritmos",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.PID Controller": {
+    "message": "Controlador PID",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.LQR — Linear Quadratic Regulator": {
+    "message": "LQR — Regulador Quadratico Linear",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.Multi-Agent Simulation": {
+    "message": "Simulação Multiagente",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Multi-Agent Simulation — Concepts": {
+    "message": "Conceitos",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.ControllerAgent": {
+    "message": "ControllerAgent",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.SIL & HIL Simulation": {
+    "message": "Simulação SIL e HIL",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.Digital Twins & Custom Signals": {
+    "message": "Gêmeos Digitais & Sinais",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.PlantAgent": {
+    "message": "PlantAgent",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.ControllerAgent": {
+    "message": "ControllerAgent",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.Transport Layer": {
+    "message": "Camada de Transporte",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Transport Layer — Overview": {
+    "message": "Visão Geral",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.Shared Memory Transport": {
+    "message": "Memória Compartilhada",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.doc.ZeroMQ Transport": {
+    "message": "Rede ZeroMQ",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.API Reference": {
+    "message": "Referência da API",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Roadmap": {
+    "message": "Roadmap",
+    "description": "Sidebar label"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "home.meta.description": {
+    "message": "Framework moderno de sistemas de controle em Python com simulação multiagente distribuída",
+    "description": "Meta description da página inicial"
+  },
+  "home.hero.tagline": {
+    "message": "Framework moderno de sistemas de controle em Python com simulação multiagente distribuída",
+    "description": "Tagline no hero da página inicial"
+  },
+  "home.hero.cta.start": {
+    "message": "Comecar →",
+    "description": "Botao primario do hero"
+  },
+  "home.feature.matlab.title": {
+    "message": "API Compatível com MATLAB",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.matlab.desc": {
+    "message": "tf(), ss(), step(), bode(), feedback() — mesma sintaxe que você já conhece, Python puro.",
+    "description": "Descrição do card de feature"
+  },
+  "home.feature.latency.title": {
+    "message": "Transporte de Ultra-Baixa Latência",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.latency.desc": {
+    "message": "Memória compartilhada zero-copy e ZeroMQ para comunicação entre processos sub-milissegundo.",
+    "description": "Descrição do card de feature"
+  },
+  "home.feature.agents.title": {
+    "message": "Simulação Multiagente",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.agents.desc": {
+    "message": "PlantAgent e ControllerAgent com mensagens FIPA ACL e sincronismo lock-step / wall-clock.",
+    "description": "Descrição do card de feature"
+  },
+  "home.feature.lti.title": {
+    "message": "Núcleo LTI Sólido",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.lti.desc": {
+    "message": "TransferFunction e StateSpace com sobrecarga de operadores, polos, zeros e estabilidade.",
+    "description": "Descrição do card de feature"
+  },
+  "home.feature.algorithms.title": {
+    "message": "Algoritmos",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.algorithms.desc": {
+    "message": "PID discreto com anti-windup e LQR via equacao algebrica de Riccati — prontos para producao.",
+    "description": "Descrição do card de feature"
+  },
+  "home.feature.hw.title": {
+    "message": "Abstracao de Hardware",
+    "description": "Titulo do card de feature"
+  },
+  "home.feature.hw.desc": {
+    "message": "HardwareInterface plugavel para FPGAs, FPAAs e microcontroladores (planejado).",
+    "description": "Descrição do card de feature"
+  },
+  "home.tab.core": {
+    "message": "Núcleo Matemático",
+    "description": "Label da aba de exemplos de código"
+  },
+  "home.tab.algorithms": {
+    "message": "Algoritmos",
+    "description": "Label da aba de exemplos de código"
+  },
+  "home.tab.distributed": {
+    "message": "Simulação Distribuída",
+    "description": "Label da aba de exemplos de código"
+  }
+}

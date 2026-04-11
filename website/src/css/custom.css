@@ -1,0 +1,312 @@
+/* =============================================
+   Synapsys Docs — Premium Scientific Layout
+   ============================================= */
+
+/* Google Fonts: Inter (Modern Sans), Lora (Academic Serif for blockquotes), JetBrains Mono (Code) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* ---- Light Mode: Clean Paper / Academic ---- */
+:root {
+  /* Royal Blue to Violet Accent Palette */
+  --ifm-color-primary: #3b82f6;
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #1d4ed8;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93c5fd;
+  --ifm-color-primary-lightest: #bfdbfe;
+  
+  --ifm-code-font-size: 85%;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-heading-font-family: 'Inter', system-ui, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --ifm-heading-font-weight: 700;
+  --ifm-font-size-base: 16px;
+  --ifm-line-height-base: 1.75;
+  
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f8fafc;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(59, 130, 246, 0.1);
+  --ifm-navbar-background-color: rgba(255, 255, 255, 0.85);
+  --ifm-navbar-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+
+  /* Sidebar */
+  --ifm-sidebar-background-color: #f8fafc;
+  --ifm-menu-color: #334155;
+}
+
+/* ---- Dark Mode: Premium Deep Space ---- */
+[data-theme='dark'] {
+  --ifm-color-primary: #3b82f6;
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #1d4ed8;
+  --ifm-color-primary-darkest: #1e3a8a;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93c5fd;
+  --ifm-color-primary-lightest: #bfdbfe;
+
+  --ifm-background-color: #0b0f19;
+  --ifm-background-surface-color: #111827;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(59, 130, 246, 0.15);
+
+  --ifm-sidebar-background-color: #0b0f19;
+  --ifm-navbar-background-color: rgba(11, 15, 25, 0.85);
+  --ifm-menu-color: #cbd5e1;
+}
+
+/* ---- Global Typography & Smoothness ---- */
+html {
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  scroll-behavior: smooth;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: -0.03em;
+}
+
+h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+}
+
+/* ---- Premium Navbar (Glassmorphism) ---- */
+.navbar {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.navbar__title {
+  font-weight: 800;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ---- Hero Section (Landing Page) ---- */
+.hero--synapsys {
+  background: radial-gradient(circle at top center, rgba(59, 130, 246, 0.08) 0%, transparent 70%), var(--ifm-background-color);
+  padding: 6rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.hero__title--gradient {
+  font-size: clamp(3rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(120deg, #3b82f6 0%, #8b5cf6 50%, #14b8a6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.25rem;
+  animation: glow 6s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+  0% { text-shadow: 0 0 20px rgba(59, 130, 246, 0); }
+  100% { text-shadow: 0 0 40px rgba(139, 92, 246, 0.15); }
+}
+
+.hero__subtitle {
+  font-size: 1.25rem;
+  color: var(--ifm-color-content-secondary);
+  max-width: 650px;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+}
+
+.hero__buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Primary Button (Glow + Hover) */
+.hero__cta-primary {
+  padding: 0.85rem 2.25rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 1.05rem;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39);
+}
+
+.hero__cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.23);
+  text-decoration: none;
+}
+
+/* Secondary Button (Ghost/Outline) */
+.hero__cta-secondary {
+  padding: 0.85rem 2.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  color: var(--ifm-font-color-base) !important;
+  font-weight: 500;
+  font-size: 1.05rem;
+  text-decoration: none;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.hero__cta-secondary:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* ---- Premium Feature Cards ---- */
+.features__section {
+  padding: 5rem 2rem;
+  background: var(--ifm-background-color);
+}
+
+.features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.feature__card {
+  padding: 2rem;
+  border-radius: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  background: var(--ifm-background-surface-color);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle inner glow for cards */
+.feature__card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3b82f6, transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.feature__card:hover::before {
+  opacity: 1;
+}
+
+.feature__card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1), 0 0 15px rgba(59, 130, 246, 0.1);
+}
+
+.feature__icon {
+  font-size: 2.25rem;
+  margin-bottom: 1.25rem;
+  display: inline-block;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 0.75rem;
+  border-radius: 12px;
+}
+
+.feature__title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.feature__desc {
+  font-size: 0.95rem;
+  color: var(--ifm-color-content-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---- Academic Format (Markdown Content) ---- */
+.markdown {
+  color: var(--ifm-font-color-base);
+}
+
+/* Text readability improvements */
+.markdown > p {
+  line-height: inherit;
+  margin-bottom: 1.5rem;
+  color: inherit;
+  opacity: 0.9;
+}
+
+/* Beautiful Blockquotes (for Theorems/Notes) */
+.markdown blockquote {
+  border-left: 4px solid var(--ifm-color-primary);
+  background: var(--ifm-background-surface-color);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.1);
+  border-radius: 0 12px 12px 0;
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  font-family: 'Lora', serif;
+  font-style: italic;
+  font-size: 1.05rem;
+  color: var(--ifm-color-content-secondary);
+}
+
+/* Interactive Links */
+.markdown a {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-bottom-color 0.2s ease;
+}
+
+.markdown a:hover {
+  border-bottom-color: var(--ifm-color-primary);
+}
+
+/* Code Highlights in Text */
+.markdown code {
+  background: rgba(148, 163, 184, 0.15) !important;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  font-weight: 500;
+  color: var(--ifm-color-primary-darker);
+}
+
+[data-theme='dark'] .markdown code {
+  color: var(--ifm-color-primary-lighter);
+}
+
+/* Admonitions styling override */
+.alert {
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+/* Codeblock formatting */
+.features__code-section {
+  padding: 2rem 2rem 5rem;
+  max-width: 850px;
+  margin: 0 auto;
+}
+
+pre {
+  border-radius: 12px !important;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+}

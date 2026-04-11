@@ -1,0 +1,42 @@
+{
+  "title": {
+    "message": "Synapsys",
+    "description": "The title in the navbar"
+  },
+  "navbar.item.label.Docs": {
+    "message": "Documentação",
+    "description": "Navbar item"
+  },
+  "navbar.item.label.API": {
+    "message": "API",
+    "description": "Navbar item"
+  },
+  "navbar.item.label.Roadmap": {
+    "message": "Roadmap",
+    "description": "Navbar item"
+  },
+  "navbar.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item"
+  },
+  "footer.link.label.Getting Started": {
+    "message": "Primeiros Passos",
+    "description": "Footer link"
+  },
+  "footer.link.label.Architecture": {
+    "message": "Arquitetura",
+    "description": "Footer link"
+  },
+  "footer.link.label.API Reference": {
+    "message": "Referência da API",
+    "description": "Footer link"
+  },
+  "footer.link.label.Issues": {
+    "message": "Issues",
+    "description": "Footer link"
+  },
+  "footer.copyright": {
+    "message": "Copyright © {year} Contribuidores do Synapsys. Construído com Docusaurus.",
+    "description": "Footer copyright"
+  }
+}
