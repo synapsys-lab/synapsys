@@ -1,0 +1,99 @@
+name: Publish to PyPI
+
+# Triggers:
+#   1. Automatic — when a GitHub Release is published (tag vX.Y.Z)
+#   2. Manual    — workflow_dispatch lets you publish to TestPyPI for smoke-testing
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Publish target'
+        required: true
+        default: testpypi
+        type: choice
+        options:
+          - testpypi
+          - pypi
+
+# No repository secrets required — authentication uses OIDC Trusted Publishing.
+# Configure once on the PyPI / TestPyPI website (see README for instructions).
+
+jobs:
+  # ── Job 1: Build sdist + wheel ───────────────────────────────────────────────
+  build:
+    name: Build distribution packages
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Build sdist and wheel
+        run: uv build          # produces dist/*.tar.gz and dist/*.whl
+
+      - name: Upload dist artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          if-no-files-found: error
+
+  # ── Job 2: Publish to TestPyPI (manual only) ─────────────────────────────────
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'testpypi'
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/synapsys
+
+    permissions:
+      id-token: write   # OIDC trusted publishing — no API token needed
+
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  # ── Job 3: Publish to PyPI (release event OR manual with target=pypi) ────────
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    if: >
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/synapsys
+
+    permissions:
+      id-token: write   # OIDC trusted publishing — no API token needed
+
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
