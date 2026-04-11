@@ -53,6 +53,7 @@ addopts = "-v --tb=short"
 [tool.mypy]
 python_version = "3.10"
 strict = true
+disable_error_code = ["type-arg"]   # np.ndarray generic args vary across numpy versions
 
 [[tool.mypy.overrides]]
 module = ["scipy.*", "zmq.*"]
