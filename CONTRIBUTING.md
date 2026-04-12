@@ -57,15 +57,19 @@ uv run mypy synapsys   # no type errors
 
 ## Branch Policy
 
-| Branch | Purpose |
-|--------|---------|
-| `main` | Stable — direct commits are not allowed |
-| `develop` | Integration branch for new features |
-| `feat/<name>` | New features |
-| `fix/<name>` | Bug fixes |
-| `docs/<name>` | Documentation changes |
+| Branch | Created from | Merges into | Purpose |
+|--------|-------------|-------------|---------|
+| `main` | — | — | Always releasable — no direct pushes |
+| `develop` | `main` | — | Integration buffer — default PR target |
+| `feat/<name>` | `develop` | `develop` (PR) | New features |
+| `fix/<name>` | `develop` | `develop` (PR) | Non-urgent bug fixes |
+| `docs/<name>` | `develop` | `develop` (PR) | Documentation changes |
+| `chore/<name>` / `ci/<name>` | `develop` | `develop` (PR) | Tooling, deps, CI |
+| `release/vX.Y.Z` | `develop` | `main` + back-merge `develop` | Release stabilisation |
+| `hotfix/vX.Y.Z` | tag on `main` | `main` + back-merge `develop` | Urgent production fix |
 
-All changes must go through a pull request targeting `main` or `develop`.
+**All topic branches must be created from `develop`, not `main`.**
+Pull requests from external contributors must target `develop`.
 
 ---
 

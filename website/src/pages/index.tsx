@@ -2,6 +2,7 @@ import type { ReactElement } from 'react';
 import Link from '@docusaurus/Link';
 import Translate, { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Layout from '@theme/Layout';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -80,6 +81,7 @@ function NavCard({ Icon, title, desc, href }: { Icon: LucideIcon; title: string;
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home(): ReactElement {
   const { siteConfig } = useDocusaurusContext();
+  const logoUrl = useBaseUrl('/img/logo.svg');
 
   return (
     <Layout
@@ -93,40 +95,52 @@ export default function Home(): ReactElement {
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <header className="doc-header">
         <div className="doc-header__inner">
-          <div className="doc-header__meta">
-            <span className="doc-badge">v0.1.0</span>
-            <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
-            <span className="doc-badge doc-badge--neutral">MIT</span>
-            <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>
-          </div>
+          <div className="doc-header__cols">
 
-          <h1 className="doc-header__title">{siteConfig.title}</h1>
+            {/* ── Logo column ── */}
+            <div className="doc-header__logo-col">
+              <img src={logoUrl} alt="Synapsys logo" className="doc-header__logo" />
+            </div>
 
-          <p className="doc-header__tagline">
-            <Translate id="home.header.tagline">
-              A Python library for modelling, analysis and real-time simulation of linear
-              control systems. Provides a MATLAB-compatible API over SciPy, a multi-agent
-              simulation framework, and a pluggable transport layer (shared memory / ZMQ)
-              for MIL → SIL → HIL workflows.
-            </Translate>
-          </p>
+            {/* ── Content column ── */}
+            <div className="doc-header__content-col">
+              <div className="doc-header__meta">
+                <span className="doc-badge">v0.1.0</span>
+                <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
+                <span className="doc-badge doc-badge--neutral">MIT</span>
+                <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>
+              </div>
 
-          <div className="doc-header__install">
-            <code>pip install synapsys</code>
-            <span className="doc-header__sep">or</span>
-            <code>uv add synapsys</code>
-          </div>
+              <h1 className="doc-header__title">{siteConfig.title}</h1>
 
-          <div className="doc-header__actions">
-            <Link className="btn btn--primary" to="/docs/getting-started/installation">
-              <Translate id="home.header.cta.docs">Documentation</Translate>
-            </Link>
-            <Link className="btn btn--outline" to={GITHUB}>
-              <GitBranch size={15} /> GitHub
-            </Link>
-            <Link className="btn btn--outline" to="/docs/getting-started/quickstart">
-              <Translate id="home.header.cta.quickstart">Quickstart</Translate>
-            </Link>
+              <p className="doc-header__tagline">
+                <Translate id="home.header.tagline">
+                  A Python library for modelling, analysis and real-time simulation of linear
+                  control systems. Provides a MATLAB-compatible API over SciPy, a multi-agent
+                  simulation framework, and a pluggable transport layer (shared memory / ZMQ)
+                  for MIL → SIL → HIL workflows.
+                </Translate>
+              </p>
+
+              <div className="doc-header__install">
+                <code>pip install synapsys</code>
+                <span className="doc-header__sep">or</span>
+                <code>uv add synapsys</code>
+              </div>
+
+              <div className="doc-header__actions">
+                <Link className="btn btn--primary" to="/docs/getting-started/installation">
+                  <Translate id="home.header.cta.docs">Documentation</Translate>
+                </Link>
+                <Link className="btn btn--outline" to={GITHUB}>
+                  <GitBranch size={15} /> GitHub
+                </Link>
+                <Link className="btn btn--outline" to="/docs/getting-started/quickstart">
+                  <Translate id="home.header.cta.quickstart">Quickstart</Translate>
+                </Link>
+              </div>
+            </div>
+
           </div>
         </div>
       </header>
