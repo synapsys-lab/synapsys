@@ -73,3 +73,21 @@ class TestLQR:
         """lqr should accept plain Python lists (not just numpy arrays)."""
         K, P = lqr([[-1.0]], [[1.0]], [[1.0]], [[1.0]])
         assert K.shape == (1, 1)
+
+    def test_singular_R_raises(self):
+        """R must be positive definite — singular R must raise ValueError."""
+        A = np.array([[-1.0]])
+        B = np.array([[1.0]])
+        Q = np.eye(1)
+        R_singular = np.array([[0.0]])  # singular (zero determinant)
+        with pytest.raises(ValueError, match="positive definite"):
+            lqr(A, B, Q, R_singular)
+
+    def test_negative_R_raises(self):
+        """Negative-definite R must raise ValueError."""
+        A = np.array([[-1.0]])
+        B = np.array([[1.0]])
+        Q = np.eye(1)
+        R_neg = np.array([[-1.0]])
+        with pytest.raises(ValueError, match="positive definite"):
+            lqr(A, B, Q, R_neg)

@@ -55,9 +55,16 @@ class PlantAgent(BaseAgent):
         self._ch_y = channel_y
         self._ch_u = channel_u
         n = plant.n_states
-        self._x: np.ndarray = (
-            np.zeros(n) if x0 is None else np.asarray(x0, dtype=np.float64).flatten()
-        )
+        if x0 is None:
+            self._x: np.ndarray = np.zeros(n)
+        else:
+            x0_arr = np.asarray(x0, dtype=np.float64).flatten()
+            if x0_arr.size != n:
+                raise ValueError(
+                    f"x0 must have {n} element(s) to match plant.n_states, "
+                    f"got {x0_arr.size}"
+                )
+            self._x = x0_arr
 
     def setup(self) -> None:
         u0 = np.zeros(self._plant.n_inputs)

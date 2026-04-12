@@ -46,17 +46,32 @@ class SharedMemoryTransport(TransportStrategy):
 
         byte_size = total * np.dtype(np.float64).itemsize
 
-        if create:
-            self._shm = shared_memory.SharedMemory(
-                name=name, create=True, size=byte_size
-            )
-        else:
-            self._shm = shared_memory.SharedMemory(name=name)
-
-        self._buf: np.ndarray = np.ndarray(
-            (total,), dtype=np.float64, buffer=self._shm.buf
-        )
         self._create = create
+        try:
+            if create:
+                self._shm = shared_memory.SharedMemory(
+                    name=name, create=True, size=byte_size
+                )
+            else:
+                self._shm = shared_memory.SharedMemory(name=name)
+
+            self._buf: np.ndarray = np.ndarray(
+                (total,), dtype=np.float64, buffer=self._shm.buf
+            )
+        except Exception:
+            if hasattr(self, "_shm"):
+                self._shm.close()
+                if create:
+                    self._shm.unlink()
+            raise
+
+    def __del__(self) -> None:
+        # Safety net: release resources if close() was never called explicitly
+        if hasattr(self, "_shm"):
+            try:
+                self.close()
+            except Exception:
+                pass
 
     def write(self, channel: str, data: np.ndarray) -> None:
         offset = self._offsets[channel]

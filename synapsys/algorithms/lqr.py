@@ -30,6 +30,22 @@ def lqr(
     Q = np.atleast_2d(np.asarray(Q, dtype=np.float64))
     R = np.atleast_2d(np.asarray(R, dtype=np.float64))
 
-    P = linalg.solve_continuous_are(A, B, Q, R)
+    # R must be positive definite — Cholesky is the canonical check
+    try:
+        linalg.cholesky(R)
+    except linalg.LinAlgError:
+        raise ValueError(
+            "R must be positive definite. "
+            f"Got R with eigenvalues {np.linalg.eigvalsh(R).tolist()}"
+        )
+
+    try:
+        P = linalg.solve_continuous_are(A, B, Q, R)
+    except linalg.LinAlgError as exc:
+        raise ValueError(
+            "Algebraic Riccati equation could not be solved. "
+            "Check that (A, B) is stabilisable and (A, Q^½) is detectable."
+        ) from exc
+
     K = np.linalg.solve(R, B.T @ P)
     return K, P

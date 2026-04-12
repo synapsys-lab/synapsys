@@ -15,6 +15,10 @@ class PID:
         u_min: float = -np.inf,
         u_max: float = np.inf,
     ):
+        if dt <= 0.0:
+            raise ValueError(f"dt must be > 0, got {dt}")
+        if u_min >= u_max:
+            raise ValueError(f"u_min ({u_min}) must be < u_max ({u_max})")
         self.Kp = Kp
         self.Ki = Ki
         self.Kd = Kd

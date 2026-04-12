@@ -4,6 +4,7 @@ Basic example: step response of a second-order system.
 Usage:
     python examples/basic/step_response.py
 """
+
 import matplotlib.pyplot as plt
 
 from synapsys.api.matlab_compat import tf, step
@@ -29,3 +30,4 @@ plt.grid(True)
 plt.tight_layout()
 plt.savefig("step_response.png", dpi=150)
 print("Plot saved: step_response.png")
+plt.show()

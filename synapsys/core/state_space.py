@@ -188,6 +188,16 @@ class StateSpace(LTIModel):
             raise RuntimeError("evolve() requires a discrete plant. Use c2d() first.")
         x = np.atleast_2d(np.asarray(x, dtype=np.float64)).reshape(-1, 1)
         u = np.atleast_2d(np.asarray(u, dtype=np.float64)).reshape(-1, 1)
+        if x.shape[0] != self.n_states:
+            raise ValueError(
+                f"x must have {self.n_states} element(s) (n_states), "
+                f"got {x.shape[0]}"
+            )
+        if u.shape[0] != self.n_inputs:
+            raise ValueError(
+                f"u must have {self.n_inputs} element(s) (n_inputs), "
+                f"got {u.shape[0]}"
+            )
         x_next = self._A @ x + self._B @ u
         y = self._C @ x + self._D @ u
         return x_next.flatten(), y.flatten()

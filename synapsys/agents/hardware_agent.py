@@ -119,5 +119,13 @@ class HardwareAgent(BaseAgent):
             self._hw.write_inputs(
                 np.zeros(self._hw.n_inputs), timeout_ms=self._timeout_ms
             )
+        except TimeoutError:
+            logger.warning(
+                "Agent '%s': hardware write_inputs timed out during teardown.",
+                self.name,
+            )
         except Exception:
-            pass
+            logger.exception(
+                "Agent '%s': unexpected error during teardown.",
+                self.name,
+            )

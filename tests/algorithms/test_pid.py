@@ -42,3 +42,15 @@ class TestPID:
     def test_repr(self):
         pid = PID(Kp=1.0, Ki=0.5, Kd=0.1)
         assert "PID" in repr(pid)
+
+    def test_dt_zero_raises(self):
+        with pytest.raises(ValueError, match="dt must be > 0"):
+            PID(Kp=1.0, dt=0.0)
+
+    def test_dt_negative_raises(self):
+        with pytest.raises(ValueError, match="dt must be > 0"):
+            PID(Kp=1.0, dt=-0.01)
+
+    def test_u_min_ge_u_max_raises(self):
+        with pytest.raises(ValueError, match="u_min"):
+            PID(Kp=1.0, u_min=5.0, u_max=5.0)
