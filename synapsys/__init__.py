@@ -4,28 +4,38 @@ __version__ = "0.1.0"
 
 # ── Convenience re-exports ────────────────────────────────────────────────────
 # Users can write `from synapsys import tf` instead of `from synapsys.api import tf`
+from synapsys.algorithms.lqr import lqr
+from synapsys.algorithms.pid import PID
 from synapsys.api.matlab_compat import (
-    tf,
+    bode,
+    c2d,
+    feedback,
+    lsim,
+    parallel,
+    series,
     ss,
     step,
-    bode,
-    lsim,
-    feedback,
-    series,
-    parallel,
-    c2d,
+    tf,
 )
-from synapsys.core.transfer_function import TransferFunction
 from synapsys.core.state_space import StateSpace
-from synapsys.algorithms.pid import PID
-from synapsys.algorithms.lqr import lqr
+from synapsys.core.transfer_function import TransferFunction
 
 __all__ = [
     "__version__",
     # MATLAB-compatible API
-    "tf", "ss", "step", "bode", "lsim", "feedback", "series", "parallel", "c2d",
+    "tf",
+    "ss",
+    "step",
+    "bode",
+    "lsim",
+    "feedback",
+    "series",
+    "parallel",
+    "c2d",
     # Core classes
-    "TransferFunction", "StateSpace",
+    "TransferFunction",
+    "StateSpace",
     # Algorithms
-    "PID", "lqr",
+    "PID",
+    "lqr",
 ]
