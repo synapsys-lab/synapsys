@@ -47,6 +47,8 @@ website/.docusaurus/
 
 # ── Website static assets (exceptions) ────────────────────────────────────────
 !website/static/img/*.png
+!website/static/img/examples/
+!website/static/img/examples/*.png
 
 # ── OS & editors ──────────────────────────────────────────────────────────────
 .DS_Store

@@ -65,6 +65,37 @@ const sidebars: SidebarsConfig = {
     },
     {
       type: 'category',
+      label: 'Examples',
+      items: [
+        'examples/examples-index',
+        {
+          type: 'category',
+          label: 'Basic',
+          items: ['examples/basic/step-response'],
+        },
+        {
+          type: 'category',
+          label: 'Advanced',
+          items: [
+            'examples/advanced/custom-signals',
+            'examples/advanced/sil-ai-controller',
+            'examples/advanced/realtime-scope',
+            'examples/advanced/realtime-oscilloscope',
+            'examples/advanced/digital-twin',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Distributed',
+          items: [
+            'examples/distributed/shared-memory-example',
+            'examples/distributed/zmq-example',
+          ],
+        },
+      ],
+    },
+    {
+      type: 'category',
       label: 'API Reference',
       items: [
         'api/matlab-compat',
