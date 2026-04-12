@@ -16,8 +16,11 @@ try:
             self.linear = nn.Linear(1, 1)
             # Hardcode weight so it acts predictably (like a P controller)
             with torch.no_grad():
-                self.linear.weight.fill_(-0.5) 
+                self.linear.weight.fill_(-0.5)
                 self.linear.bias.fill_(1.0)
+
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            return self.linear(x)
                 
     model = DummyRLController()
     model.eval()

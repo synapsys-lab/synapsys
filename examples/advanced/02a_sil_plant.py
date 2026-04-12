@@ -8,7 +8,7 @@ def main():
     print("Initializing SIL Plant Process (Physics Engine)...")
 
     # 1. Mathematical model -> Discretised for digital simulation at 100 Hz
-    plant_c = tf([1], [1, 1, 1])  # G(s) = 1 / (s^2 + s + 1)
+    plant_c = tf([10], [1, 3, 10])  # G(s) = 10 / (s^2 + 3s + 10)
     plant_d = c2d(plant_c, dt=0.01)
     
     # 2. Set up Transport Bus (This process OWNS the memory block)
