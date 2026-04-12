@@ -45,6 +45,9 @@ website/.docusaurus/
 *.csv
 *.log
 
+# ── Website static assets (exceptions) ────────────────────────────────────────
+!website/static/img/*.png
+
 # ── OS & editors ──────────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
