@@ -89,6 +89,36 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   margin: 0 auto;
 }
 
+.doc-header__cols {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.doc-header__logo-col {
+  flex-shrink: 0;
+  padding-top: 0.25rem;
+}
+
+.doc-header__logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+}
+
+.doc-header__content-col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 540px) {
+  .doc-header__cols {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
 .doc-header__meta {
   display: flex;
   gap: 0.4rem;
