@@ -84,14 +84,14 @@ agent.start()   # non-blocking background thread
 
 Beyond the robust multi-agent architecture for SIL/HIL simulations, Synapsys is built to provide an incredible Developer Experience (DX) for control engineers:
 
-- 🧠 **Zero Learning Curve (MATLAB Mirror):** The `synapsys.api` layer provides functions like `tf()`, `ss()`, `step()`, and `bode()`. It allows engineers to bring legacy scripts to open-source Python with almost zero friction, avoiding the complex object-oriented overhead of SciPy.
-- 📐 **Natural Block Algebra:** Overloaded operators allow composing LTI systems exactly as they look in textbooks without invoking complex matrix concatenations manually:
+- **Zero Learning Curve (MATLAB Mirror):** The `synapsys.api` layer provides functions like `tf()`, `ss()`, `step()`, and `bode()`. It allows engineers to bring legacy scripts to open-source Python with almost zero friction, avoiding the complex object-oriented overhead of SciPy.
+- **Natural Block Algebra:** Overloaded operators allow composing LTI systems exactly as they look in textbooks without invoking complex matrix concatenations manually:
   - Series (Cascade): `G_total = G1 * G2`
   - Parallel: `G_total = G1 + G2`
   - Closed-loop: `T = (C * G).feedback()`
-- ⏱️ **Continuous vs. Discrete Abstraction:** You don't need to manually switch between differential ODE solvers and difference equations. Setting `dt > 0` on any object automatically changes behavior across all underlying `.bode()`, `.step()`, and `is_stable()` calls.
-- 🚦 **Zero Callback Hell:** Integrating distributed network agents usually forces complicated async/await wrappers or `.on_message()` callbacks. Synapsys's `ControllerAgent` relies on **synchronous, deterministic functions**, hiding the FIPA ACL communication overhead under a clean procedural layer.
-- 💡 **Strict Type Hinting:** Built for Modern Python 3.10+, rigorous typing enables rich IDE IntelliSense (VSCode/PyCharm), catching structural array dimension issues before they execute.
+- **Continuous vs. Discrete Abstraction:** You don't need to manually switch between differential ODE solvers and difference equations. Setting `dt > 0` on any object automatically changes behavior across all underlying `.bode()`, `.step()`, and `is_stable()` calls.
+- **Zero Callback Hell:** Integrating distributed network agents usually forces complicated async/await wrappers or `.on_message()` callbacks. Synapsys's `ControllerAgent` relies on **synchronous, deterministic functions**, hiding the FIPA ACL communication overhead under a clean procedural layer.
+- **Strict Type Hinting:** Built for Modern Python 3.10+, rigorous typing enables rich IDE IntelliSense (VSCode/PyCharm), catching structural array dimension issues before they execute.
 
 ---
 

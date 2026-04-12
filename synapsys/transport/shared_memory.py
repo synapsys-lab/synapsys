@@ -65,6 +65,12 @@ class SharedMemoryTransport(TransportStrategy):
                     self._shm.unlink()
             raise
 
+    def __enter__(self) -> "SharedMemoryTransport":
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
+
     def __del__(self) -> None:
         # Safety net: release resources if close() was never called explicitly
         if hasattr(self, "_shm"):

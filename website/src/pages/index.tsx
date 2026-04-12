@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import Link from '@docusaurus/Link';
 import Translate, { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
@@ -5,53 +6,68 @@ import Layout from '@theme/Layout';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
+import {
+  Zap,
+  LayoutGrid,
+  Calculator,
+  Network,
+  Share2,
+  Cpu,
+  type LucideIcon,
+} from 'lucide-react';
 import ControlSystemBackground from '../components/ControlSystemBackground';
 
 const GITHUB = 'https://github.com/Oseiasdfarias/synapsys';
 
 // ── Feature cards ─────────────────────────────────────────────────────────────
-const FEATURES = [
+const FEATURES: { id: string; Icon: LucideIcon; title: string; desc: string; href: string }[] = [
   {
     id: 'matlab',
-    icon: '⚡',
+    Icon: Zap,
     title: translate({ id: 'home.feature.matlab.title',    message: 'MATLAB-Compatible API' }),
     desc:  translate({ id: 'home.feature.matlab.desc',     message: 'tf(), ss(), step(), bode(), feedback() — familiar syntax, pure Python. Zero MATLAB licence required.' }),
+    href: '/docs/api/matlab-compat',
   },
   {
     id: 'lti',
-    icon: '📐',
+    Icon: LayoutGrid,
     title: translate({ id: 'home.feature.lti.title',       message: 'Solid LTI Core' }),
     desc:  translate({ id: 'home.feature.lti.desc',        message: 'TransferFunction and StateSpace with full operator algebra, poles, zeros, stability analysis and ZOH discretisation.' }),
+    href: '/docs/guide/core/transfer-function',
   },
   {
     id: 'algorithms',
-    icon: '🧮',
+    Icon: Calculator,
     title: translate({ id: 'home.feature.algorithms.title', message: 'Control Algorithms' }),
     desc:  translate({ id: 'home.feature.algorithms.desc',  message: 'Discrete PID with anti-windup and saturation. LQR via algebraic Riccati equation. Production-ready.' }),
+    href: '/docs/guide/algorithms/pid',
   },
   {
     id: 'agents',
-    icon: '🤖',
+    Icon: Network,
     title: translate({ id: 'home.feature.agents.title',    message: 'Multi-Agent Simulation' }),
     desc:  translate({ id: 'home.feature.agents.desc',     message: 'PlantAgent and ControllerAgent with FIPA ACL messaging. Lock-step and wall-clock synchronisation.' }),
+    href: '/docs/guide/agents/concepts',
   },
   {
     id: 'transport',
-    icon: '🔗',
+    Icon: Share2,
     title: translate({ id: 'home.feature.transport.title', message: 'Pluggable Transport' }),
     desc:  translate({ id: 'home.feature.transport.desc',  message: 'Zero-copy shared memory for single-host simulation. ZeroMQ PUB/SUB and REQ/REP for distributed setups.' }),
+    href: '/docs/guide/transport/overview',
   },
   {
     id: 'hw',
-    icon: '🔌',
+    Icon: Cpu,
     title: translate({ id: 'home.feature.hw.title',        message: 'Hardware Abstraction' }),
     desc:  translate({ id: 'home.feature.hw.desc',         message: 'HardwareInterface enables seamless MIL → SIL → HIL transitions. MockHardwareInterface for in-process testing.' }),
+    href: '/docs/guide/agents/hil-sil',
   },
 ];
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 const STATS = [
-  { value: '67',    label: translate({ id: 'home.stat.tests',   message: 'Tests Passing' }) },
+  { value: '74',    label: translate({ id: 'home.stat.tests',   message: 'Tests Passing' }) },
   { value: '86%',   label: translate({ id: 'home.stat.cov',     message: 'Coverage' }) },
   { value: '3.10+', label: translate({ id: 'home.stat.python',  message: 'Python' }) },
   { value: 'MIT',   label: translate({ id: 'home.stat.license', message: 'License' }) },
@@ -80,13 +96,15 @@ const STEPS = [
 ];
 
 // ── Sub-components ────────────────────────────────────────────────────────────
-function Feature({ icon, title, desc }: { icon: string; title: string; desc: string }) {
+function Feature({ Icon, title, desc, href }: { Icon: LucideIcon; title: string; desc: string; href: string }): ReactElement {
   return (
-    <div className="feature__card">
-      <span className="feature__icon">{icon}</span>
+    <Link to={href} className="feature__card">
+      <span className="feature__icon">
+        <Icon size={24} strokeWidth={1.75} />
+      </span>
       <h3 className="feature__title">{title}</h3>
       <p className="feature__desc">{desc}</p>
-    </div>
+    </Link>
   );
 }
 
@@ -111,7 +129,7 @@ function Step({
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
-export default function Home(): JSX.Element {
+export default function Home(): ReactElement {
   const { siteConfig } = useDocusaurusContext();
 
   return (
@@ -194,7 +212,7 @@ export default function Home(): JSX.Element {
         </p>
         <div className="features__grid">
           {FEATURES.map((f) => (
-            <Feature key={f.id} icon={f.icon} title={f.title} desc={f.desc} />
+            <Feature key={f.id} Icon={f.Icon} title={f.title} desc={f.desc} href={f.href} />
           ))}
         </div>
       </section>

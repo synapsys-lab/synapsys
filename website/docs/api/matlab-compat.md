@@ -21,7 +21,7 @@ This module is the recommended entry point for most users.
 | `c2d(sys, dt, method='zoh')` | `c2d(sys, dt)` | Discretise a continuous system |
 | `step(sys, T=None)` | `step(sys)` | Step response |
 | `bode(sys, w=None)` | `bode(sys)` | Bode diagram data |
-| `feedback(G, H=None, sign=-1)` | `feedback(G, H)` | Closed-loop system |
+| `feedback(G, H=None)` | `feedback(G, H)` | Closed-loop system |
 
 ## Example
 

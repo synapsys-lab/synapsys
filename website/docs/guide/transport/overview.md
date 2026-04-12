@@ -34,9 +34,10 @@ flowchart LR
 ## Common interface
 
 ```python
+import numpy as np
 from synapsys.transport import SharedMemoryTransport
 
-# Using as a context manager (closes automatically)
+# Context manager — releases shared memory automatically on exit
 with SharedMemoryTransport("bus", {"y": 2, "u": 1}, create=True) as t:
     t.write("y", np.array([0.0, 0.0]))
     y = t.read("y")
