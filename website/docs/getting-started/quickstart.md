@@ -57,10 +57,10 @@ Run in two separate terminals:
 
 ```bash
 # Terminal 1 — start the plant first
-python examples/distributed/plant.py
+python examples/distributed/01_shared_memory/plant.py
 
 # Terminal 2 — then the controller
-python examples/distributed/controller.py
+python examples/distributed/01_shared_memory/controller.py
 ```
 
 The plant exposes its state via **shared memory** (zero-copy). The controller reads `y`, computes `u` with PID, and writes it back — no network sockets involved.
@@ -69,8 +69,8 @@ The plant exposes its state via **shared memory** (zero-copy). The controller re
 
 ```bash
 # Machine A — plant
-python examples/distributed/plant_zmq.py
+python examples/distributed/02_zmq/plant_zmq.py
 
 # Machine B — controller (set PLANT_HOST to Machine A's IP)
-PLANT_HOST=192.168.1.10 python examples/distributed/controller_zmq.py
+PLANT_HOST=192.168.1.10 python examples/distributed/02_zmq/controller_zmq.py
 ```
