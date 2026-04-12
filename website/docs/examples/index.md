@@ -16,24 +16,24 @@ Each example lives in its own subfolder under `examples/` and includes a detaile
 
 | Example | Concepts |
 |---|---|
-| [Step Response](./basic/step-response) | Transfer function, `tf()`, `step()`, poles, stability |
+| [Step Response](./basic/step-response.md) | Transfer function, `tf()`, `step()`, poles, stability |
 
 ## Advanced
 
 | Example | Concepts |
 |---|---|
-| [Custom Signal Injection](./advanced/custom-signals) | MIL, superposition, `simulate()`, arbitrary waveforms |
-| [SIL + AI Controller](./advanced/sil-ai-controller) | SIL, `PlantAgent`, `ControllerAgent`, PyTorch integration, real-time plot |
-| [Real-Time Scope (Terminal)](./advanced/realtime-scope) | Read-only bus monitor, headless display |
-| [Real-Time Oscilloscope](./advanced/realtime-oscilloscope) | Three-role architecture, PID, sinusoidal reference, `FuncAnimation` |
-| [Digital Twin](./advanced/digital-twin) | Virtual twin, wear injection, divergence metric, anomaly detection |
+| [Custom Signal Injection](./advanced/custom-signals.md) | MIL, superposition, `simulate()`, arbitrary waveforms |
+| [SIL + AI Controller](./advanced/sil-ai-controller.md) | SIL, `PlantAgent`, `ControllerAgent`, PyTorch integration, real-time plot |
+| [Real-Time Scope (Terminal)](./advanced/realtime-scope.md) | Read-only bus monitor, headless display |
+| [Real-Time Oscilloscope](./advanced/realtime-oscilloscope.md) | Three-role architecture, PID, sinusoidal reference, `FuncAnimation` |
+| [Digital Twin](./advanced/digital-twin.md) | Virtual twin, wear injection, divergence metric, anomaly detection |
 
 ## Distributed
 
 | Example | Concepts |
 |---|---|
-| [Shared Memory](./distributed/shared-memory-example) | Multi-process IPC, bus ownership, rate decoupling |
-| [ZeroMQ Network](./distributed/zmq-example) | PUB/SUB, cross-machine simulation, ZOH fallback |
+| [Shared Memory](./distributed/shared-memory.md) | Multi-process IPC, bus ownership, rate decoupling |
+| [ZeroMQ Network](./distributed/zmq.md) | PUB/SUB, cross-machine simulation, ZOH fallback |
 
 ---
 
