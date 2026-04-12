@@ -72,7 +72,29 @@ jobs:
         with:
           repository-url: https://test.pypi.org/legacy/
 
-  # ── Job 3: Publish to PyPI (release event OR manual with target=pypi) ────────
+  # ── Job 3: Attach wheel + sdist to the GitHub Release ───────────────────────
+  attach-assets:
+    name: Upload packages to GitHub Release
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # required to upload release assets
+
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*
+
+  # ── Job 4: Publish to PyPI (release event OR manual with target=pypi) ────────
   publish-pypi:
     name: Publish to PyPI
     needs: build
