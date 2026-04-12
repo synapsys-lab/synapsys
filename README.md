@@ -188,7 +188,7 @@ uv run ruff check synapsys tests       # linting
 
 | Metric | Value |
 |--------|-------|
-| Test suite | 69 tests |
+| Test suite | 74 tests |
 | Coverage | 86 % |
 | Type checking | mypy strict — 0 errors |
 | Python versions | 3.10 · 3.11 · 3.12 |
@@ -205,6 +205,41 @@ uv run ruff check synapsys tests       # linting
 | **v0.5** | Real hardware drivers (serial, CAN, FPGA via PYNQ) |
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history.
+
+---
+
+## Citing
+
+If you use Synapsys in academic work, please cite it as:
+
+**BibTeX**
+```bibtex
+@software{synapsys2026,
+  author    = {Farias, Oseias D. and contributors},
+  title     = {Synapsys: A Python Framework for Modelling and
+               Real-Time Simulation of Linear Control Systems},
+  year      = {2026},
+  version   = {0.1.0},
+  url       = {https://github.com/synapsys-lab/synapsys},
+  license   = {MIT},
+}
+```
+
+**APA**
+```
+Farias, O. D., & contributors. (2026). Synapsys: A Python framework for
+modelling and real-time simulation of linear control systems (v0.1.0).
+https://github.com/synapsys-lab/synapsys
+```
+
+**LaTeX (plain)**
+```latex
+\bibitem{synapsys2026}
+O.~D. Farias and contributors,
+\textit{Synapsys: A Python Framework for Modelling and Real-Time Simulation
+of Linear Control Systems}, version~0.1.0, 2026.
+Available: \url{https://github.com/synapsys-lab/synapsys}
+```
 
 ---
 

@@ -90,4 +90,4 @@ ControllerAgent(
 
 ## Source
 
-See [`synapsys/agents/`](https://github.com/synapsys/synapsys/tree/main/synapsys/agents) on GitHub.
+See [`synapsys/agents/`](https://github.com/synapsys-lab/synapsys/tree/main/synapsys/agents) on GitHub.

@@ -38,4 +38,4 @@ w, mag, phase = bode(G)          # Bode data
 
 ## Source
 
-See [`synapsys/api/matlab_compat.py`](https://github.com/synapsys/synapsys/blob/main/synapsys/api/matlab_compat.py) on GitHub.
+See [`synapsys/api/matlab_compat.py`](https://github.com/synapsys-lab/synapsys/blob/main/synapsys/api/matlab_compat.py) on GitHub.

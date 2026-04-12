@@ -24,7 +24,7 @@ uv add synapsys
 ## Instalar do código-fonte
 
 ```bash
-git clone https://github.com/synapsys/synapsys.git
+git clone https://github.com/synapsys-lab/synapsys.git
 cd synapsys
 uv sync --extra dev
 ```

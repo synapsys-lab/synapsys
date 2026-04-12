@@ -26,6 +26,12 @@ dependencies = [
     "pyzmq>=25.0",
 ]
 
+[project.urls]
+Repository    = "https://github.com/synapsys-lab/synapsys"
+Documentation = "https://synapsys-lab.github.io/synapsys/"
+"Bug Tracker" = "https://github.com/synapsys-lab/synapsys/issues"
+Changelog     = "https://github.com/synapsys-lab/synapsys/blob/main/CHANGELOG.md"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4",

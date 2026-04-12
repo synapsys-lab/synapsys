@@ -62,4 +62,4 @@ Server must call `read()` before `write()`. Client must call `write()` before `r
 
 ## Source
 
-See [`synapsys/transport/`](https://github.com/synapsys/synapsys/tree/main/synapsys/transport) on GitHub.
+See [`synapsys/transport/`](https://github.com/synapsys-lab/synapsys/tree/main/synapsys/transport) on GitHub.

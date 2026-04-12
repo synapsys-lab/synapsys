@@ -53,4 +53,4 @@ Represents an LTI system via $(A, B, C, D)$ matrices.
 
 ## Source
 
-See [`synapsys/core/`](https://github.com/synapsys/synapsys/tree/main/synapsys/core) on GitHub.
+See [`synapsys/core/`](https://github.com/synapsys-lab/synapsys/tree/main/synapsys/core) on GitHub.

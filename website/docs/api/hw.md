@@ -32,4 +32,4 @@ Pluggable interface for connecting Synapsys agents directly to physical hardware
 
 ## Source
 
-See [`synapsys/hw/base.py`](https://github.com/synapsys/synapsys/blob/main/synapsys/hw/base.py) on GitHub.
+See [`synapsys/hw/base.py`](https://github.com/synapsys-lab/synapsys/blob/main/synapsys/hw/base.py) on GitHub.

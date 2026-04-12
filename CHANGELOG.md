@@ -52,4 +52,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **No hardware implementations** — `HardwareInterface` subclasses for real hardware are planned for v0.5.
 - **Race-condition caveat** — `SharedMemoryTransport` has no internal mutex; architect channels so that each process is the sole writer of its own channel.
 
-[0.1.0]: https://github.com/synapsys/synapsys/releases/tag/v0.1.0
+[0.1.0]: https://github.com/synapsys-lab/synapsys/releases/tag/v0.1.0

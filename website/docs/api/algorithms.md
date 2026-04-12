@@ -59,4 +59,4 @@ lqr(A, B, Q, R) -> tuple[np.ndarray, np.ndarray]
 
 ## Source
 
-See [`synapsys/algorithms/`](https://github.com/synapsys/synapsys/tree/main/synapsys/algorithms) on GitHub.
+See [`synapsys/algorithms/`](https://github.com/synapsys-lab/synapsys/tree/main/synapsys/algorithms) on GitHub.
