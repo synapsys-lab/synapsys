@@ -49,6 +49,8 @@ website/.docusaurus/
 !website/static/img/*.png
 !website/static/img/examples/
 !website/static/img/examples/*.png
+!website/static/img/quickstart/
+!website/static/img/quickstart/*.png
 
 # ── OS & editors ──────────────────────────────────────────────────────────────
 .DS_Store
