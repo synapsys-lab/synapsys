@@ -43,7 +43,7 @@ const NAV_CARDS: { Icon: LucideIcon; title: string; desc: string; href: string }
     Icon: FlaskConical,
     title: translate({ id: 'home.nav.examples.title', message: 'Examples' }),
     desc:  translate({ id: 'home.nav.examples.desc',  message: 'Step response, PID loop, LQR, real-time agents.' }),
-    href:  '/docs/getting-started/quickstart',
+    href:  '/docs/examples',
   },
 ];
 
