@@ -2,15 +2,17 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { themes as prismThemes } from 'prism-react-renderer';
 
+const GITHUB = 'https://github.com/Oseiasdfarias/synapsys';
+
 const config: Config = {
   title: 'Synapsys',
   tagline: 'Modern Python control systems framework with distributed multi-agent simulation',
   favicon: 'img/favicon.ico',
 
-  url: 'https://synapsys.github.io',
+  url: 'https://oseiasdfarias.github.io',
   baseUrl: '/synapsys/',
 
-  organizationName: 'synapsys',
+  organizationName: 'Oseiasdfarias',
   projectName: 'synapsys',
   trailingSlash: false,
 
@@ -21,23 +23,12 @@ const config: Config = {
     defaultLocale: 'en',
     locales: ['en', 'pt'],
     localeConfigs: {
-      en: {
-        label: 'English',
-        direction: 'ltr',
-        htmlLang: 'en-US',
-      },
-      pt: {
-        label: 'Português (BR)',
-        direction: 'ltr',
-        htmlLang: 'pt-BR',
-      },
+      en: { label: 'English',         direction: 'ltr', htmlLang: 'en-US' },
+      pt: { label: 'Português (BR)',   direction: 'ltr', htmlLang: 'pt-BR' },
     },
   },
 
-  markdown: {
-    mermaid: true,
-  },
-
+  markdown: { mermaid: true },
   themes: ['@docusaurus/theme-mermaid'],
 
   presets: [
@@ -46,14 +37,12 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/synapsys/synapsys/tree/main/website/',
+          editUrl: `${GITHUB}/tree/main/website/`,
           remarkPlugins: [require('remark-math')],
           rehypePlugins: [require('rehype-katex')],
         },
         blog: false,
-        theme: {
-          customCss: './src/css/custom.css',
-        },
+        theme: { customCss: './src/css/custom.css' },
       } satisfies Preset.Options,
     ],
   ],
@@ -62,8 +51,7 @@ const config: Config = {
     {
       href: 'https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css',
       type: 'text/css',
-      integrity:
-        'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
+      integrity: 'sha384-odtC+0UGzzFL/6PNoE8rX/SPcQDXBJ+uRepguP4QkPCm2LBxH3FA3y+fKSiJ+AmM',
       crossorigin: 'anonymous',
     },
   ],
@@ -77,10 +65,7 @@ const config: Config = {
     },
     navbar: {
       title: 'Synapsys',
-      logo: {
-        alt: 'Synapsys Logo',
-        src: 'img/logo.png',
-      },
+      logo: { alt: 'Synapsys Logo', src: 'img/logo.png' },
       items: [
         {
           type: 'docSidebar',
@@ -88,25 +73,10 @@ const config: Config = {
           position: 'left',
           label: 'Docs',
         },
-        {
-          to: '/docs/api/core',
-          label: 'API',
-          position: 'left',
-        },
-        {
-          to: '/docs/roadmap',
-          label: 'Roadmap',
-          position: 'left',
-        },
-        {
-          type: 'localeDropdown',
-          position: 'right',
-        },
-        {
-          href: 'https://github.com/synapsys/synapsys',
-          label: 'GitHub',
-          position: 'right',
-        },
+        { to: '/docs/api/core',  label: 'API',     position: 'left' },
+        { to: '/docs/roadmap',   label: 'Roadmap', position: 'left' },
+        { type: 'localeDropdown', position: 'right' },
+        { href: GITHUB, label: 'GitHub', position: 'right' },
       ],
     },
     footer: {
@@ -116,31 +86,24 @@ const config: Config = {
           title: 'Docs',
           items: [
             { label: 'Getting Started', to: '/docs/getting-started/installation' },
-            { label: 'Architecture', to: '/docs/architecture' },
-            { label: 'API Reference', to: '/docs/api/core' },
+            { label: 'Architecture',    to: '/docs/architecture' },
+            { label: 'API Reference',   to: '/docs/api/core' },
           ],
         },
         {
           title: 'Community',
           items: [
-            {
-              label: 'GitHub',
-              href: 'https://github.com/synapsys/synapsys',
-            },
-            {
-              label: 'Issues',
-              href: 'https://github.com/synapsys/synapsys/issues',
-            },
+            { label: 'GitHub',  href: GITHUB },
+            { label: 'Issues',  href: `${GITHUB}/issues` },
+            { label: 'Releases', href: `${GITHUB}/releases` },
           ],
         },
         {
           title: 'More',
           items: [
             { label: 'Roadmap', to: '/docs/roadmap' },
-            {
-              label: 'PyPI',
-              href: 'https://pypi.org/project/synapsys/',
-            },
+            { label: 'PyPI',    href: 'https://pypi.org/project/synapsys/' },
+            { label: 'Changelog', href: `${GITHUB}/blob/main/CHANGELOG.md` },
           ],
         },
       ],
