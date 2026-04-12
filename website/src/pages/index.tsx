@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 import ControlSystemBackground from '../components/ControlSystemBackground';
 
-const GITHUB = 'https://github.com/Oseiasdfarias/synapsys';
+const GITHUB = 'https://github.com/synapsys-lab/synapsys';
 
 // ── Feature cards ─────────────────────────────────────────────────────────────
 const FEATURES: { id: string; Icon: LucideIcon; title: string; desc: string; href: string }[] = [

@@ -6,15 +6,15 @@
 
 **Modern Python control systems framework with distributed multi-agent simulation**
 
-[![CI](https://github.com/Oseiasdfarias/synapsys/actions/workflows/ci.yml/badge.svg)](https://github.com/Oseiasdfarias/synapsys/actions/workflows/ci.yml)
-[![Deploy Docs](https://github.com/Oseiasdfarias/synapsys/actions/workflows/docs.yml/badge.svg)](https://oseiasdfarias.github.io/synapsys/)
+[![CI](https://github.com/synapsys-lab/synapsys/actions/workflows/ci.yml/badge.svg)](https://github.com/synapsys-lab/synapsys/actions/workflows/ci.yml)
+[![Deploy Docs](https://github.com/synapsys-lab/synapsys/actions/workflows/docs.yml/badge.svg)](https://synapsys-lab.github.io/synapsys/)
 [![PyPI version](https://img.shields.io/pypi/v/synapsys.svg?color=blue)](https://pypi.org/project/synapsys/)
 [![Python](https://img.shields.io/pypi/pyversions/synapsys.svg)](https://pypi.org/project/synapsys/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen.svg)](#testing)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-[Documentation](https://oseiasdfarias.github.io/synapsys/) · [Quickstart](#quickstart) · [Examples](examples/) · [Changelog](CHANGELOG.md)
+[Documentation](https://synapsys-lab.github.io/synapsys/) · [Quickstart](#quickstart) · [Examples](examples/) · [Changelog](CHANGELOG.md)
 
 </div>
 
@@ -60,7 +60,7 @@ pip install synapsys
 For development:
 
 ```bash
-git clone https://github.com/Oseiasdfarias/synapsys.git
+git clone https://github.com/synapsys-lab/synapsys.git
 cd synapsys
 uv sync --extra dev
 ```
@@ -213,7 +213,7 @@ See [CHANGELOG.md](CHANGELOG.md) for the full release history.
 Contributions are welcome! Please open an issue to discuss what you'd like to change before submitting a pull request.
 
 ```bash
-git clone https://github.com/Oseiasdfarias/synapsys.git
+git clone https://github.com/synapsys-lab/synapsys.git
 cd synapsys
 uv sync --extra dev
 uv run pytest          # make sure everything passes before you start

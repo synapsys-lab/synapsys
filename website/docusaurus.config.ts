@@ -2,17 +2,17 @@ import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { themes as prismThemes } from 'prism-react-renderer';
 
-const GITHUB = 'https://github.com/Oseiasdfarias/synapsys';
+const GITHUB = 'https://github.com/synapsys-lab/synapsys';
 
 const config: Config = {
   title: 'Synapsys',
   tagline: 'Modern Python control systems framework with distributed multi-agent simulation',
   favicon: 'img/favicon.ico',
 
-  url: 'https://oseiasdfarias.github.io',
+  url: 'https://synapsys-lab.github.io',
   baseUrl: '/synapsys/',
 
-  organizationName: 'Oseiasdfarias',
+  organizationName: 'synapsys-lab',
   projectName: 'synapsys',
   trailingSlash: false,
 
