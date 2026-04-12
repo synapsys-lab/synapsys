@@ -7,124 +7,73 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import {
-  Zap,
-  LayoutGrid,
-  Calculator,
-  Network,
-  Share2,
+  BookOpen,
   Cpu,
+  FlaskConical,
+  LayoutList,
+  GitBranch,
+  ArrowRight,
   type LucideIcon,
 } from 'lucide-react';
-import ControlSystemBackground from '../components/ControlSystemBackground';
 
 const GITHUB = 'https://github.com/synapsys-lab/synapsys';
 
-// ── Feature cards ─────────────────────────────────────────────────────────────
-const FEATURES: { id: string; Icon: LucideIcon; title: string; desc: string; href: string }[] = [
+// ── Quick-navigation cards ───────────────────────────���────────────────────────
+const NAV_CARDS: { Icon: LucideIcon; title: string; desc: string; href: string }[] = [
   {
-    id: 'matlab',
-    Icon: Zap,
-    title: translate({ id: 'home.feature.matlab.title',    message: 'MATLAB-Compatible API' }),
-    desc:  translate({ id: 'home.feature.matlab.desc',     message: 'tf(), ss(), step(), bode(), feedback() — familiar syntax, pure Python. Zero MATLAB licence required.' }),
-    href: '/docs/api/matlab-compat',
+    Icon: BookOpen,
+    title: translate({ id: 'home.nav.start.title',   message: 'Getting Started' }),
+    desc:  translate({ id: 'home.nav.start.desc',    message: 'Installation, quickstart and first simulation.' }),
+    href:  '/docs/getting-started/installation',
   },
   {
-    id: 'lti',
-    Icon: LayoutGrid,
-    title: translate({ id: 'home.feature.lti.title',       message: 'Solid LTI Core' }),
-    desc:  translate({ id: 'home.feature.lti.desc',        message: 'TransferFunction and StateSpace with full operator algebra, poles, zeros, stability analysis and ZOH discretisation.' }),
-    href: '/docs/guide/core/transfer-function',
+    Icon: LayoutList,
+    title: translate({ id: 'home.nav.guide.title',   message: 'User Guide' }),
+    desc:  translate({ id: 'home.nav.guide.desc',    message: 'LTI models, algorithms, agents and transport.' }),
+    href:  '/docs/guide/core/transfer-function',
   },
   {
-    id: 'algorithms',
-    Icon: Calculator,
-    title: translate({ id: 'home.feature.algorithms.title', message: 'Control Algorithms' }),
-    desc:  translate({ id: 'home.feature.algorithms.desc',  message: 'Discrete PID with anti-windup and saturation. LQR via algebraic Riccati equation. Production-ready.' }),
-    href: '/docs/guide/algorithms/pid',
-  },
-  {
-    id: 'agents',
-    Icon: Network,
-    title: translate({ id: 'home.feature.agents.title',    message: 'Multi-Agent Simulation' }),
-    desc:  translate({ id: 'home.feature.agents.desc',     message: 'PlantAgent and ControllerAgent with FIPA ACL messaging. Lock-step and wall-clock synchronisation.' }),
-    href: '/docs/guide/agents/concepts',
-  },
-  {
-    id: 'transport',
-    Icon: Share2,
-    title: translate({ id: 'home.feature.transport.title', message: 'Pluggable Transport' }),
-    desc:  translate({ id: 'home.feature.transport.desc',  message: 'Zero-copy shared memory for single-host simulation. ZeroMQ PUB/SUB and REQ/REP for distributed setups.' }),
-    href: '/docs/guide/transport/overview',
-  },
-  {
-    id: 'hw',
     Icon: Cpu,
-    title: translate({ id: 'home.feature.hw.title',        message: 'Hardware Abstraction' }),
-    desc:  translate({ id: 'home.feature.hw.desc',         message: 'HardwareInterface enables seamless MIL → SIL → HIL transitions. MockHardwareInterface for in-process testing.' }),
-    href: '/docs/guide/agents/hil-sil',
+    title: translate({ id: 'home.nav.api.title',     message: 'API Reference' }),
+    desc:  translate({ id: 'home.nav.api.desc',      message: 'Complete reference for every public class and function.' }),
+    href:  '/docs/api/core',
+  },
+  {
+    Icon: FlaskConical,
+    title: translate({ id: 'home.nav.examples.title', message: 'Examples' }),
+    desc:  translate({ id: 'home.nav.examples.desc',  message: 'Step response, PID loop, LQR, real-time agents.' }),
+    href:  '/docs/getting-started/quickstart',
   },
 ];
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
-const STATS = [
-  { value: '74',    label: translate({ id: 'home.stat.tests',   message: 'Tests Passing' }) },
-  { value: '86%',   label: translate({ id: 'home.stat.cov',     message: 'Coverage' }) },
-  { value: '3.10+', label: translate({ id: 'home.stat.python',  message: 'Python' }) },
-  { value: 'MIT',   label: translate({ id: 'home.stat.license', message: 'License' }) },
+// ── Module status table ───────────────────────────────────────────────────────
+const MODULES = [
+  { pkg: 'synapsys.core',      desc: 'TransferFunction, StateSpace, ZOH discretisation',   status: 'Stable' },
+  { pkg: 'synapsys.api',       desc: 'MATLAB-compatible layer: tf(), ss(), step(), bode()', status: 'Stable' },
+  { pkg: 'synapsys.algorithms', desc: 'Discrete PID with anti-windup, LQR (ARE solver)',   status: 'Stable' },
+  { pkg: 'synapsys.agents',    desc: 'PlantAgent, ControllerAgent, SyncEngine',             status: 'Functional' },
+  { pkg: 'synapsys.transport', desc: 'SharedMemory (zero-copy), ZMQ PUB/SUB & REQ/REP',    status: 'Functional' },
+  { pkg: 'synapsys.hw',        desc: 'HardwareInterface, MockHardwareInterface (HIL)',      status: 'Interface' },
+  { pkg: 'synapsys.mpc',       desc: 'Model Predictive Control',                            status: 'Planned' },
 ];
 
-// ── How it works steps ────────────────────────────────────────────────────────
-const STEPS = [
-  {
-    n: '01',
-    title: translate({ id: 'home.step1.title', message: 'Install' }),
-    desc:  translate({ id: 'home.step1.desc',  message: 'One pip command, no native dependencies.' }),
-    code: 'pip install synapsys',
-  },
-  {
-    n: '02',
-    title: translate({ id: 'home.step2.title', message: 'Model Your System' }),
-    desc:  translate({ id: 'home.step2.desc',  message: 'Define plants and controllers with the MATLAB-compatible API.' }),
-    code: 'G = tf([1], [1, 2, 1])',
-  },
-  {
-    n: '03',
-    title: translate({ id: 'home.step3.title', message: 'Simulate & Deploy' }),
-    desc:  translate({ id: 'home.step3.desc',  message: 'Run agents on shared memory or ZMQ. Scale from laptop to lab.' }),
-    code: 'agent.start(blocking=False)',
-  },
-];
+const STATUS_CLASS: Record<string, string> = {
+  Stable:     'badge--stable',
+  Functional: 'badge--functional',
+  Interface:  'badge--interface',
+  Planned:    'badge--planned',
+};
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-function Feature({ Icon, title, desc, href }: { Icon: LucideIcon; title: string; desc: string; href: string }): ReactElement {
+// ── Sub-components ──────────────────────────────��──────────────────────────��──
+function NavCard({ Icon, title, desc, href }: { Icon: LucideIcon; title: string; desc: string; href: string }): ReactElement {
   return (
-    <Link to={href} className="feature__card">
-      <span className="feature__icon">
-        <Icon size={24} strokeWidth={1.75} />
+    <Link to={href} className="nav-card">
+      <span className="nav-card__icon"><Icon size={20} strokeWidth={1.75} /></span>
+      <span className="nav-card__body">
+        <span className="nav-card__title">{title} <ArrowRight size={13} className="nav-card__arrow" /></span>
+        <span className="nav-card__desc">{desc}</span>
       </span>
-      <h3 className="feature__title">{title}</h3>
-      <p className="feature__desc">{desc}</p>
     </Link>
-  );
-}
-
-function Step({
-  n, title, desc, code, last,
-}: {
-  n: string; title: string; desc: string; code: string; last?: boolean;
-}) {
-  return (
-    <div className="step__wrapper">
-      <div className="step__item">
-        <div className="step__number">{n}</div>
-        <div className="step__body">
-          <h3 className="step__title">{title}</h3>
-          <p className="step__desc">{desc}</p>
-          <code className="step__code">{code}</code>
-        </div>
-      </div>
-      {!last && <div className="step__connector" aria-hidden="true">→</div>}
-    </div>
   );
 }
 
@@ -137,208 +86,208 @@ export default function Home(): ReactElement {
       title={siteConfig.title}
       description={translate({
         id: 'home.meta.description',
-        message: 'Modern Python control systems framework with distributed multi-agent simulation',
+        message: 'Python control systems library — LTI models, PID, LQR and distributed multi-agent simulation',
       })}
     >
-      {/* ── Hero ──────────────────────────────────────────────────────────── */}
-      <header className="hero--synapsys">
-        <div className="hero__inner">
-          <div className="hero__badge-row">
-            <span className="hero__badge">v0.1.0 Alpha</span>
-            <span className="hero__badge hero__badge--neutral">Python 3.10+</span>
-            <span className="hero__badge hero__badge--neutral">MIT</span>
+
+      {/* ── Header ────────────────────────────────────────────────────────── */}
+      <header className="doc-header">
+        <div className="doc-header__inner">
+          <div className="doc-header__meta">
+            <span className="doc-badge">v0.1.0</span>
+            <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
+            <span className="doc-badge doc-badge--neutral">MIT</span>
+            <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>
           </div>
 
-          <h1 className="hero__title--gradient">{siteConfig.title}</h1>
+          <h1 className="doc-header__title">{siteConfig.title}</h1>
 
-          <p className="hero__subtitle">
-            <Translate id="home.hero.tagline">
-              Modern Python control systems framework with distributed multi-agent simulation.
-              MATLAB-compatible API, zero-copy shared memory, and a pluggable transport layer
-              that scales from laptop to lab.
+          <p className="doc-header__tagline">
+            <Translate id="home.header.tagline">
+              A Python library for modelling, analysis and real-time simulation of linear
+              control systems. Provides a MATLAB-compatible API over SciPy, a multi-agent
+              simulation framework, and a pluggable transport layer (shared memory / ZMQ)
+              for MIL → SIL → HIL workflows.
             </Translate>
           </p>
 
-          <div className="hero__install">
-            <code className="hero__install-cmd">pip install synapsys</code>
-            <span className="hero__install-version">
-              <Translate id="home.hero.latest">latest: 0.1.0</Translate>
-            </span>
+          <div className="doc-header__install">
+            <code>pip install synapsys</code>
+            <span className="doc-header__sep">or</span>
+            <code>uv add synapsys</code>
           </div>
 
-          <div className="hero__buttons">
-            <Link className="hero__cta-primary" to="/docs/getting-started/installation">
-              <Translate id="home.hero.cta.start">Get Started →</Translate>
+          <div className="doc-header__actions">
+            <Link className="btn btn--primary" to="/docs/getting-started/installation">
+              <Translate id="home.header.cta.docs">Documentation</Translate>
             </Link>
-            <Link className="hero__cta-secondary" to={GITHUB}>
-              GitHub
+            <Link className="btn btn--outline" to={GITHUB}>
+              <GitBranch size={15} /> GitHub
             </Link>
-            <Link className="hero__cta-secondary" to="/docs/api/core">
-              <Translate id="home.hero.cta.api">API Reference</Translate>
+            <Link className="btn btn--outline" to="/docs/getting-started/quickstart">
+              <Translate id="home.header.cta.quickstart">Quickstart</Translate>
             </Link>
           </div>
         </div>
       </header>
 
-      {/* ── Stats bar ─────────────────────────────────────────────────────── */}
-      <div className="stats__bar">
-        {STATS.map((s) => (
-          <div key={s.label} className="stat__item">
-            <span className="stat__value">{s.value}</span>
-            <span className="stat__label">{s.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Live control system animation ─────────────────────────────────── */}
-      <section className="diagram__section">
-        <p className="diagram__label">
-          <Translate id="home.diagram.label">
-            Closed-loop control system — animated signal flow
-          </Translate>
-        </p>
-        <ControlSystemBackground style={{ height: 260 }} />
-      </section>
-
-      {/* ── Feature cards ─────────────────────────────────────────────────── */}
-      <section className="features__section">
-        <h2 className="section__title">
-          <Translate id="home.features.title">Everything you need</Translate>
-        </h2>
-        <p className="section__subtitle">
-          <Translate id="home.features.subtitle">
-            From LTI math to real-time distributed simulation in one library.
-          </Translate>
-        </p>
-        <div className="features__grid">
-          {FEATURES.map((f) => (
-            <Feature key={f.id} Icon={f.Icon} title={f.title} desc={f.desc} href={f.href} />
+      {/* ── Navigation cards ──────────────────────────────────────────────── */}
+      <section className="nav-cards__section">
+        <div className="nav-cards__grid">
+          {NAV_CARDS.map((c) => (
+            <NavCard key={c.href} {...c} />
           ))}
         </div>
       </section>
 
-      {/* ── How it works ──────────────────────────────────────────────────── */}
-      <section className="steps__section">
-        <h2 className="section__title">
-          <Translate id="home.steps.title">Up and running in 3 steps</Translate>
-        </h2>
-        <div className="steps__row">
-          {STEPS.map((s, i) => (
-            <Step key={s.n} {...s} last={i === STEPS.length - 1} />
-          ))}
-        </div>
-      </section>
+      {/* ── Quick example ─────────────────────────────────────────────────── */}
+      <section className="content-section">
+        <div className="content-section__inner">
+          <h2 className="content-section__title">
+            <Translate id="home.example.title">Overview</Translate>
+          </h2>
+          <p className="content-section__lead">
+            <Translate id="home.example.desc">
+              Synapsys covers the full control-design workflow — from continuous-time
+              LTI modelling to discrete real-time closed-loop simulation — with a
+              consistent API across all stages.
+            </Translate>
+          </p>
 
-      {/* ── Code examples ─────────────────────────────────────────────────── */}
-      <section className="code__section">
-        <h2 className="section__title">
-          <Translate id="home.code.title">See it in action</Translate>
-        </h2>
-        <div className="code__tabs-wrapper">
           <Tabs>
-            <TabItem value="core" label={translate({ id: 'home.tab.core', message: 'Core Math' })}>
-              <CodeBlock language="python" title="LTI systems · Bode · step response">
-{`from synapsys.api import tf, step, bode, feedback, c2d
+            <TabItem value="lti" label="LTI Models">
+              <CodeBlock language="python" title="Transfer functions and state-space — synapsys.api">
+{`from synapsys.api import tf, ss, step, bode, feedback, c2d
 
-# Transfer function — MATLAB syntax
-G = tf([1], [1, 2, 1])      # G(s) = 1 / (s² + 2s + 1)
+# Transfer function:  G(s) = ωn² / (s² + 2ζωnˢ + ωn²)
+wn, zeta = 10.0, 0.5
+G = tf([wn**2], [1, 2*zeta*wn, wn**2])
 
-# Closed-loop with negative feedback
-T = feedback(G)              # T(s) = G / (1 + G)
-t, y = step(T)               # step response
+# Closed-loop (negative feedback)
+T = feedback(G)
 
-# Frequency response
+# Frequency and time-domain analysis
 w, mag, phase = bode(G)
+t, y          = step(T)
 
-# ZOH discretisation at 50 Hz
-Gd = c2d(G, dt=0.02)`}
+# Zero-order-hold discretisation at 200 Hz
+Gd = c2d(G, dt=0.005)`}
               </CodeBlock>
             </TabItem>
 
-            <TabItem value="algorithms" label={translate({ id: 'home.tab.algorithms', message: 'Algorithms' })}>
-              <CodeBlock language="python" title="Discrete PID · LQR">
+            <TabItem value="pid" label="PID / LQR">
+              <CodeBlock language="python" title="Control algorithms — synapsys.algorithms">
 {`from synapsys.algorithms import PID, lqr
 import numpy as np
 
-# Discrete PID with anti-windup and output saturation
+# Discrete PID with anti-windup saturation
 pid = PID(Kp=3.0, Ki=0.5, Kd=0.1, dt=0.01,
           u_min=-10.0, u_max=10.0)
 u = pid.compute(setpoint=5.0, measurement=y)
 
-# LQR — solves the algebraic Riccati equation
-A = np.array([[ 0., 1.], [-2., -3.]])
-B = np.array([[0.], [1.]])
-K, P = lqr(A, B, Q=np.eye(2), R=np.eye(1))`}
+# LQR — solves the continuous algebraic Riccati equation
+#   minimises  J = ∫ (x'Qx + u'Ru) dt
+A = np.array([[ 0.,  1.], [-wn**2, -2*zeta*wn]])
+B = np.array([[0.], [wn**2]])
+K, P = lqr(A, B, Q=np.eye(2), R=np.eye(1))
+# Control law:  u = −Kx`}
               </CodeBlock>
             </TabItem>
 
-            <TabItem value="distributed" label={translate({ id: 'home.tab.distributed', message: 'Multi-Agent' })}>
-              <CodeBlock language="python" title="PlantAgent + ControllerAgent on shared memory">
+            <TabItem value="sim" label="Real-Time Simulation">
+              <CodeBlock language="python" title="Multi-agent closed loop — synapsys.agents">
 {`from synapsys.api import ss, c2d
 from synapsys.agents import PlantAgent, ControllerAgent, SyncEngine, SyncMode
 from synapsys.algorithms import PID
 from synapsys.transport import SharedMemoryTransport
 import numpy as np
 
+# Discretise G(s) = 1/(s+1)  at 100 Hz
 plant_d = c2d(ss([[-1]], [[1]], [[1]], [[0]]), dt=0.01)
 
-bus = SharedMemoryTransport("demo", {"y": 1, "u": 1}, create=True)
-bus.write("y", np.zeros(1))
-bus.write("u", np.zeros(1))
+# Shared-memory bus — zero-copy, latency < 1 µs
+with SharedMemoryTransport("demo", {"y": 1, "u": 1}, create=True) as bus:
+    bus.write("y", np.zeros(1)); bus.write("u", np.zeros(1))
 
-pid = PID(Kp=4.0, Ki=1.0, dt=0.01)
-law = lambda y: np.array([pid.compute(setpoint=3.0, measurement=y[0])])
+    pid = PID(Kp=4.0, Ki=1.0, dt=0.01)
+    law = lambda y: np.array([pid.compute(setpoint=3.0, measurement=y[0])])
 
-PlantAgent("plant", plant_d, bus, SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)).start(blocking=False)
-ControllerAgent("ctrl", law, bus,  SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)).start(blocking=False)`}
-              </CodeBlock>
-            </TabItem>
-
-            <TabItem value="hil" label={translate({ id: 'home.tab.hil', message: 'MIL → HIL' })}>
-              <CodeBlock language="python" title="Swap transport — algorithm unchanged">
-{`# MIL — everything in process memory
-from synapsys.transport import SharedMemoryTransport
-bus = SharedMemoryTransport("sim", channels, create=True)
-
-# SIL — cross-process or cross-machine via ZMQ
-from synapsys.transport import ZMQTransport
-bus = ZMQTransport("tcp://localhost:5555", mode="pub")
-
-# HIL — real hardware, same controller
-from synapsys.agents import HardwareAgent
-from synapsys.hw import MockHardwareInterface   # swap for your hardware driver
-
-hw    = MockHardwareInterface(n_inputs=1, n_outputs=1, plant_fn=my_hw)
-agent = HardwareAgent("hw", hw, bus, sync)
-
-# ControllerAgent and PID/LQR stay exactly the same in all three modes`}
+    sync = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
+    PlantAgent("plant", plant_d, bus, sync).start(blocking=False)
+    ControllerAgent("ctrl",  law,     bus, sync).start(blocking=False)`}
               </CodeBlock>
             </TabItem>
           </Tabs>
         </div>
       </section>
 
-      {/* ── Bottom CTA ────────────────────────────────────────────────────── */}
-      <section className="bottom-cta__section">
-        <div className="bottom-cta__inner">
-          <h2 className="bottom-cta__title">
-            <Translate id="home.cta.title">Ready to control something real?</Translate>
+      {/* ── Module overview ────────────────────────────────���──────────────── */}
+      <section className="content-section content-section--alt">
+        <div className="content-section__inner">
+          <h2 className="content-section__title">
+            <Translate id="home.modules.title">Package Overview</Translate>
           </h2>
-          <p className="bottom-cta__subtitle">
-            <Translate id="home.cta.subtitle">
-              Start with the quickstart guide or dive straight into the API reference.
-            </Translate>
-          </p>
-          <div className="hero__buttons">
-            <Link className="hero__cta-primary" to="/docs/getting-started/installation">
-              <Translate id="home.cta.start">Get Started →</Translate>
-            </Link>
-            <Link className="hero__cta-secondary" to={GITHUB}>
-              View on GitHub
-            </Link>
-          </div>
+          <table className="module-table">
+            <thead>
+              <tr>
+                <th>Package</th>
+                <th>Contents</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MODULES.map((m) => (
+                <tr key={m.pkg}>
+                  <td><code>{m.pkg}</code></td>
+                  <td className="module-table__desc">{m.desc}</td>
+                  <td><span className={`status-badge ${STATUS_CLASS[m.status]}`}>{m.status}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
+
+      {/* ── MIL → HIL pipeline ────────────────────��───────────────────────── */}
+      <section className="content-section">
+        <div className="content-section__inner content-section__inner--narrow">
+          <h2 className="content-section__title">
+            <Translate id="home.hil.title">Simulation Fidelity Ladder</Translate>
+          </h2>
+          <p className="content-section__lead">
+            <Translate id="home.hil.desc">
+              Synapsys is designed for incremental fidelity increases.
+              Only the transport layer changes — the controller algorithm remains identical
+              across all three stages.
+            </Translate>
+          </p>
+          <div className="pipeline">
+            <div className="pipeline__stage">
+              <span className="pipeline__label">MIL</span>
+              <span className="pipeline__name">Model-in-the-Loop</span>
+              <span className="pipeline__detail">SharedMemoryTransport · PlantAgent</span>
+            </div>
+            <ArrowRight className="pipeline__arrow" size={18} />
+            <div className="pipeline__stage">
+              <span className="pipeline__label">SIL</span>
+              <span className="pipeline__name">Software-in-the-Loop</span>
+              <span className="pipeline__detail">ZMQTransport · separate process</span>
+            </div>
+            <ArrowRight className="pipeline__arrow" size={18} />
+            <div className="pipeline__stage">
+              <span className="pipeline__label">HIL</span>
+              <span className="pipeline__name">Hardware-in-the-Loop</span>
+              <span className="pipeline__detail">HardwareAgent · real device</span>
+            </div>
+          </div>
+          <p className="pipeline__note">
+            See the{' '}
+            <Link to="/docs/guide/agents/hil-sil">HIL / SIL guide</Link>
+            {' '}for a step-by-step migration example.
+          </p>
+        </div>
+      </section>
+
     </Layout>
   );
 }
