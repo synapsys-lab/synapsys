@@ -57,7 +57,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/synapsys-social-card.png',
+    image: 'img/logo.svg',
     colorMode: {
       defaultMode: 'dark',
       disableSwitch: false,
@@ -65,7 +65,7 @@ const config: Config = {
     },
     navbar: {
       title: 'Synapsys',
-      logo: { alt: 'Synapsys Logo', src: 'img/logo.png' },
+      logo: { alt: 'Synapsys Logo', src: 'img/logo.svg' },
       items: [
         {
           type: 'docSidebar',
