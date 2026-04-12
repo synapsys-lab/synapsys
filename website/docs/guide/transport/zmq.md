@@ -34,7 +34,7 @@ Plant:       PUB :5555  ->  SUB :5556
 Controller:  PUB :5556  ->  SUB :5555
 ```
 
-See `examples/distributed/plant_zmq.py` and `examples/distributed/controller_zmq.py` in the repository.
+See `examples/distributed/02_zmq/plant_zmq.py` and `examples/distributed/02_zmq/controller_zmq.py` in the repository.
 
 ## REQ/REP — Lock-step
 
