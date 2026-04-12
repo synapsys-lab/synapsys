@@ -121,6 +121,19 @@ class TransferFunction(LTIModel):
         t_out, y_out = signal.step(sys, T=t)
         return t_out, y_out
 
+    def evolve(self, x: np.ndarray, u: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Advance one discrete step.
+
+        Delegates to the equivalent ``StateSpace`` representation.
+        The state vector ``x`` must match the order of the converted state space
+        (i.e. the controllable canonical form used by ``to_state_space()``).
+
+        Returns
+        -------
+        x_next, y : np.ndarray
+        """
+        return self.to_state_space().evolve(x, u)
+
     def simulate(
         self,
         t: np.ndarray,

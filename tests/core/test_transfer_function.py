@@ -54,3 +54,23 @@ class TestTransferFunction:
     def test_evaluate_at_zero(self):
         G = TransferFunction([2], [1, 2])  # DC gain = 1.0
         assert G.evaluate(0) == pytest.approx(1.0)
+
+    def test_evolve_discrete(self):
+        """TransferFunction.evolve() delegates to StateSpace and advances one step."""
+        from synapsys.api import c2d
+        # G(s) = 1/(s+1) discretised with ZOH at dt=0.1
+        Gd = c2d(TransferFunction([1], [1, 1]), dt=0.1)
+        x = np.zeros(Gd.n_states)
+        # Apply unit step for several ticks — output should rise toward 1
+        y_vals = []
+        for _ in range(60):   # 6 s >> τ=1 s, so output ≈ 1 − e⁻⁶ ≈ 0.9975
+            x, y = Gd.evolve(x, np.array([1.0]))
+            y_vals.append(float(y[0]))
+        # Discrete first-order step response converges to DC gain = 1
+        assert y_vals[-1] == pytest.approx(1.0, abs=0.02)
+
+    def test_evolve_continuous_raises(self):
+        """evolve() on a continuous TF must raise RuntimeError."""
+        G = TransferFunction([1], [1, 1])
+        with pytest.raises(RuntimeError):
+            G.evolve(np.zeros(1), np.array([1.0]))
