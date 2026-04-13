@@ -105,5 +105,33 @@
   "sidebar.docsSidebar.doc.Roadmap": {
     "message": "Roadmap",
     "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.Examples": {
+    "message": "Exemplos",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Examples": {
+    "message": "Exemplos",
+    "description": "Sidebar label"
+  },
+  "sidebar.docsSidebar.category.Basic": {
+    "message": "Básico",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.category.Advanced": {
+    "message": "Avançado",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.category.Distributed": {
+    "message": "Distribuído",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.category.Utilities": {
+    "message": "Utilitários",
+    "description": "Sidebar category"
+  },
+  "sidebar.docsSidebar.doc.Matrix Builders": {
+    "message": "Construtores de Matrizes",
+    "description": "Sidebar label"
   }
 }

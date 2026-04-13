@@ -19,6 +19,7 @@ from synapsys.api.matlab_compat import (
 )
 from synapsys.core.state_space import StateSpace
 from synapsys.core.transfer_function import TransferFunction
+from synapsys.utils import StateEquations, col, mat, row
 
 __all__ = [
     "__version__",
@@ -38,4 +39,9 @@ __all__ = [
     # Algorithms
     "PID",
     "lqr",
+    # Utils
+    "mat",
+    "col",
+    "row",
+    "StateEquations",
 ]
