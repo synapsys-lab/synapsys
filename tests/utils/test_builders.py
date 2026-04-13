@@ -3,7 +3,6 @@ import pytest
 
 from synapsys.utils.builders import StateEquations
 
-
 # ── fixture: 2-DOF mass-spring-damper ────────────────────────────────────────
 
 M, C_DAMP, K = 1.0, 0.1, 2.0
