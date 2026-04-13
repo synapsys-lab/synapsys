@@ -8,13 +8,21 @@ sidebar_position: 2
 
 `StateSpace(A, B, C, D, dt=0.0)` representa um sistema LTI na forma matricial:
 
-$$\dot{x} = Ax + Bu$$
-$$y = Cx + Du$$
+$$
+\dot{x} = Ax + Bu
+$$
+$$
+y = Cx + Du
+$$
 
 Para sistemas discretos (dt > 0):
 
-$$x(k+1) = Ax(k) + Bu(k)$$
-$$y(k) = Cx(k) + Du(k)$$
+$$
+x(k+1) = Ax(k) + Bu(k)
+$$
+$$
+y(k) = Cx(k) + Du(k)
+$$
 
 ## Criacao
 

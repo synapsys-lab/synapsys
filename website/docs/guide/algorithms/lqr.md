@@ -49,4 +49,4 @@ A classical starting point: $Q_{ii} = 1 / x_{i,max}^2$ and $R_{jj} = 1 / u_{j,ma
 
 ## API Reference
 
-See the full reference at [synapsys.algorithms — lqr](../../api/algorithms#synapsysalgorithmslqrlqr).
+See the full reference at [synapsys.algorithms — lqr](../../api/algorithms#lqr).

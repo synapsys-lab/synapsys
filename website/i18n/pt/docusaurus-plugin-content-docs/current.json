@@ -78,10 +78,6 @@
     "message": "PlantAgent",
     "description": "Sidebar label"
   },
-  "sidebar.docsSidebar.doc.ControllerAgent": {
-    "message": "ControllerAgent",
-    "description": "Sidebar label"
-  },
   "sidebar.docsSidebar.category.Transport Layer": {
     "message": "Camada de Transporte",
     "description": "Sidebar category"

@@ -62,4 +62,4 @@ Useful on mode switches (manual to automatic) or after abrupt setpoint changes.
 
 ## API Reference
 
-See the full reference at [synapsys.algorithms — PID](../../api/algorithms#synapsysalgorithmspidpid).
+See the full reference at [synapsys.algorithms — PID](../../api/algorithms#pid).
