@@ -82,4 +82,4 @@ ss2 = tf.to_state_space()         # TransferFunction -> StateSpace
 
 ## API Reference
 
-See the full reference at [synapsys.core — StateSpace](../../api/core#synapsyscorestate_spacestateSpace).
+See the full reference at [synapsys.core — StateSpace](../../api/core#statespace).

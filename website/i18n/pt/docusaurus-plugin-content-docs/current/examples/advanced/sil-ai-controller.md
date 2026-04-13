@@ -29,10 +29,6 @@ A two-process **SIL (Software-in-the-Loop)** simulation of a **2-DOF mass-spring
   [c]                  [c]
 ```
 
-import MassSpringDamper from '@site/src/components/MassSpringDamper';
-
-<MassSpringDamper />
-
 State vector $\mathbf{x} = [x_1,\, x_2,\, \dot{x}_1,\, \dot{x}_2]^\top$ — positions and velocities of both masses. Input: force $F$ applied to $m_2$.
 
 $$

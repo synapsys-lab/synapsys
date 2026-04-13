@@ -111,6 +111,7 @@ const sidebars: SidebarsConfig = {
         'api/agents',
         'api/transport',
         'api/hw',
+        'api/utils',
       ],
     },
     {

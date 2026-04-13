@@ -59,4 +59,4 @@ ctrl = ControllerAgent("bang_bang", bang_bang, transport, sync)
 
 ## API Reference
 
-See the full reference at [synapsys.agents — ControllerAgent](../../api/agents#synapsysagentscontroller_agentcontrolleragent).
+See the full reference at [synapsys.agents — ControllerAgent](../../api/agents#controlleragent).

@@ -42,13 +42,16 @@ website/.docusaurus/
 
 # ── Outputs / artefacts ───────────────────────────────────────────────────────
 *.png
+*.gif
 *.csv
 *.log
 
 # ── Website static assets (exceptions) ────────────────────────────────────────
 !website/static/img/*.png
+!website/static/img/*.gif
 !website/static/img/examples/
 !website/static/img/examples/*.png
+!website/static/img/examples/*.gif
 !website/static/img/quickstart/
 !website/static/img/quickstart/*.png
 

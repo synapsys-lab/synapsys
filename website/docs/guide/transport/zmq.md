@@ -70,4 +70,4 @@ For comparison, `SharedMemoryTransport` operates at < 1 µs.
 
 ## API Reference
 
-See the full reference at [synapsys.transport — ZMQTransport](../../api/transport#synapsystransportnetworkzmqtransport) and [ZMQReqRepTransport](../../api/transport#synapsystransportnetworkzmqrepreptransport).
+See the full reference at [synapsys.transport — ZMQTransport](../../api/transport#zmqtransport) and [ZMQReqRepTransport](../../api/transport#zmqrepreptransport).

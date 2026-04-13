@@ -71,4 +71,4 @@ Combining a continuous system with a discrete one, or two discrete systems with 
 
 ## API Reference
 
-See the full reference at [synapsys.core — TransferFunction](../../api/core#synapsyscoretransfer_functiontransferfunction).
+See the full reference at [synapsys.core — TransferFunction](../../api/core#transferfunction).
