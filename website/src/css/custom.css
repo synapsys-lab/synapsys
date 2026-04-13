@@ -66,9 +66,40 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
 
 /* ── Navbar ─────────────────────────────────────────────────────────────────── */
 .navbar {
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
+}
+
+/* Blur only on desktop — on mobile it creates a stacking context that traps
+   the sidebar drawer and hides menu items */
+@media (min-width: 997px) {
+  .navbar {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+/* Mobile sidebar: force solid background so items are always visible */
+.navbar-sidebar {
+  background: var(--ifm-background-color) !important;
+}
+
+.navbar-sidebar__brand,
+.navbar-sidebar__items {
+  background: var(--ifm-background-color);
+}
+
+[data-theme='dark'] .navbar-sidebar {
+  background: #0f1117 !important;
+}
+
+/* Navbar background: opaque on mobile, semi-transparent on desktop */
+@media (max-width: 996px) {
+  :root {
+    --ifm-navbar-background-color: #ffffff;
+  }
+  [data-theme='dark'] {
+    --ifm-navbar-background-color: #0f1117;
+  }
 }
 
 .navbar__title {
@@ -475,15 +506,302 @@ pre {
 
 .alert { border-radius: 8px; }
 
+/* ── AI Showcase ─────────────────────────────────────────────────────────────── */
+@keyframes float {
+  0%   { transform: translateY(0px);   box-shadow: 0 8px 30px rgba(37,99,235,0.18), 0 2px 8px rgba(0,0,0,0.18); }
+  50%  { transform: translateY(-8px);  box-shadow: 0 20px 48px rgba(37,99,235,0.26), 0 6px 20px rgba(0,0,0,0.22); }
+  100% { transform: translateY(0px);   box-shadow: 0 8px 30px rgba(37,99,235,0.18), 0 2px 8px rgba(0,0,0,0.18); }
+}
+
+.ai-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  margin-top: 1.5rem;
+}
+
+.ai-showcase__figure {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--bg-alt);
+  animation: float 4s ease-in-out infinite;
+  will-change: transform;
+}
+
+.ai-showcase__img {
+  width: 100%;
+  display: block;
+  border-bottom: 1px solid var(--border);
+}
+
+.ai-showcase__caption {
+  padding: 0.65rem 1rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.ai-showcase__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.ai-showcase__card {
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  transition: border-color 0.15s;
+}
+
+.ai-showcase__card:hover { border-color: var(--ifm-color-primary); }
+
+.ai-showcase__card-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--ifm-color-primary);
+}
+
+.ai-showcase__card-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Mass-Spring-Damper component ───────────────────────────────────────────── */
+.msd-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+
 /* ── Responsive ─────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .pipeline {
-    flex-direction: column;
-  }
+  /* Pipeline */
+  .pipeline { flex-direction: column; }
   .pipeline__stage { border-right: none; border-bottom: 1px solid var(--border); }
   .pipeline__stage:last-child { border-bottom: none; }
   .pipeline__arrow { display: none; }
-  .doc-header { padding: 2.5rem 1.25rem 2rem; }
-  .content-section { padding: 2.5rem 1.25rem; }
+
+  /* Spacing */
+  .doc-header         { padding: 2.5rem 1.25rem 2rem; }
+  .content-section    { padding: 2.5rem 1.25rem; }
   .nav-cards__section { padding: 1.25rem; }
+
+  /* Install bar: wrap and fill width on small screens */
+  .doc-header__install {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0.5rem 0.75rem;
+  }
+
+  /* Module table: horizontal scroll instead of overflow */
+  .module-table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+  }
+  .module-table__desc { white-space: normal; min-width: 180px; }
+
+  /* AI showcase: disable float animation (save battery, avoid jitter) */
+  .ai-showcase__figure { animation: none; }
+
+  /* Action buttons: full-width row on very small screens */
+  .doc-header__actions { gap: 0.5rem; }
+  .doc-header__actions .btn { flex: 1 1 auto; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  /* Nav cards: single column */
+  .nav-cards__grid { grid-template-columns: 1fr; }
+
+  /* AI showcase cards: single column */
+  .ai-showcase__cards { grid-template-columns: 1fr; }
+
+  /* Reduce header title size */
+  .doc-header__title { font-size: 1.75rem; }
+
+  /* Navbar: ensure hamburger area has enough tap target */
+  .navbar__toggle { padding: 0.5rem; }
+}
+
+/* Respect reduced-motion: disable float animation */
+@media (prefers-reduced-motion: reduce) {
+  .ai-showcase__figure { animation: none; }
+}
+
+/* ── Mass-Spring-Damper Animation ───────────────────────────────────────────── */
+.msd-container {
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin: 1.5rem 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.msd-visual {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.msd-stroke {
+  stroke: var(--ifm-color-primary);
+  stroke-opacity: 0.6;
+}
+
+.msd-stroke-light {
+  stroke: var(--ifm-color-primary);
+  stroke-opacity: 0.2;
+}
+
+.msd-fill-stroke {
+  fill: var(--ifm-color-primary);
+  fill-opacity: 0.6;
+}
+
+.msd-mass {
+  fill: var(--ifm-color-primary);
+  fill-opacity: 0.1;
+  stroke: var(--ifm-color-primary);
+}
+
+.msd-text {
+  fill: var(--ifm-font-color-base);
+  font-weight: 700;
+  font-size: 13px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.msd-accent-stroke {
+  stroke: var(--brand-teal);
+}
+
+.msd-accent-fill {
+  fill: var(--brand-teal);
+}
+
+.msd-accent-text {
+  fill: var(--brand-teal);
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.msd-controls {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.msd-btn {
+  padding: 0.4rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  border: none;
+  transition: transform 0.1s ease, filter 0.15s ease;
+}
+
+.msd-btn:hover {
+  filter: brightness(1.1);
+}
+
+.msd-btn:active {
+  transform: scale(0.96);
+}
+
+.msd-btn--secondary {
+  background: var(--border-light);
+  color: var(--ifm-font-color-base);
+}
+
+[data-theme='dark'] .msd-container {
+  background: rgba(0,0,0,0.2);
+}
+
+/* ── Mermaid — light theme overrides (Synapsys blue palette) ─────────────── */
+[data-theme='light'] .docusaurus-mermaid-container svg .node rect,
+[data-theme='light'] .docusaurus-mermaid-container svg .node circle,
+[data-theme='light'] .docusaurus-mermaid-container svg .node polygon,
+[data-theme='light'] .docusaurus-mermaid-container svg .node ellipse {
+  fill:   #dbeafe;
+  stroke: #2563eb;
+  stroke-width: 1.5px;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .node .label,
+[data-theme='light'] .docusaurus-mermaid-container svg .nodeLabel,
+[data-theme='light'] .docusaurus-mermaid-container svg .node text {
+  fill:  #1e3a8a;
+  color: #1e3a8a;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .edgePath .path,
+[data-theme='light'] .docusaurus-mermaid-container svg .flowchart-link {
+  stroke: #3b82f6;
+  stroke-width: 1.5px;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .edgeLabel rect {
+  fill: #f8fafc;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .edgeLabel span,
+[data-theme='light'] .docusaurus-mermaid-container svg .edgeLabel p {
+  color:      #1e40af;
+  background: #f8fafc;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .cluster rect {
+  fill:   #f1f5f9;
+  stroke: #cbd5e1;
+}
+
+[data-theme='light'] .docusaurus-mermaid-container svg .cluster text {
+  fill: #0f172a;
+}
+
+/* ── Mermaid — dark theme: ensure visibility ─────────────────────────────── */
+[data-theme='dark'] .docusaurus-mermaid-container svg .node rect,
+[data-theme='dark'] .docusaurus-mermaid-container svg .node circle,
+[data-theme='dark'] .docusaurus-mermaid-container svg .node polygon,
+[data-theme='dark'] .docusaurus-mermaid-container svg .node ellipse {
+  fill:   #1e3a8a;
+  stroke: #3b82f6;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container svg .node .label,
+[data-theme='dark'] .docusaurus-mermaid-container svg .nodeLabel,
+[data-theme='dark'] .docusaurus-mermaid-container svg .node text {
+  fill:  #bfdbfe;
+  color: #bfdbfe;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container svg .edgePath .path,
+[data-theme='dark'] .docusaurus-mermaid-container svg .flowchart-link {
+  stroke: #60a5fa;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container svg .edgeLabel span,
+[data-theme='dark'] .docusaurus-mermaid-container svg .edgeLabel p {
+  color:      #bfdbfe;
+  background: #1e293b;
 }

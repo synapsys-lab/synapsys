@@ -64,4 +64,4 @@ There is no mutex in the current implementation. If two processes write to the s
 
 ## API Reference
 
-See the full reference at [synapsys.transport — SharedMemoryTransport](../../api/transport#synapsystransportshared_memorysharedmemorytransport).
+See the full reference at [synapsys.transport — SharedMemoryTransport](../../api/transport#sharedmemorytransport).

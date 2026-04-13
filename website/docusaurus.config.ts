@@ -1,6 +1,8 @@
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 import { themes as prismThemes } from 'prism-react-renderer';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const GITHUB = 'https://github.com/synapsys-lab/synapsys';
 
@@ -31,6 +33,8 @@ const config: Config = {
   markdown: { mermaid: true },
   themes: ['@docusaurus/theme-mermaid'],
 
+  plugins: ['docusaurus-plugin-image-zoom'],
+
   presets: [
     [
       'classic',
@@ -38,8 +42,8 @@ const config: Config = {
         docs: {
           sidebarPath: './sidebars.ts',
           editUrl: `${GITHUB}/tree/main/website/`,
-          remarkPlugins: [require('remark-math')],
-          rehypePlugins: [require('rehype-katex')],
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
         },
         blog: false,
         theme: { customCss: './src/css/custom.css' },
@@ -59,7 +63,7 @@ const config: Config = {
   themeConfig: {
     image: 'img/logo.svg',
     colorMode: {
-      defaultMode: 'dark',
+      defaultMode: 'light',
       disableSwitch: false,
       respectPrefersColorScheme: true,
     },
@@ -116,6 +120,17 @@ const config: Config = {
     },
     mermaid: {
       theme: { light: 'neutral', dark: 'dark' },
+    },
+    zoom: {
+      selector: '.markdown img, .ai-showcase__img',
+      background: {
+        light: 'rgba(240, 244, 248, 0.92)',
+        dark:  'rgba(15, 23, 42, 0.95)',
+      },
+      config: {
+        margin: 24,
+        scrollOffset: 0,
+      },
     },
   } satisfies Preset.ThemeConfig,
 };

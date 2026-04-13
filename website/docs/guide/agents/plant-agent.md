@@ -58,4 +58,4 @@ agent = PlantAgent("plant", plant_d, transport, sync, x0=x0)
 
 ## API Reference
 
-See the full reference at [synapsys.agents — PlantAgent](../../api/agents#synapsysagentsplant_agentplantagent).
+See the full reference at [synapsys.agents — PlantAgent](../../api/agents#plantagent).

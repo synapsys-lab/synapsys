@@ -10,11 +10,15 @@ O `PID` implementa um controlador Proporcional-Integral-Derivativo discreto com 
 
 ## Formula
 
-$$u(k) = K_p \, e(k) + K_i \sum_{j=0}^{k} e(j)\,\Delta t + K_d \, \frac{e(k) - e(k-1)}{\Delta t}$$
+$$
+u(k) = K_p \, e(k) + K_i \sum_{j=0}^{k} e(j)\,\Delta t + K_d \, \frac{e(k) - e(k-1)}{\Delta t}
+$$
 
 O anti-windup corrige o integrador quando a saida satura:
 
-$$\text{integral} \mathrel{+}= \frac{u_{sat}(k) - u(k)}{K_i}$$
+$$
+\text{integral} \mathrel{+}= \frac{u_{sat}(k) - u(k)}{K_i}
+$$
 
 ## Uso basico
 

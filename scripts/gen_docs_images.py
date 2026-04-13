@@ -75,39 +75,125 @@ fig.tight_layout()
 fig.savefig(OUT / "02_custom_signals.png", dpi=150)
 plt.close(fig)
 
-# ── 3. SIL AI controller (batch simulation) ───────────────────────────────────
+# ── 3. SIL — Neural-LQR controller on 2-DOF mass-spring-damper ──────────────
 print("Generating 03_sil_ai_controller.png ...")
-# Simulate the closed loop manually for documentation
-plant_c = tf([10], [1, 3, 10])
-plant_d = c2d(plant_c, dt=0.01)
-x = np.zeros(plant_d.n_states)
+from synapsys.utils import StateEquations
+from synapsys.algorithms import lqr
 
-N = 800
-t3 = np.arange(N) * 0.01
-y3, u3 = np.zeros(N), np.zeros(N)
+M3, C3, K3 = 1.0, 0.1, 2.0
+DT3 = 0.01
+N3  = 1200
+X2_REF3 = 1.0
 
-for k in range(N):
-    _, y_arr = plant_d.evolve(x, np.array([u3[k-1] if k > 0 else 0.0]))
-    y3[k] = float(y_arr[0])
-    x, _ = plant_d.evolve(x, np.array([u3[k-1] if k > 0 else 0.0]))
-    # AI (linear): u = -0.5*y + 1.0
-    u3[k] = -0.5 * y3[k] + 1.0
+eqs3 = (
+    StateEquations(states=["x1","x2","v1","v2"], inputs=["F"])
+    .eq("x1", v1=1).eq("x2", v2=1)
+    .eq("v1", x1=-2*K3/M3, x2=K3/M3,  v1=-C3/M3)
+    .eq("v2", x1=K3/M3,  x2=-2*K3/M3, v2=-C3/M3, F=K3/M3)
+)
+K_lqr, _ = lqr(eqs3.A, eqs3.B,
+               np.diag([1.0, 10.0, 0.5, 1.0]), np.array([[1.0]]))
+A_cl3 = eqs3.A - eqs3.B @ K_lqr
+Nbar3 = float(-1.0 / (np.array([[0,1,0,0]]) @ np.linalg.inv(A_cl3) @ eqs3.B).squeeze())
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(9, 5), sharex=True)
-ax1.plot(t3, y3, color=STYLE["blue"], lw=1.8, label="y(t) — plant output")
-ax1.set_ylabel("y(t)")
-ax1.legend(fontsize=9)
-ax1.grid(True, alpha=0.3)
+G3 = ss(eqs3.A, eqs3.B, np.eye(4), np.zeros((4, 1)))
+G3d = c2d(G3, dt=DT3)
+x3 = np.zeros(4)
+t3 = np.arange(N3) * DT3
+x1_3, x2_3, v1_3, v2_3, u3 = (np.zeros(N3) for _ in range(5))
 
-ax2.plot(t3, u3, color=STYLE["red"], lw=1.8, label="u(t) — AI control action")
-ax2.set_ylabel("u(t)")
-ax2.set_xlabel("Time (s)")
-ax2.legend(fontsize=9)
-ax2.grid(True, alpha=0.3)
-fig.suptitle("SIL — AI Controller (DummyRLController, PyTorch linear layer)", fontsize=11)
-fig.tight_layout()
-fig.savefig(OUT / "03_sil_ai_controller.png", dpi=150)
-plt.close(fig)
+for k in range(N3):
+    u_k = float(np.dot(-K_lqr.flatten(), x3)) + Nbar3 * X2_REF3
+    u_k = np.clip(u_k, -20.0, 20.0)
+    x3, y3_arr = G3d.evolve(x3, np.array([u_k]))
+    x1_3[k]=float(y3_arr[0]); x2_3[k]=float(y3_arr[1])
+    v1_3[k]=float(y3_arr[2]); v2_3[k]=float(y3_arr[3]); u3[k]=u_k
+
+# ── Scientific dark-theme figure ──────────────────────────────────────────────
+BG_FIG  = "#0f172a"
+BG_AX   = "#1e293b"
+COL_GRID = "#334155"
+COL_TXT  = "#e2e8f0"
+COL_AX   = "#94a3b8"
+
+fig3 = plt.figure(figsize=(13, 8), facecolor=BG_FIG)
+fig3.suptitle(
+    "Neural-LQR — 2-DOF Mass-Spring-Damper  (SIL batch simulation)",
+    color=COL_TXT, fontsize=13, fontweight="bold", y=0.97,
+)
+gs3 = gridspec.GridSpec(3, 2, figure=fig3,
+                        hspace=0.48, wspace=0.35,
+                        left=0.08, right=0.97, top=0.91, bottom=0.08)
+
+def _ax3(r, c, title, ylabel, xlabel=None):
+    ax = fig3.add_subplot(gs3[r, c])
+    ax.set_facecolor(BG_AX)
+    ax.tick_params(colors=COL_AX, labelsize=8)
+    for sp in ax.spines.values(): sp.set_edgecolor(COL_GRID)
+    ax.grid(True, color=COL_GRID, linewidth=0.5, alpha=0.7)
+    ax.set_title(title, color=COL_TXT, fontsize=9.5, pad=5)
+    ax.set_ylabel(ylabel, color=COL_AX, fontsize=8.5)
+    if xlabel: ax.set_xlabel(xlabel, color=COL_AX, fontsize=8.5)
+    return ax
+
+ax_p  = fig3.add_subplot(gs3[0, :])   # positions — full width
+ax_v  = _ax3(1, 0, "Velocities  v₁(t), v₂(t)", "Velocity (m/s)", "Time (s)")
+ax_f  = _ax3(1, 1, "Control force  F(t)  [Neural-LQR output]", "Force (N)", "Time (s)")
+ax_ph = fig3.add_subplot(gs3[2, :])   # phase portrait — full width
+
+for ax in [ax_p, ax_ph]:
+    ax.set_facecolor(BG_AX)
+    ax.tick_params(colors=COL_AX, labelsize=8)
+    for sp in ax.spines.values(): sp.set_edgecolor(COL_GRID)
+    ax.grid(True, color=COL_GRID, linewidth=0.5, alpha=0.7)
+
+# ── settle index ──────────────────────────────────────────────────────────────
+tol = 0.02
+settled_idx = np.where(np.abs(x2_3 - X2_REF3) <= tol)[0]
+t_settle = t3[settled_idx[0]] if len(settled_idx) else t3[-1]
+os_pct = (max(x2_3) - X2_REF3) / X2_REF3 * 100 if max(x2_3) > X2_REF3 else 0.0
+
+# ── Position panel ────────────────────────────────────────────────────────────
+ax_p.set_title("Position tracking — x₁(t) and x₂(t) → setpoint", color=COL_TXT, fontsize=10, pad=6)
+ax_p.set_ylabel("Position (m)", color=COL_AX, fontsize=9)
+ax_p.set_xlabel("Time (s)", color=COL_AX, fontsize=9)
+ax_p.axhline(X2_REF3, color=STYLE["green"], ls="--", lw=1.2, alpha=0.6,
+             label=f"setpoint r = {X2_REF3} m")
+ax_p.axhspan(X2_REF3*0.98, X2_REF3*1.02, alpha=0.07, color=STYLE["green"])
+ax_p.axvline(t_settle, color=STYLE["orange"], ls="--", lw=1.2, alpha=0.8,
+             label=f"settled at t={t_settle:.2f}s  (±2%)")
+ax_p.plot(t3, x1_3, color=STYLE["blue"],   lw=1.5, label="x₁(t) — mass 1")
+ax_p.plot(t3, x2_3, color=STYLE["red"],    lw=2.0, label=f"x₂(t) — mass 2  [OS={os_pct:.1f}%]")
+ax_p.legend(fontsize=8, loc="lower right",
+            facecolor=BG_AX, edgecolor=COL_GRID, labelcolor=COL_TXT)
+
+# ── Velocity panel ────────────────────────────────────────────────────────────
+ax_v.axhline(0, color=STYLE["gray"], ls=":", lw=0.8, alpha=0.5)
+ax_v.plot(t3, v1_3, color=STYLE["purple"], lw=1.4, label="v₁(t)")
+ax_v.plot(t3, v2_3, color=STYLE["orange"], lw=1.4, label="v₂(t)")
+ax_v.legend(fontsize=8, facecolor=BG_AX, edgecolor=COL_GRID, labelcolor=COL_TXT)
+
+# ── Force panel ───────────────────────────────────────────────────────────────
+ax_f.axhline(0, color=STYLE["gray"], ls=":", lw=0.8, alpha=0.5)
+ax_f.fill_between(t3, 0, u3, where=(u3 >= 0), alpha=0.15, color=STYLE["green"])
+ax_f.fill_between(t3, 0, u3, where=(u3 < 0),  alpha=0.15, color=STYLE["red"])
+ax_f.plot(t3, u3, color=STYLE["green"], lw=1.5, label="F(t) — Neural-LQR output")
+ax_f.legend(fontsize=8, facecolor=BG_AX, edgecolor=COL_GRID, labelcolor=COL_TXT)
+
+# ── Phase portrait ────────────────────────────────────────────────────────────
+ax_ph.set_title("Phase portrait (x₁, x₂) — trajectory from rest to equilibrium",
+                color=COL_TXT, fontsize=10, pad=6)
+ax_ph.set_xlabel("x₁ (m)", color=COL_AX, fontsize=9)
+ax_ph.set_ylabel("x₂ (m)", color=COL_AX, fontsize=9)
+scatter_colors = plt.cm.plasma(np.linspace(0, 0.85, N3))
+ax_ph.scatter(x1_3, x2_3, c=scatter_colors, s=1.5, alpha=0.7, rasterized=True)
+ax_ph.plot(x1_3[0],  x2_3[0],  "o", ms=7, color=STYLE["blue"],   zorder=5, label="start")
+ax_ph.plot(x1_3[-1], x2_3[-1], "s", ms=7, color=STYLE["orange"], zorder=5, label="final state")
+ax_ph.axhline(X2_REF3, color=STYLE["green"], ls="--", lw=1.0, alpha=0.5, label=f"x₂ = {X2_REF3}")
+ax_ph.legend(fontsize=8, facecolor=BG_AX, edgecolor=COL_GRID, labelcolor=COL_TXT)
+
+fig3.savefig(OUT / "03_sil_ai_controller.png", dpi=150)
+plt.close(fig3)
 
 # ── 4. Real-time oscilloscope — PID + sinusoidal reference ───────────────────
 print("Generating 04_realtime_oscilloscope.png ...")
