@@ -122,12 +122,12 @@ class StateEquations:
     @property
     def A(self) -> np.ndarray:
         """System matrix  (n × n)."""
-        return self._A.copy()
+        return np.array(self._A)
 
     @property
     def B(self) -> np.ndarray:
         """Input matrix  (n × m)."""
-        return self._B.copy()
+        return np.array(self._B)
 
     # ── convenience ──────────────────────────────────────────────────────────
 
