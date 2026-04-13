@@ -61,6 +61,13 @@ const sidebars: SidebarsConfig = {
             'guide/transport/zmq',
           ],
         },
+        {
+          type: 'category',
+          label: 'Utilities',
+          items: [
+            'guide/utils/matrix-builders',
+          ],
+        },
       ],
     },
     {
