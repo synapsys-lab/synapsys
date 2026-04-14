@@ -95,28 +95,27 @@ jobs:
           files: dist/*
 
   # ── Job 4: Publish to PyPI ────────────────────────────────────────────────
-  # TODO: enable after configuring OIDC Trusted Publishing on pypi.org
-  # publish-pypi:
-  #   name: Publish to PyPI
-  #   needs: build
-  #   if: >
-  #     github.event_name == 'release' ||
-  #     (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
-  #   runs-on: ubuntu-latest
-  #
-  #   environment:
-  #     name: pypi
-  #     url: https://pypi.org/p/synapsys
-  #
-  #   permissions:
-  #     id-token: write   # OIDC trusted publishing — no API token needed
-  #
-  #   steps:
-  #     - name: Download dist artifacts
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: dist
-  #         path: dist/
-  #
-  #     - name: Publish to PyPI
-  #       uses: pypa/gh-action-pypi-publish@release/v1
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    if: >
+      github.event_name == 'release' ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.target == 'pypi')
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/synapsys
+
+    permissions:
+      id-token: write   # OIDC trusted publishing — no API token needed
+
+    steps:
+      - name: Download dist artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
