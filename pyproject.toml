@@ -10,15 +10,28 @@ readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
 authors = [{ name = "synapsys contributors" }]
-keywords = ["control systems", "simulation", "multi-agent", "LTI", "state-space"]
+keywords = [
+    "control systems", "control theory", "simulation", "multi-agent",
+    "LTI", "state-space", "transfer function", "PID", "LQR",
+    "MATLAB", "scipy", "real-time", "distributed", "ZeroMQ", "SIL", "HIL",
+]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Hardware",
+    "Typing :: Typed",
 ]
 dependencies = [
     "numpy>=1.24",
@@ -27,6 +40,7 @@ dependencies = [
 ]
 
 [project.urls]
+Homepage      = "https://synapsys-lab.github.io/synapsys/"
 Repository    = "https://github.com/synapsys-lab/synapsys"
 Documentation = "https://synapsys-lab.github.io/synapsys/"
 "Bug Tracker" = "https://github.com/synapsys-lab/synapsys/issues"
