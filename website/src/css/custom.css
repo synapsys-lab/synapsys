@@ -176,6 +176,18 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   color: var(--text-muted);
 }
 
+.doc-badge--pypi {
+  background: rgba(37,99,235,0.10);
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.doc-badge--pypi:hover {
+  background: rgba(37,99,235,0.18);
+  color: var(--brand-blue);
+}
+
 .doc-header__title {
   font-size: clamp(2rem, 5vw, 2.8rem);
   font-weight: 700;
@@ -192,24 +204,45 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   margin-bottom: 1.75rem;
 }
 
-.doc-header__install {
-  display: inline-flex;
-  align-items: center;
+/* ── Install columns ─────────────────────────────────────────────────────────── */
+.install-cols {
+  display: flex;
   gap: 0.75rem;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--ifm-background-surface-color);
-  font-family: var(--ifm-font-family-monospace);
-  font-size: 0.875rem;
+  flex-wrap: wrap;
   margin-bottom: 1.75rem;
-  color: var(--ifm-font-color-base);
 }
 
-.doc-header__sep {
-  color: var(--text-subtle);
-  font-family: var(--ifm-font-family-base);
-  font-size: 0.8rem;
+.install-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--ifm-background-surface-color);
+  min-width: 0;
+  flex: 1 1 160px;
+  transition: border-color 0.15s;
+}
+
+.install-col:hover { border-color: var(--brand-blue); }
+
+.install-col__label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-blue);
+}
+
+.install-col__cmd {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.82rem;
+  color: var(--ifm-font-color-base);
+  background: none;
+  border: none;
+  padding: 0;
+  white-space: nowrap;
 }
 
 .doc-header__actions {
@@ -595,14 +628,9 @@ pre {
   .content-section    { padding: 2.5rem 1.25rem; }
   .nav-cards__section { padding: 1.25rem; }
 
-  /* Install bar: wrap and fill width on small screens */
-  .doc-header__install {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    box-sizing: border-box;
-    gap: 0.5rem 0.75rem;
-  }
+  /* Install columns: stack to 2-col on small screens */
+  .install-cols { gap: 0.5rem; }
+  .install-col  { flex: 1 1 calc(50% - 0.25rem); }
 
   /* Module table: horizontal scroll instead of overflow */
   .module-table {
@@ -616,9 +644,11 @@ pre {
   /* AI showcase: disable float animation (save battery, avoid jitter) */
   .ai-showcase__figure { animation: none; }
 
-  /* Action buttons: full-width row on very small screens */
+  /* Action buttons: wrap and fill on small screens */
   .doc-header__actions { gap: 0.5rem; }
   .doc-header__actions .btn { flex: 1 1 auto; justify-content: center; }
+  /* Install columns: single column on very small screens */
+  .install-col { flex: 1 1 100%; }
 }
 
 @media (max-width: 480px) {
