@@ -16,10 +16,12 @@ import {
   GitBranch,
   ArrowRight,
   BrainCircuit,
+  Package,
   type LucideIcon,
 } from 'lucide-react';
 
 const GITHUB = 'https://github.com/synapsys-lab/synapsys';
+const PYPI   = 'https://pypi.org/project/synapsys/';
 
 // ── Quick-navigation cards ───────────────────────────���────────────────────────
 const NAV_CARDS: { Icon: LucideIcon; title: string; desc: string; href: string }[] = [
@@ -107,7 +109,7 @@ export default function Home(): ReactElement {
             {/* ── Content column ── */}
             <div className="doc-header__content-col">
               <div className="doc-header__meta">
-                <span className="doc-badge">v0.1.0</span>
+                <a href={PYPI} className="doc-badge doc-badge--pypi" target="_blank" rel="noreferrer">v0.1.0 · PyPI</a>
                 <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
                 <span className="doc-badge doc-badge--neutral">MIT</span>
                 <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>
@@ -124,10 +126,19 @@ export default function Home(): ReactElement {
                 </Translate>
               </p>
 
-              <div className="doc-header__install">
-                <code>pip install synapsys</code>
-                <span className="doc-header__sep">or</span>
-                <code>uv add synapsys</code>
+              <div className="install-cols">
+                <div className="install-col">
+                  <span className="install-col__label">pip</span>
+                  <code className="install-col__cmd">pip install synapsys</code>
+                </div>
+                <div className="install-col">
+                  <span className="install-col__label">uv</span>
+                  <code className="install-col__cmd">uv add synapsys</code>
+                </div>
+                <div className="install-col">
+                  <span className="install-col__label">dev</span>
+                  <code className="install-col__cmd">uv sync --extra dev</code>
+                </div>
               </div>
 
               <div className="doc-header__actions">
@@ -137,8 +148,8 @@ export default function Home(): ReactElement {
                 <Link className="btn btn--outline" to={GITHUB}>
                   <GitBranch size={15} /> GitHub
                 </Link>
-                <Link className="btn btn--outline" to="/docs/getting-started/quickstart">
-                  <Translate id="home.header.cta.quickstart">Quickstart</Translate>
+                <Link className="btn btn--outline" href={PYPI} target="_blank" rel="noreferrer">
+                  <Package size={15} /> PyPI
                 </Link>
               </div>
             </div>
