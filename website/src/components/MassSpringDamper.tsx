@@ -201,9 +201,6 @@ export default function MassSpringDamper() {
         </text>
       </svg>
 
-      <div className="msd-controls">
-        <button onClick={replay} className="msd-btn msd-btn--secondary">↺ Replay</button>
-      </div>
     </div>
   );
 }
