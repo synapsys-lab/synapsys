@@ -9,6 +9,10 @@ slug: /
 
 **Modern Python control systems framework with distributed multi-agent simulation.**
 
+[![PyPI version](https://img.shields.io/pypi/v/synapsys.svg?color=blue&label=PyPI)](https://pypi.org/project/synapsys/)
+[![Python](https://img.shields.io/pypi/pyversions/synapsys.svg)](https://pypi.org/project/synapsys/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/synapsys-lab/synapsys/blob/main/LICENSE)
+
 Synapsys is designed as a MATLAB-compatible alternative for control engineers who want:
 
 - A **clean Python API** that mirrors MATLAB/Simulink syntax
