@@ -146,7 +146,7 @@ class TransferFunctionMatrix(LTIModel):
         true Smith-McMillan poles of the transfer-function matrix.
         Use ``to_state_space().poles()`` for the true system poles.
         """
-        all_poles = np.concatenate([
+        all_poles: np.ndarray = np.concatenate([
             self._tfs[i][j].poles()
             for i in range(self._p)
             for j in range(self._m)
