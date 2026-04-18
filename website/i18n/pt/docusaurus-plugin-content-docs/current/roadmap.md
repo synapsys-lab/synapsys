@@ -6,38 +6,51 @@ sidebar_position: 99
 
 # Roadmap
 
-## Estado atual — v0.1.0
+## Estado atual — v0.2.0
 
-A fundação esta pronta e testada (40 testes, Python 3.10–3.12).
+A biblioteca está completa e testada (184 testes, Python 3.10–3.12, cobertura 90 %).
 
 | Módulo | Status |
 |--------|--------|
-| `synapsys.core` — TransferFunction, StateSpace (continuo + discreto) | Concluído |
-| `synapsys.algorithms` — PID (anti-windup), LQR | Concluído |
+| `synapsys.core` — TransferFunction, StateSpace, TransferFunctionMatrix (contínuo + discreto) | Concluído |
+| `synapsys.algorithms` — PID (anti-windup), LQR (Q/R validados) | Concluído |
 | `synapsys.agents` — PlantAgent, ControllerAgent, FIPA ACL, SyncEngine | Concluído |
 | `synapsys.transport` — SharedMemory (zero-copy), ZMQ (PUB/SUB, REQ/REP) | Concluído |
-| `synapsys.api` — tf(), ss(), c2d(), step(), bode(), feedback() | Concluído |
+| `synapsys.api` — tf(), ss(), c2d(), step(), bode(), feedback() (SISO + MIMO) | Concluído |
 | `synapsys.hw` — Interface definida, sem implementações concretas | Pendente |
 
 ---
 
-## v0.2 — Análise avançada
+## v0.1.0 ✅ — Fundação
 
-- [ ] **Sistemas MIMO** — múltiplas entradas/saídas
+- LTI SISO (`TransferFunction`, `StateSpace`), PID, LQR, multi-agente, memória compartilhada, ZMQ, abstração de hardware.
+
+## v0.2.0 ✅ — MIMO
+
+- `TransferFunctionMatrix` — matriz de funções de transferência MIMO com álgebra de operadores, `to_state_space()`, polos/zeros/estabilidade.
+- `feedback()` MIMO — malha fechada em espaço de estados para plantas `StateSpace` e `TransferFunctionMatrix`.
+- Zeros de transmissão via matriz de Rosenbrock.
+- Validação de semi-definição positiva de Q no `lqr()`.
+- Anotações de tipo covariantes no `LTIModel` para mypy/pyright.
+
+---
+
+## v0.3 — Análise avançada
+
 - [ ] **Atraso de transporte** — aproximação de Pade `pade(T, n)`
 - [ ] **Margem de fase e ganho** — `margin(G)`
 - [ ] **Root locus** — `rlocus(G)`
 - [ ] **Alocação de polos** — `place(A, B, poles)`
 - [ ] **LQI** — LQR com ação integral
+- [ ] **Observadores** — filtro de Kalman e Luenberger
 
 ---
 
-## v0.3 — Controle avançado
+## v0.4 — Controle avançado
 
 - [ ] **MPC** — Model Predictive Control com restrições
 - [ ] **Controle adaptativo** — MRAC para plantas com parâmetros variantes
 - [ ] **Reconfiguração em tempo real** — troca de lei sem parar a simulação
-- [ ] **Observadores** — filtro de Kalman e Luenberger
 
 ---
 

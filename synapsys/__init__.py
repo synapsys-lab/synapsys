@@ -19,6 +19,7 @@ from synapsys.api.matlab_compat import (
 )
 from synapsys.core.state_space import StateSpace
 from synapsys.core.transfer_function import TransferFunction
+from synapsys.core.transfer_function_matrix import TransferFunctionMatrix
 from synapsys.utils import StateEquations, col, mat, row
 
 __all__ = [
@@ -35,6 +36,7 @@ __all__ = [
     "c2d",
     # Core classes
     "TransferFunction",
+    "TransferFunctionMatrix",
     "StateSpace",
     # Algorithms
     "PID",
