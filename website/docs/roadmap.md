@@ -6,26 +6,39 @@ sidebar_position: 99
 
 # Roadmap
 
-## Current state — v0.1.0
+## Current state — v0.2.0
 
-The foundation is complete and tested (40 tests, Python 3.10–3.12).
+The library is complete and tested (184 tests, Python 3.10–3.12, 90 % coverage).
 
 | Module | Status |
 |--------|--------|
-| `synapsys.core` — TransferFunction, StateSpace (continuous + discrete) | Done |
-| `synapsys.algorithms` — PID (anti-windup), LQR | Done |
+| `synapsys.core` — TransferFunction, StateSpace, TransferFunctionMatrix (continuous + discrete) | Done |
+| `synapsys.algorithms` — PID (anti-windup), LQR (Q/R validated) | Done |
 | `synapsys.agents` — PlantAgent, ControllerAgent, FIPA ACL, SyncEngine | Done |
 | `synapsys.transport` — SharedMemory (zero-copy), ZMQ (PUB/SUB, REQ/REP) | Done |
-| `synapsys.api` — tf(), ss(), c2d(), step(), bode(), feedback() | Done |
+| `synapsys.api` — tf(), ss(), c2d(), step(), bode(), feedback() (SISO + MIMO) | Done |
 | `synapsys.hw` — Interface defined, no concrete implementations yet | Pending |
 
 ---
 
-## v0.2 — Advanced analysis
+## v0.1.0 ✅ — Foundation
+
+- SISO LTI (`TransferFunction`, `StateSpace`), PID, LQR, multi-agent, shared memory, ZMQ, hardware abstraction.
+
+## v0.2.0 ✅ — MIMO
+
+- `TransferFunctionMatrix` — MIMO transfer-function matrix with operator algebra, `to_state_space()`, poles/zeros/stability.
+- MIMO `feedback()` — state-space closed-loop for `StateSpace` and `TransferFunctionMatrix` plants.
+- Transmission zeros via Rosenbrock system-matrix pencil.
+- `lqr()` Q positive semi-definiteness validation.
+- Covariant LTI type annotations for mypy/pyright.
+
+---
+
+## v0.3 — Advanced analysis
 
 **Core:**
 
-- [ ] **MIMO systems** — `TransferFunction` and `StateSpace` for multiple inputs/outputs
 - [ ] **Transport delay** — Pade approximation `pade(T, n)`
 - [ ] **Phase and gain margin** — `margin(G)` returning $G_m$, $\phi_m$, $\omega_{gc}$, $\omega_{pc}$
 - [ ] **Root locus** — `rlocus(G)` for root locus analysis
@@ -33,17 +46,16 @@ The foundation is complete and tested (40 tests, Python 3.10–3.12).
 
 **Algorithms:**
 
-- [ ] **PID in state space** — formulation with integrated Luenberger observer
 - [ ] **LQI** — LQR with integral action for disturbance rejection
+- [ ] **Observers** — `ObserverAgent` with Kalman filter and Luenberger observer
 
 ---
 
-## v0.3 — Advanced control
+## v0.4 — Advanced control
 
 - [ ] **MPC** — Model Predictive Control with sliding horizon and state/input constraints
 - [ ] **Adaptive control** — MRAC (Model Reference Adaptive Control) for plants with varying parameters
 - [ ] **Real-time reconfiguration** — swap the control law without stopping the simulation
-- [ ] **Observers** — `ObserverAgent` with Kalman filter and Luenberger observer
 
 ---
 

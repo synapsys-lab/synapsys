@@ -24,11 +24,14 @@ flowchart TB
         M1["LTIModel (ABC)"]
         M2["StateSpace"]
         M3["TransferFunction"]
+        M5["TransferFunctionMatrix"]
         M4["NumPy / SciPy solvers"]
         M1 --> M2
         M1 --> M3
+        M1 --> M5
         M2 --> M4
         M3 --> M4
+        M5 --> M3
     end
 
     subgraph ControlLogic["3. Algorithms — synapsys.algorithms"]
@@ -82,6 +85,8 @@ The `synapsys.api` layer is a convenience wrapper only. All mathematics lives in
 ```python
 T = (C * G).feedback()   # closed loop: C in series with G
 ```
+
+`TransferFunctionMatrix` extends this algebra to MIMO plants: `*` performs matrix multiplication (series) and `+` is element-wise (parallel). Simulation and analysis delegate to a minimal `StateSpace` realisation built lazily by `to_state_space()`.
 
 ### Strategy pattern in transport
 

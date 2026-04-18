@@ -98,12 +98,35 @@ class StateSpace(LTIModel):
         return np.asarray(linalg.eigvals(self._A))
 
     def zeros(self) -> np.ndarray:
-        if self.is_discrete:
-            sys = signal.dlti(self._A, self._B, self._C, self._D, dt=self._dt)
-        else:
-            sys = signal.StateSpace(self._A, self._B, self._C, self._D)
-        _, z, _ = signal.zpkdata(sys, input=0)
-        return np.array(z[0]) if z else np.array([])
+        """Transmission zeros via the Rosenbrock system matrix.
+
+        Returns finite eigenvalues of the generalised pencil
+        (A_ext, E) where A_ext = [[A, B], [C, D]] and
+        E = [[I_n, 0], [0, 0]].  Works for SISO and MIMO systems.
+
+        Requires a **square** plant (n_inputs == n_outputs) and a
+        **minimal** realisation.  Non-minimal realisations may produce
+        spurious zeros corresponding to uncontrollable or unobservable
+        modes.
+        """
+        n, m, p = self.n_states, self.n_inputs, self.n_outputs
+        if m != p:
+            raise ValueError(
+                f"zeros() requires a square plant "
+                f"(n_inputs == n_outputs); "
+                f"got n_inputs={m}, n_outputs={p}."
+            )
+        if n == 0:
+            return np.array([], dtype=complex)
+        A_ext = np.block([[self._A, self._B], [self._C, self._D]])
+        E = np.block(
+            [
+                [np.eye(n), np.zeros((n, m))],
+                [np.zeros((p, n)), np.zeros((p, m))],
+            ]
+        )
+        eigs = linalg.eigvals(A_ext, E)
+        return eigs[np.isfinite(eigs)]  # type: ignore[no-any-return]
 
     def is_stable(self) -> bool:
         p = self.poles()
@@ -119,6 +142,13 @@ class StateSpace(LTIModel):
         return self
 
     def to_transfer_function(self) -> TransferFunction:
+        if self.n_inputs != 1 or self.n_outputs != 1:
+            raise ValueError(
+                f"to_transfer_function() requires a SISO system "
+                f"(n_inputs=1, n_outputs=1); "
+                f"got n_inputs={self.n_inputs}, n_outputs={self.n_outputs}. "
+                f"Use StateSpace directly for MIMO systems."
+            )
         from .transfer_function import TransferFunction
 
         if self.is_discrete:
@@ -229,6 +259,12 @@ class StateSpace(LTIModel):
         if not isinstance(other, StateSpace):
             other = other.to_state_space()
         self._check_compatible(other)
+        if self.n_inputs != other.n_outputs:
+            raise ValueError(
+                f"Series connection requires compatible inner dimensions "
+                f"(self.n_inputs={self.n_inputs} must equal "
+                f"other.n_outputs={other.n_outputs})."
+            )
         A = np.block([
             [other._A, np.zeros((other.n_states, self.n_states))],
             [self._B @ other._C, self._A],

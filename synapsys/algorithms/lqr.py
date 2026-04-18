@@ -30,6 +30,14 @@ def lqr(
     Q = np.atleast_2d(np.asarray(Q, dtype=np.float64))
     R = np.atleast_2d(np.asarray(R, dtype=np.float64))
 
+    # Q must be positive semi-definite
+    eigvals_Q = np.linalg.eigvalsh(Q)
+    if np.any(eigvals_Q < -1e-10):
+        raise ValueError(
+            "Q must be positive semi-definite. "
+            f"Got Q with eigenvalues {eigvals_Q.tolist()}"
+        )
+
     # R must be positive definite — Cholesky is the canonical check
     try:
         linalg.cholesky(R)

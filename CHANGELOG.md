@@ -13,6 +13,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] — 2026-04-18
+
+### Added
+
+#### MIMO Support
+- `TransferFunctionMatrix` — MIMO transfer-function matrix `G(s)` of shape `(n_outputs × n_inputs)`, storing SISO `TransferFunction` elements at `G[i, j]`.
+  - Full operator algebra: element-wise `+` (parallel), matrix-multiply `*` (series), negation `-`.
+  - `to_state_space()` — block-diagonal minimal state-space realisation; zero-numerator elements are skipped to avoid scipy phantom states.
+  - `poles()`, `zeros()`, `is_stable()`, `simulate()`, `step()`, `bode()`.
+  - `from_arrays(num, den)` factory: supports shared denominator or per-element denominators.
+- `tf()` MIMO dispatch — `tf(num, den)` with 2-D `num` now returns a `TransferFunctionMatrix` (mirrors MATLAB `tf`).
+- `feedback()` MIMO support — `feedback(G)` and `feedback(G, H)` now accept `StateSpace` and `TransferFunctionMatrix` plants, returning a `StateSpace` closed-loop model.
+- Transmission zeros via Rosenbrock system-matrix pencil — replaces deprecated `scipy.signal.zpkdata`; correct for both SISO and MIMO state-space models.
+
+#### Validation
+- `lqr()` — added positive semi-definiteness check for `Q` (`eigvalsh` ≥ −1e-10); complements the existing Cholesky check on `R`.
+- `feedback()` — added sample-time (`dt`) mismatch guard between plant `G` and sensor `H`.
+- `series()` / `parallel()` — added guard against zero-argument calls.
+- `tf()` — added `TypeError` guard for `None` numerator or denominator.
+- `StateSpace.__mul__()` — added inner-dimension validation for series connection.
+- `StateSpace.zeros()` — added non-square plant guard with descriptive error message.
+- `StateSpace.to_transfer_function()` — added MIMO guard (raises `ValueError` for non-SISO plants).
+
+#### Type Annotations
+- `LTIModel.to_state_space()` and `LTIModel.to_transfer_function()` now declare covariant return types (`StateSpace` and `TransferFunction`) via `TYPE_CHECKING` imports, enabling accurate static analysis with mypy/pyright.
+
+### Changed
+- Test suite expanded from 74 to 184 tests; coverage increased from 86 % to 90 %.
+
+### Known Limitations
+- **No advanced frequency-domain tools** — `margin()`, `rlocus()`, `pole_placement()` planned for v0.3.
+- **No state estimation** — Kalman filter and Luenberger observer planned for v0.3.
+- **No hardware implementations** — `HardwareInterface` subclasses for real hardware planned for v0.5.
+- **Race-condition caveat** — `SharedMemoryTransport` has no internal mutex; architect channels so that each process is the sole writer of its own channel.
+
+---
+
 ## [0.1.0] — 2026-04-11
 
 ### Added
@@ -60,4 +97,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **No hardware implementations** — `HardwareInterface` subclasses for real hardware are planned for v0.5.
 - **Race-condition caveat** — `SharedMemoryTransport` has no internal mutex; architect channels so that each process is the sole writer of its own channel.
 
+[0.2.0]: https://github.com/synapsys-lab/synapsys/releases/tag/v0.2.0
 [0.1.0]: https://github.com/synapsys-lab/synapsys/releases/tag/v0.1.0
