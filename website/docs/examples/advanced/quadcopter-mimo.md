@@ -273,12 +273,16 @@ Clicking **Run Simulation** closes the dialog, validates the configuration, and 
 
 ### PyVista 3D window (50 Hz)
 
+![Real-time 3D animation of the quadcopter tracking a figure-8 trajectory — drone mesh, trail, and reference curve](/img/examples/06_quadcopter_3d.gif)
+
 - **Drone mesh** — X-configuration body (box), 4 arms (cylinders) and 4 rotors (discs); pose updated via `actor.user_matrix` from the rotation matrix $R = R_z R_y R_x$ computed with `scipy.spatial.transform.Rotation`
 - **Trajectory trail** — last `TRAIL_LEN = 500` positions as a `pv.PolyData` polyline, updated in place
 - **Reference curve** — static preview of the chosen trajectory rendered at the start
 - **HUD overlay** — live text showing mode, time, position, Euler angles, velocities
 
 ### matplotlib telemetry window (10 Hz)
+
+![Live telemetry: top-down x-y trajectory, altitude z(t), Euler angles and control inputs](/img/examples/06_quadcopter_telemetry.gif)
 
 | Panel | Content |
 |---|---|
@@ -310,6 +314,18 @@ python 06b_neural_lqr_3d.py
 2. A matplotlib telemetry window opens with 4 live panels
 3. A PyVista 3D window opens with the drone animation
 4. Close either window or press **Ctrl+C** to stop
+
+**Export GIF recordings (no display needed):**
+
+```bash
+# Default: 20 s run, 15 fps 3D GIF + 7 fps telemetry GIF → current dir
+python 06b_neural_lqr_3d.py --save
+
+# Custom: 30 s, faster PyVista, slower telemetry, custom output folder
+python 06b_neural_lqr_3d.py --save --fps 20 --mpl-fps 8 --out ./results
+```
+
+Saves `quadcopter_3d.gif` (~1.8 MB) and `quadcopter_telemetry.gif` (~4 MB) in under 2 minutes. Requires `pip install imageio`.
 
 **Two-process SIL variant (optional):**
 

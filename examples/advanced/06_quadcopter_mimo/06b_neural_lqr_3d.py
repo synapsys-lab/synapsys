@@ -31,8 +31,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from tkinter import ttk
 
+_SAVE_MODE = "--save" in sys.argv   # choose backend before pyplot import
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use("Agg" if _SAVE_MODE else "TkAgg")
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
@@ -342,6 +343,113 @@ def _sim_thread(sys_d: object, K: np.ndarray, net: object | None,
     _done[0] = True
 
 
+# ── Fast (non-real-time) simulation ──────────────────────────────────────────
+
+def _run_fast_sim(
+    sys_d: object, K: np.ndarray, net: object | None, cfg: SimConfig
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Run full simulation without real-time pacing. Returns arrays (n, dim)."""
+    n_steps = int(cfg.t_total / DT)
+    states  = np.zeros((n_steps, 12))
+    refs    = np.zeros((n_steps, 12))
+    inputs  = np.zeros((n_steps,  4))
+    times   = np.zeros( n_steps)
+    x = np.zeros(12)
+
+    for step in range(n_steps):
+        t     = step * DT
+        x_ref = get_ref(t, cfg)
+        e     = x - x_ref
+        if net is not None and HAS_TORCH:
+            with torch.no_grad():
+                t_in    = torch.tensor(e, dtype=torch.float32).unsqueeze(0)
+                delta_u: np.ndarray = net(t_in).squeeze(0).numpy()
+        else:
+            delta_u = -(K @ e)
+        delta_u = np.clip(delta_u, U_MIN, U_MAX)
+        x_next, _ = sys_d.evolve(x, delta_u)  # type: ignore[union-attr]
+        x = x_next
+        states[step] = x
+        refs[step]   = x_ref
+        inputs[step] = delta_u
+        times[step]  = t
+        if step % 500 == 0:
+            print(f"  sim {100 * step / n_steps:.0f}%  t={t:.1f}s", end="\r", flush=True)
+
+    print(f"  sim 100%  t={cfg.t_total:.1f}s                    ")
+    return states, refs, inputs, times
+
+
+# ── GIF export ────────────────────────────────────────────────────────────────
+
+def _save_pyvista_gif(
+    states: np.ndarray, refs: np.ndarray, times: np.ndarray,
+    cfg: SimConfig, path: Path, fps: int = 15,
+) -> None:
+    """Render every sim frame off-screen and write to a GIF via PyVista."""
+    n     = len(states)
+    skip  = max(1, round(1.0 / (DT * fps)))
+    idxs  = list(range(0, n, skip))
+    print(f"  PyVista GIF: {len(idxs)} frames @ {fps} fps → {path.name}")
+
+    drone_mesh = _build_drone()
+    pl = pv.Plotter(off_screen=True, window_size=(900, 820))
+    actors = _setup_3d(pl, drone_mesh, cfg)
+    pl.open_gif(str(path), fps=fps)
+
+    for k, i in enumerate(idxs):
+        trail_sl = slice(max(0, i - TRAIL_LEN + 1), i + 1)
+        _update_pv(
+            actors,
+            list(states[trail_sl]),
+            [float(times[i])],
+            [refs[i]],
+        )
+        pl.write_frame()
+        if k % 30 == 0:
+            print(f"  PyVista {100 * k // len(idxs):3d}%", end="\r", flush=True)
+
+    pl.close()
+    size_kb = path.stat().st_size / 1024
+    print(f"  PyVista 100% — saved {path}  ({size_kb:.0f} KB)")
+
+
+def _save_matplotlib_gif(
+    states: np.ndarray, refs: np.ndarray,
+    inputs: np.ndarray, times: np.ndarray,
+    cfg: SimConfig, path: Path, fps: int = 10,
+) -> None:
+    """Build matplotlib figure and save all frames as a GIF (Pillow writer)."""
+    from matplotlib.animation import FuncAnimation, PillowWriter
+
+    n    = len(states)
+    skip = max(1, round(1.0 / (DT * fps)))
+    idxs = list(range(0, n, skip))
+    print(f"  matplotlib GIF: {len(idxs)} frames @ {fps} fps → {path.name}")
+
+    fig, axes, lines = _build_mpl_figure(cfg)
+    WIN = 500  # rolling window of steps shown
+
+    def _frame(k: int) -> list:
+        i  = idxs[k]
+        sl = slice(max(0, i - WIN), i + 1)
+        _update_mpl(axes, lines,
+                    list(states[sl]), list(times[sl]),
+                    list(refs[sl]),   list(inputs[sl]))
+        return list(lines.values())
+
+    def _progress(cur: int, total: int) -> None:
+        print(f"  matplotlib {100 * cur // total:3d}%", end="\r", flush=True)
+
+    ani = FuncAnimation(fig, _frame, frames=len(idxs),
+                        interval=int(1000 / fps), blit=False)
+    ani.save(str(path), writer=PillowWriter(fps=fps), dpi=80,
+             progress_callback=_progress)
+    plt.close(fig)
+    size_kb = path.stat().st_size / 1024
+    print(f"  matplotlib 100% — saved {path}  ({size_kb:.0f} KB)")
+
+
 # ── PyVista 3-D drone mesh ────────────────────────────────────────────────────
 
 def _build_drone() -> pv.PolyData:
@@ -601,15 +709,37 @@ def _update_mpl(axes: dict, lines: dict,
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Quadcopter MIMO Neural-LQR — interactive or GIF export"
+    )
+    parser.add_argument(
+        "--save", action="store_true",
+        help="Run fast sim and save quadcopter_3d.gif + quadcopter_telemetry.gif",
+    )
+    parser.add_argument("--fps",     type=int, default=15,
+                        help="PyVista GIF fps (default 15)")
+    parser.add_argument("--mpl-fps", type=int, default=0,
+                        help="matplotlib GIF fps (default: fps//2)")
+    parser.add_argument("--out",  type=str, default=".",
+                        help="Output directory for GIF files (default: current dir)")
+    args = parser.parse_args()
+
     print("=" * 60)
     print("  Quadcopter MIMO  —  Neural-LQR + PyVista 3D")
+    if args.save:
+        print("  MODE: GIF export")
     print("=" * 60)
 
-    # Config dialog
-    cfg = _show_config_dialog()
-    if cfg is None:
-        print("Cancelled.")
-        return
+    # Config dialog — skipped in save mode (uses compact defaults: 20 s)
+    if args.save:
+        cfg: SimConfig = SimConfig(t_total=20.0, t_hover=3.0)
+    else:
+        cfg = _show_config_dialog()
+        if cfg is None:
+            print("Cancelled.")
+            return
 
     print(f"\nConfig: t={cfg.t_total:.0f}s  hover={cfg.t_hover:.1f}s  "
           f"z={cfg.z_hover:.1f}m  ref={cfg.ref_type}")
@@ -631,19 +761,39 @@ def main() -> None:
         print("Building Neural-LQR (12->64->32->4)…")
         net = build_neural_lqr(K)
 
-    # Simulation thread
+    # ── Save mode ─────────────────────────────────────────────────────────────
+    if args.save:
+        out_dir = Path(args.out)
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        print(f"\nRunning fast simulation (no real-time pacing)…")
+        states, refs, inputs, times = _run_fast_sim(sys_d, K, net, cfg)
+
+        mpl_fps = args.mpl_fps if args.mpl_fps > 0 else max(6, args.fps // 2)
+        _save_pyvista_gif(
+            states, refs, times, cfg,
+            path=out_dir / "quadcopter_3d.gif",
+            fps=args.fps,
+        )
+        _save_matplotlib_gif(
+            states, refs, inputs, times, cfg,
+            path=out_dir / "quadcopter_telemetry.gif",
+            fps=mpl_fps,
+        )
+        print(f"\nDone. GIFs saved to: {out_dir.resolve()}/")
+        return
+
+    # ── Interactive mode ───────────────────────────────────────────────────────
     sim = threading.Thread(target=_sim_thread, args=(sys_d, K, net, cfg), daemon=True)
     sim.start()
     time.sleep(0.12)
 
-    # Matplotlib (non-blocking)
     plt.ion()
     fig, axes, lines = _build_mpl_figure(cfg)
     plt.show(block=False)
     fig.canvas.draw()
     fig.canvas.flush_events()
 
-    # PyVista (non-blocking)
     print("Opening PyVista 3D window…  (close window or Ctrl+C to exit)\n")
     drone_mesh = _build_drone()
     pl = pv.Plotter(
@@ -653,7 +803,6 @@ def main() -> None:
     actors = _setup_3d(pl, drone_mesh, cfg)
     pl.show(auto_close=False, interactive_update=True)
 
-    # Main update loop
     pv_dt    = 1.0 / VIZ_HZ
     mpl_dt   = 1.0 / MPL_HZ
     last_pv  = time.perf_counter()
@@ -664,19 +813,19 @@ def main() -> None:
             now = time.perf_counter()
             if now - last_pv >= pv_dt:
                 with _lock:
-                    states = list(_states)
-                    times  = list(_times)
-                    refs   = list(_refs)
-                _update_pv(actors, states, times, refs)
+                    states_s = list(_states)
+                    times_s  = list(_times)
+                    refs_s   = list(_refs)
+                _update_pv(actors, states_s, times_s, refs_s)
                 pl.update()
                 last_pv = now
             if now - last_mpl >= mpl_dt:
                 with _lock:
-                    states = list(_states)
-                    times  = list(_times)
-                    refs   = list(_refs)
-                    inputs = list(_inputs)
-                _update_mpl(axes, lines, states, times, refs, inputs)
+                    states_s = list(_states)
+                    times_s  = list(_times)
+                    refs_s   = list(_refs)
+                    inputs_s = list(_inputs)
+                _update_mpl(axes, lines, states_s, times_s, refs_s, inputs_s)
                 fig.canvas.draw()
                 fig.canvas.flush_events()
                 last_mpl = now
@@ -690,9 +839,9 @@ def main() -> None:
     sim.join(timeout=2.0)
     if _done[0]:
         with _lock:
-            states = list(_states)
-        if states:
-            f = states[-1]
+            final = list(_states)
+        if final:
+            f = final[-1]
             print(f"\nFinal:  x={f[0]:+.3f}  y={f[1]:+.3f}  z={f[2]:+.3f} m  "
                   f"| phi={np.degrees(f[3]):+.1f} theta={np.degrees(f[4]):+.1f} "
                   f"psi={np.degrees(f[5]):+.1f} deg")

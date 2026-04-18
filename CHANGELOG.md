@@ -13,6 +13,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.1] — 2026-04-18
+
+### Added
+
+#### Quadcopter MIMO Example
+- `examples/advanced/06_quadcopter_mimo/` — complete real-time simulation of a 12-state linearised quadcopter controlled by a residual Neural-LQR (`δu = −K·e + MLP(e)`).
+- `quadcopter_dynamics.py` — physical constants, `build_matrices()`, `figure8_ref()`, LQR weight matrices `Q` and `R`.
+- `06a_quadcopter_plant.py` — two-process SIL variant via `PlantAgent` + `SharedMemoryTransport`.
+- `06b_neural_lqr_3d.py` — standalone simulation with:
+  - **tkinter config GUI**: simulation time, hover altitude, reference trajectory (Figure-8 / Circle / Hover) and its parameters.
+  - **PyVista 3D window** (50 Hz): drone mesh, trajectory trail, static reference curve, HUD overlay.
+  - **matplotlib telemetry window** (10 Hz): x-y trajectory, altitude, Euler angles, control inputs.
+  - **`--save` export mode**: runs fast (no real-time pacing) and saves `quadcopter_3d.gif` and `quadcopter_telemetry.gif` via PyVista off-screen + matplotlib PillowWriter.
+- `pyvista>=0.43` added as `synapsys[viz]` optional dependency.
+- Full EN + PT documentation with embedded GIF recordings.
+
+### Fixed
+- `synapsys/__init__.py` version synced to match `pyproject.toml` (was `0.1.0`, now `0.2.1`).
+
+---
+
 ## [0.2.0] — 2026-04-18
 
 ### Added
