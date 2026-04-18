@@ -11,7 +11,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/synapsys.svg)](https://pypi.org/project/synapsys/)
 [![Docs](https://img.shields.io/badge/docs-synapsys--lab.github.io-blue)](https://synapsys-lab.github.io/synapsys/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-86%25-brightgreen.svg)](#testing)
+[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](#testing)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
 [📖 Documentation](https://synapsys-lab.github.io/synapsys/) · [🚀 Quickstart](#quickstart) · [📦 PyPI](https://pypi.org/project/synapsys/) · [💡 Examples](examples/) · [📋 Changelog](CHANGELOG.md)
@@ -25,12 +25,20 @@
 Synapsys is an open-source Python library for **modelling, simulating, and deploying control systems**. It provides a **MATLAB-compatible API** built on SciPy, a modern **multi-agent simulation framework**, and a pluggable **transport layer** (shared memory / ZeroMQ) that scales from a single laptop to distributed lab setups.
 
 ```python
-from synapsys.api import tf, feedback, step, c2d
+from synapsys.api import tf, ss, feedback, step, c2d
 
+# SISO
 G    = tf([1], [1, 2, 1])    # G(s) = 1 / (s² + 2s + 1)
 T    = feedback(G)            # closed-loop: T = G / (1 + G)
 t, y = step(T)                # step response
 Gd   = c2d(G, dt=0.02)       # ZOH discretisation at 50 Hz
+
+# MIMO
+G_mimo = tf([[[ 1], [0]],     # 2×2 transfer-function matrix
+             [[ 0], [1]]],
+            [[[1,1],[1]],
+             [[1],[1,2]]])
+T_mimo = feedback(G_mimo)     # state-space closed-loop
 ```
 
 ```bash
@@ -56,8 +64,9 @@ Neural-LQR controller on a 2-DOF mass-spring-damper — MLP initialized with LQR
 | Feature | Description |
 |---------|-------------|
 | ⚡ **MATLAB-Compatible API** | `tf()`, `ss()`, `c2d()`, `step()`, `bode()`, `feedback()`, `lsim()` — same names, pure Python |
-| 📐 **LTI Core** | `TransferFunction` and `StateSpace` with operator overloading, poles, zeros, stability |
-| 🧮 **Control Algorithms** | Discrete PID with anti-windup · LQR via algebraic Riccati equation |
+| 📐 **LTI Core** | `TransferFunction`, `StateSpace`, and `TransferFunctionMatrix` with operator overloading, poles, zeros, stability |
+| 🔀 **MIMO Support** | `TransferFunctionMatrix` for multi-input multi-output plants · MIMO `feedback()` · transmission zeros via Rosenbrock pencil |
+| 🧮 **Control Algorithms** | Discrete PID with anti-windup · LQR via algebraic Riccati equation (Q/R validated) |
 | 🤖 **Multi-Agent Simulation** | `PlantAgent` and `ControllerAgent` with lock-step and wall-clock sync |
 | 🔗 **Pluggable Transport** | Zero-copy shared memory (single-host) · ZeroMQ PUB/SUB and REQ/REP (distributed) |
 | 🔌 **Hardware Abstraction** | `HardwareInterface` contract enables seamless MIL → SIL → HIL transitions |
@@ -90,7 +99,7 @@ uv sync --extra dev
 ```python
 from synapsys.api import tf, ss, bode, feedback, c2d
 
-# Second-order transfer function
+# SISO second-order transfer function
 G = tf([1], [1, 2, 1])
 
 # Closed-loop with unity negative feedback
@@ -101,6 +110,13 @@ w, mag, phase = bode(G)
 
 # ZOH discretisation at 50 Hz
 Gd = c2d(G, dt=0.02)
+
+# MIMO: 2×2 transfer-function matrix
+G_mimo = tf(
+    [[[1], [0]], [[0], [1]]],           # numerators
+    [[[1, 1], [1]], [[1], [1, 2]]],     # denominators
+)
+T_mimo = feedback(G_mimo)               # returns StateSpace
 ```
 
 ### 2 · Control algorithms
@@ -204,8 +220,8 @@ agent = HardwareAgent("hw", hw, bus, sync)
 
 ```
 synapsys/
-├── api/            # MATLAB-compatible façade  (tf, ss, c2d, step, bode, …)
-├── core/           # LTI math — TransferFunction, StateSpace, LTIModel
+├── api/            # MATLAB-compatible façade  (tf, ss, c2d, step, bode, feedback, …)
+├── core/           # LTI math — TransferFunction, StateSpace, TransferFunctionMatrix, LTIModel
 ├── algorithms/     # PID (discrete, anti-windup), LQR (ARE solver)
 ├── agents/         # PlantAgent, ControllerAgent, HardwareAgent, SyncEngine
 ├── transport/      # SharedMemoryTransport, ZMQTransport, ZMQReqRepTransport
@@ -228,8 +244,8 @@ uv run ruff check synapsys tests   # linting
 
 | Metric | Value |
 |--------|-------|
-| Test suite | 74 tests |
-| Coverage | 86 % |
+| Test suite | 184 tests |
+| Coverage | 90 % |
 | Type checking | mypy strict — 0 errors |
 | Python versions | 3.10 · 3.11 · 3.12 |
 
@@ -237,11 +253,11 @@ uv run ruff check synapsys tests   # linting
 
 ## Roadmap
 
-| Version | Status | Planned features |
-|---------|--------|-----------------|
+| Version | Status | Features |
+|---------|--------|---------|
 | **v0.1.0** | ✅ Released | SISO LTI, PID, LQR, multi-agent, shared memory, ZMQ, hardware abstraction, Neural-LQR example |
-| **v0.2** | 🔜 Planned | MIMO systems, `margin()`, `rlocus()`, `pole_placement()` |
-| **v0.3** | 🔜 Planned | State estimation — Kalman filter, Luenberger observer |
+| **v0.2.0** | ✅ Released | MIMO support — `TransferFunctionMatrix`, MIMO `feedback()`, transmission zeros (Rosenbrock pencil), LQR Q/R validation, covariant LTI type annotations |
+| **v0.3** | 🔜 Planned | `margin()`, `rlocus()`, `pole_placement()` · State estimation — Kalman filter, Luenberger observer |
 | **v0.5** | 🔜 Planned | Real hardware drivers (serial, CAN, FPGA via PYNQ) |
 
 See [CHANGELOG.md](CHANGELOG.md) for the full release history.

@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    from .state_space import StateSpace
+    from .transfer_function import TransferFunction
 
 
 class LTIModel(ABC):
@@ -30,10 +35,10 @@ class LTIModel(ABC):
     def is_stable(self) -> bool: ...
 
     @abstractmethod
-    def to_state_space(self) -> "LTIModel": ...
+    def to_state_space(self) -> "StateSpace": ...
 
     @abstractmethod
-    def to_transfer_function(self) -> "LTIModel": ...
+    def to_transfer_function(self) -> "TransferFunction": ...
 
     @staticmethod
     def _as_2d(data: object, shape: tuple[int, int] | None = None) -> np.ndarray:

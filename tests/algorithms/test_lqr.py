@@ -91,3 +91,21 @@ class TestLQR:
         R_neg = np.array([[-1.0]])
         with pytest.raises(ValueError, match="positive definite"):
             lqr(A, B, Q, R_neg)
+
+    def test_indefinite_Q_raises(self):
+        """Indefinite Q (negative eigenvalue) must raise ValueError."""
+        A = np.array([[-1.0]])
+        B = np.array([[1.0]])
+        Q = np.array([[-1.0]])  # negative definite
+        R = np.array([[1.0]])
+        with pytest.raises(ValueError, match="positive semi-definite"):
+            lqr(A, B, Q, R)
+
+    def test_positive_semidefinite_Q_accepted(self):
+        """Q=0 (zero matrix) is positive semi-definite and must be accepted."""
+        A = np.array([[-1.0]])
+        B = np.array([[1.0]])
+        Q = np.array([[0.0]])
+        R = np.array([[1.0]])
+        K, P = lqr(A, B, Q, R)
+        assert K.shape == (1, 1)
