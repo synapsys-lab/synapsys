@@ -27,6 +27,7 @@ Each example lives in its own subfolder under `examples/` and includes a detaile
 | [Real-Time Scope (Terminal)](./advanced/realtime-scope.md) | Read-only bus monitor, headless display |
 | [Real-Time Oscilloscope](./advanced/realtime-oscilloscope.md) | Three-role architecture, PID, sinusoidal reference, `FuncAnimation` |
 | [Digital Twin](./advanced/digital-twin.md) | Virtual twin, wear injection, divergence metric, anomaly detection |
+| [Quadricóptero MIMO Neural-LQR 3D](./advanced/quadcopter-mimo.md) | LTI MIMO, quadricóptero 12 estados, `lqr()`, MLP residual Neural-LQR, PyVista 3D, GUI de config |
 
 ## Distributed
 
