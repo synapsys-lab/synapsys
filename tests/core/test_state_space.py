@@ -35,10 +35,7 @@ class TestStateSpace:
             StateSpace([[-1, 0], [0, -2]], [[1], [1]], [[1]], [[0]])
 
     def test_mul_series_incompatible_inner_dim_raises(self):
-        # G1: 2-in 1-out; G2: 1-in 2-out → series G1*G2 ok
-        # G1: 1-in 1-out; G2: 2-in 1-out → series G1*G2 fails (G1.n_inputs=1 != G2.n_outputs=1... wait)
-        # Need: self.n_inputs != other.n_outputs to fail
-        # G1 has n_inputs=1, G2 has n_outputs=2 → incompatible
+        # G1 has n_inputs=1, G2 has n_outputs=2 → incompatible inner dims
         G1 = StateSpace([[-1]], [[1]], [[1]], [[0]])           # 1-in 1-out
         G2 = StateSpace(np.diag([-1.0, -2.0]),
                         np.ones((2, 2)), np.eye(2), np.zeros((2, 2)))  # 2-in 2-out

@@ -4,7 +4,6 @@ from functools import reduce
 from typing import TYPE_CHECKING
 
 import numpy as np
-from scipy import linalg
 
 from .lti import LTIModel
 from .transfer_function import TransferFunction
@@ -193,8 +192,8 @@ class TransferFunctionMatrix(LTIModel):
             ]
             for i in range(p)
         ]
-        n_total = sum(
-            0 if ss_elems[i][j] is None else ss_elems[i][j].n_states  # type: ignore[union-attr]
+        n_total: int = sum(
+            0 if ss_elems[i][j] is None else ss_elems[i][j].n_states  # type: ignore[union-attr, misc]
             for i in range(p)
             for j in range(m)
         )

@@ -126,7 +126,7 @@ class StateSpace(LTIModel):
             ]
         )
         eigs = linalg.eigvals(A_ext, E)
-        return eigs[np.isfinite(eigs)]
+        return eigs[np.isfinite(eigs)]  # type: ignore[no-any-return]
 
     def is_stable(self) -> bool:
         p = self.poles()

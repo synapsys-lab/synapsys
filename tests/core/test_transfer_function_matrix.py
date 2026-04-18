@@ -5,7 +5,6 @@ import pytest
 from synapsys.core.transfer_function import TransferFunction
 from synapsys.core.transfer_function_matrix import TransferFunctionMatrix
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures
 # ---------------------------------------------------------------------------
@@ -167,7 +166,6 @@ class TestAnalysis:
 
     def test_zeros_diagonal_with_known_zero(self):
         # G = diag((s+3)/(s+1), 1/(s+2)) — transmission zero at -3
-        from synapsys.core.state_space import StateSpace
         G = TransferFunctionMatrix([
             [TransferFunction([1, 3], [1, 1]), TransferFunction([0], [1])],
             [TransferFunction([0], [1]),        TransferFunction([1], [1, 2])],
@@ -250,7 +248,8 @@ class TestAlgebra:
         # G[0,0] = 1/(s+1); (G+G)[0,0] has DC gain = 2
         G = _2x2()
         result = G + G
-        np.testing.assert_allclose(result[0, 0].num[0] / result[0, 0].den[-1], 2.0, atol=1e-8)
+        dc = result[0, 0].num[0] / result[0, 0].den[-1]
+        np.testing.assert_allclose(dc, 2.0, atol=1e-8)
 
     def test_add_incompatible_shapes_raises(self):
         G1 = _2x2()

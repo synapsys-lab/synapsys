@@ -1,6 +1,4 @@
 """Tests for tf() factory — SISO vs MIMO dispatch."""
-import numpy as np
-import pytest
 
 from synapsys.api.matlab_compat import tf
 from synapsys.core.transfer_function import TransferFunction

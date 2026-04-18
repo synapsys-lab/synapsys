@@ -1,9 +1,9 @@
 import numpy as np
 import pytest
 
+from synapsys.api.matlab_compat import feedback
 from synapsys.core.state_space import StateSpace
 from synapsys.core.transfer_function import TransferFunction
-from synapsys.api.matlab_compat import feedback
 
 
 class TestFeedback:

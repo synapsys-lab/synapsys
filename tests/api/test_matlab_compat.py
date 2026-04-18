@@ -1,5 +1,4 @@
 """Tests for edge-cases in matlab_compat API layer."""
-import numpy as np
 import pytest
 
 from synapsys.api.matlab_compat import parallel, series, tf
