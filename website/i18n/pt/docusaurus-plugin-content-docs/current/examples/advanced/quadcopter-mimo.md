@@ -273,12 +273,16 @@ Clicar em **Run Simulation** fecha o dialog, valida a configuração e inicia as
 
 ### Janela PyVista 3D (50 Hz)
 
+![Animação 3D em tempo real do quadricóptero rastreando a trajetória figura-8 — malha do drone, rastro e curva de referência](/img/examples/06_quadcopter_3d.gif)
+
 - **Malha do drone** — corpo em configuração X (caixa), 4 braços (cilindros) e 4 rotores (discos); pose atualizada via `actor.user_matrix` a partir da matriz de rotação $R = R_z R_y R_x$ calculada com `scipy.spatial.transform.Rotation`
 - **Rastro da trajetória** — últimas `TRAIL_LEN = 500` posições como `pv.PolyData` polyline, atualizado in-place
 - **Curva de referência** — prévia estática da trajetória escolhida renderizada no início
 - **Overlay HUD** — texto ao vivo mostrando modo, tempo, posição, ângulos de Euler, velocidades
 
 ### Janela de telemetria matplotlib (10 Hz)
+
+![Telemetria ao vivo: trajetória x-y vista de cima, altitude z(t), ângulos de Euler e entradas de controle](/img/examples/06_quadcopter_telemetry.gif)
 
 | Painel | Conteúdo |
 |---|---|
@@ -310,6 +314,18 @@ python 06b_neural_lqr_3d.py
 2. Uma janela de telemetria matplotlib abre com 4 painéis ao vivo
 3. Uma janela PyVista 3D abre com a animação do drone
 4. Feche qualquer janela ou pressione **Ctrl+C** para parar
+
+**Exportar GIFs (sem necessidade de display):**
+
+```bash
+# Padrão: 20 s, 15 fps 3D + 7 fps telemetria → diretório atual
+python 06b_neural_lqr_3d.py --save
+
+# Personalizado: 30 s, fps customizados, pasta de saída
+python 06b_neural_lqr_3d.py --save --fps 20 --mpl-fps 8 --out ./resultados
+```
+
+Salva `quadcopter_3d.gif` (~1,8 MB) e `quadcopter_telemetry.gif` (~4 MB) em menos de 2 minutos. Requer `pip install imageio`.
 
 **Variante SIL de dois processos (opcional):**
 

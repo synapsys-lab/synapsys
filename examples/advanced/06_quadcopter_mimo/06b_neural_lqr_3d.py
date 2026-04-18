@@ -443,7 +443,7 @@ def _save_matplotlib_gif(
 
     ani = FuncAnimation(fig, _frame, frames=len(idxs),
                         interval=int(1000 / fps), blit=False)
-    ani.save(str(path), writer=PillowWriter(fps=fps), dpi=100,
+    ani.save(str(path), writer=PillowWriter(fps=fps), dpi=80,
              progress_callback=_progress)
     plt.close(fig)
     size_kb = path.stat().st_size / 1024
@@ -718,8 +718,10 @@ def main() -> None:
         "--save", action="store_true",
         help="Run fast sim and save quadcopter_3d.gif + quadcopter_telemetry.gif",
     )
-    parser.add_argument("--fps",  type=int, default=15,
-                        help="GIF frames per second (default 15)")
+    parser.add_argument("--fps",     type=int, default=15,
+                        help="PyVista GIF fps (default 15)")
+    parser.add_argument("--mpl-fps", type=int, default=0,
+                        help="matplotlib GIF fps (default: fps//2)")
     parser.add_argument("--out",  type=str, default=".",
                         help="Output directory for GIF files (default: current dir)")
     args = parser.parse_args()
@@ -730,9 +732,9 @@ def main() -> None:
         print("  MODE: GIF export")
     print("=" * 60)
 
-    # Config dialog — skipped in save mode (uses SimConfig defaults)
+    # Config dialog — skipped in save mode (uses compact defaults: 20 s)
     if args.save:
-        cfg: SimConfig = SimConfig()
+        cfg: SimConfig = SimConfig(t_total=20.0, t_hover=3.0)
     else:
         cfg = _show_config_dialog()
         if cfg is None:
@@ -767,6 +769,7 @@ def main() -> None:
         print(f"\nRunning fast simulation (no real-time pacing)…")
         states, refs, inputs, times = _run_fast_sim(sys_d, K, net, cfg)
 
+        mpl_fps = args.mpl_fps if args.mpl_fps > 0 else max(6, args.fps // 2)
         _save_pyvista_gif(
             states, refs, times, cfg,
             path=out_dir / "quadcopter_3d.gif",
@@ -775,7 +778,7 @@ def main() -> None:
         _save_matplotlib_gif(
             states, refs, inputs, times, cfg,
             path=out_dir / "quadcopter_telemetry.gif",
-            fps=args.fps,
+            fps=mpl_fps,
         )
         print(f"\nDone. GIFs saved to: {out_dir.resolve()}/")
         return
