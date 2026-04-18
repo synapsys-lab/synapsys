@@ -89,6 +89,7 @@ const sidebars: SidebarsConfig = {
             'examples/advanced/realtime-scope',
             'examples/advanced/realtime-oscilloscope',
             'examples/advanced/digital-twin',
+            'examples/advanced/quadcopter-mimo',
           ],
         },
         {
