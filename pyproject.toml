@@ -47,6 +47,9 @@ Documentation = "https://synapsys-lab.github.io/synapsys/"
 Changelog     = "https://github.com/synapsys-lab/synapsys/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
+viz = [
+    "pyvista>=0.43",
+]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.0",
