@@ -1,5 +1,5 @@
 ---
-slug: quadrotor-mimo-neural-lqr
+slug: quadcopter-mimo-neural-lqr
 title: "Controle MIMO de um Quadrotor com Neural-LQR"
 description: >
   Como modelar um quadrotor linearizado de 12 estados, projetar um LQR MIMO,

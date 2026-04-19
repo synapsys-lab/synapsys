@@ -1,5 +1,5 @@
 ---
-slug: mil-sil-hil-deployment-controle
+slug: mil-sil-hil-control-deployment
 title: "Do Modelo ao Hardware: MIL → SIL → HIL em Três Etapas"
 description: >
   Um guia prático para o fluxo de desenvolvimento MIL/SIL/HIL com Synapsys —

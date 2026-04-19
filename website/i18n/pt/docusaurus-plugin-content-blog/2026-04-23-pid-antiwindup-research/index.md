@@ -1,5 +1,5 @@
 ---
-slug: pid-anti-windup-pesquisa
+slug: pid-anti-windup-research
 title: "PID com Anti-Windup: Teoria, Ajuste e Validação Experimental"
 description: >
   Um deep-dive orientado à pesquisa sobre PID discreto com anti-windup por

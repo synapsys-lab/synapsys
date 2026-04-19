@@ -1,5 +1,5 @@
 ---
-slug: pendulo-invertido-lqr
+slug: inverted-pendulum-lqr
 title: "Estabilizando um Pêndulo Invertido com LQR"
 description: >
   Um guia completo: derive o modelo linearizado em espaço de estados de um pêndulo
