@@ -136,3 +136,12 @@ class TestHardwareAgent:
         # Last write in teardown must be zeros
         last = received_zeros[-1]
         np.testing.assert_allclose(last, [0.0])
+
+    def test_write_latency_slows_writes(self):
+        """write_inputs with latency_ms > 0 sleeps — covers mock.py:97."""
+        hw = MockHardwareInterface(n_inputs=1, n_outputs=1, latency_ms=30.0)
+        with hw:
+            t0 = time.monotonic()
+            hw.write_inputs(np.array([1.0]))
+            elapsed = time.monotonic() - t0
+        assert elapsed >= 0.025  # at least 25 ms

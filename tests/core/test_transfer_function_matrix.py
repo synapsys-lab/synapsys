@@ -316,3 +316,41 @@ class TestSimulation:
         # DC gain: 1/(s+1)|s=0 = 1.0, 1/(s+2)|s=0 = 0.5
         np.testing.assert_allclose(y[-1, 0], 1.0, atol=1e-2)
         np.testing.assert_allclose(y[-1, 1], 0.5, atol=1e-2)
+
+
+class TestFromArraysEdgeCases:
+    def test_scalar_den_triggers_except_branch(self):
+        """from_arrays with scalar den triggers except → per_element=False — covers tfm.py:82."""
+        # den=1 → den[0] raises TypeError → except fires → per_element=False
+        G = TransferFunctionMatrix.from_arrays([[1]], 1)
+        assert G.n_outputs == 1
+        assert G.n_inputs == 1
+
+
+class TestAlgebraTypeErrors:
+    def test_add_wrong_type_raises(self):
+        """__add__ with non-TFMatrix raises TypeError — covers tfm.py:267."""
+        G = TransferFunctionMatrix([[TransferFunction([1], [1, 1])]])
+        with pytest.raises(TypeError):
+            G + "not_a_matrix"
+
+    def test_mul_wrong_type_raises(self):
+        """__mul__ with non-TFMatrix raises TypeError — covers tfm.py:281."""
+        G = TransferFunctionMatrix([[TransferFunction([1], [1, 1])]])
+        with pytest.raises(TypeError):
+            G * "not_a_matrix"
+
+
+class TestRepr:
+    def test_repr_continuous(self):
+        """__repr__ includes dimensions and 'continuous' — covers tfm.py:304-305."""
+        G = TransferFunctionMatrix([[TransferFunction([1], [1, 1])]])
+        r = repr(G)
+        assert "TransferFunctionMatrix" in r
+        assert "continuous" in r
+
+    def test_repr_discrete(self):
+        """__repr__ includes dt for discrete systems."""
+        G = TransferFunctionMatrix([[TransferFunction([1], [1, 1], dt=0.1)]])
+        r = repr(G)
+        assert "dt=0.1" in r

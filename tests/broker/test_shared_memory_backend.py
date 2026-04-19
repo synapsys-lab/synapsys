@@ -58,3 +58,10 @@ class TestSharedMemoryBackend:
         backend.write(t_u, np.array([9.0]))
         np.testing.assert_allclose(backend.read(t_y), [1.0])
         np.testing.assert_allclose(backend.read(t_u), [9.0])
+
+    def test_context_manager(self, topics):
+        """Use backend as context manager — covers broker/backends/base.py:30,33."""
+        with SharedMemoryBackend("test_broker_ctx", topics, create=True) as b:
+            b.write(topics[0], np.array([2.5]))
+            result = b.read(topics[0])
+        np.testing.assert_allclose(result, [2.5])

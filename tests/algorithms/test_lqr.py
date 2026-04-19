@@ -109,3 +109,13 @@ class TestLQR:
         R = np.array([[1.0]])
         K, P = lqr(A, B, Q, R)
         assert K.shape == (1, 1)
+
+    def test_unstabilizable_system_raises(self):
+        """Unstabilizable (A,B) → ARE has no solution — covers lqr.py:52-53."""
+        # A has unstable eigenvalue at +1, B=0 → uncontrollable unstable mode
+        A = np.array([[1.0]])
+        B = np.array([[0.0]])
+        Q = np.array([[1.0]])
+        R = np.array([[1.0]])
+        with pytest.raises(ValueError, match="Riccati"):
+            lqr(A, B, Q, R)
