@@ -39,20 +39,21 @@ Usage:
 from __future__ import annotations
 
 import time
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 
-from synapsys.api import ss, c2d
-from synapsys.agents import PlantAgent, ControllerAgent, SyncEngine, SyncMode
+import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
+import numpy as np
+
+from synapsys.agents import ControllerAgent, PlantAgent, SyncEngine, SyncMode
 from synapsys.algorithms import PID
-from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+from synapsys.api import c2d, ss
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
 # ── Parameters ────────────────────────────────────────────────────────────────
-DT        = 0.02
-SIM_TIME  = 8.0
-SETPOINT  = 3.0
-DRIFT_AT  = 3.0
+DT = 0.02
+SIM_TIME = 8.0
+SETPOINT = 3.0
+DRIFT_AT = 3.0
 ALERT_THR = 0.15
 
 BUS = "twin_demo"
@@ -64,8 +65,10 @@ C_nom = np.array([[1.0]])
 D_nom = np.array([[0.0]])
 plant_nominal = c2d(ss(A_nom, B_nom, C_nom, D_nom), dt=DT)
 
+
 def make_drifted_plant(extra_damping: float) -> object:
     return c2d(ss(np.array([[-1.0 - extra_damping]]), B_nom, C_nom, D_nom), dt=DT)
+
 
 # ── Broker + topics ────────────────────────────────────────────────────────────
 topic_y = Topic("twin/y", shape=(1,))
@@ -81,7 +84,11 @@ broker.publish("twin/u", np.zeros(1))
 
 # ── Control law ───────────────────────────────────────────────────────────────
 pid = PID(Kp=4.0, Ki=1.2, dt=DT, u_min=-15.0, u_max=15.0)
-law = lambda y: np.array([pid.compute(setpoint=SETPOINT, measurement=y[0])])
+
+
+def law(y: np.ndarray) -> np.ndarray:
+    return np.array([pid.compute(setpoint=SETPOINT, measurement=y[0])])
+
 
 # ── Agents ────────────────────────────────────────────────────────────────────
 def _make_plant_agent(extra_damping: float) -> PlantAgent:
@@ -90,15 +97,20 @@ def _make_plant_agent(extra_damping: float) -> PlantAgent:
         make_drifted_plant(extra_damping),
         None,
         SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
-        channel_y="twin/y", channel_u="twin/u",
+        channel_y="twin/y",
+        channel_u="twin/u",
         broker=broker,
     )
 
+
 plant_agent = _make_plant_agent(0.0)
-ctrl_agent  = ControllerAgent(
-    "pid_ctrl", law, None,
+ctrl_agent = ControllerAgent(
+    "pid_ctrl",
+    law,
+    None,
     SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
-    channel_y="twin/y", channel_u="twin/u",
+    channel_y="twin/y",
+    channel_u="twin/u",
     broker=broker,
 )
 
@@ -109,18 +121,18 @@ ctrl_agent.start(blocking=False)
 x_virtual = np.zeros(plant_nominal.n_states)
 
 # ── Data collection ───────────────────────────────────────────────────────────
-log_t:   list[float] = []
-log_yp:  list[float] = []
-log_yv:  list[float] = []
-log_u:   list[float] = []
+log_t: list[float] = []
+log_yp: list[float] = []
+log_yv: list[float] = []
+log_u: list[float] = []
 log_div: list[float] = []
-alerts:  list[float] = []
+alerts: list[float] = []
 
 drift_applied = False
 t0 = time.monotonic()
 
 print(f"Digital Twin simulation running for {SIM_TIME}s ...")
-print(f"  Nominal model: G(s) = 1/(s+1)")
+print("  Nominal model: G(s) = 1/(s+1)")
 print(f"  Wear injection at t={DRIFT_AT}s (extra damping +1.0)")
 print(f"  Alert threshold: ||divergence|| > {ALERT_THR}\n")
 
@@ -138,11 +150,9 @@ while True:
 
     # Monitor reads directly from broker (no extra transport handle needed)
     y_physical = broker.read("twin/y")[0]
-    u_current  = broker.read("twin/u")[0]
+    u_current = broker.read("twin/u")[0]
 
-    x_virtual, y_virtual_arr = plant_nominal.evolve(
-        x_virtual, np.array([u_current])
-    )
+    x_virtual, y_virtual_arr = plant_nominal.evolve(x_virtual, np.array([u_current]))
     y_virtual = float(y_virtual_arr[0])
 
     divergence = abs(y_physical - y_virtual)
@@ -150,7 +160,9 @@ while True:
     if divergence > ALERT_THR:
         alerts.append(elapsed)
         if len(alerts) == 1 or (elapsed - alerts[-2]) > 0.5:
-            print(f"[t={elapsed:.2f}s] ALERT: divergence = {divergence:.4f} > {ALERT_THR}")
+            print(
+                f"[t={elapsed:.2f}s] ALERT: divergence = {divergence:.4f} > {ALERT_THR}"
+            )
 
     log_t.append(elapsed)
     log_yp.append(y_physical)
@@ -166,20 +178,36 @@ ctrl_agent.stop()
 broker.close()
 
 # ── Plot results ──────────────────────────────────────────────────────────────
-t_arr   = np.array(log_t)
-yp_arr  = np.array(log_yp)
-yv_arr  = np.array(log_yv)
-u_arr   = np.array(log_u)
+t_arr = np.array(log_t)
+yp_arr = np.array(log_yp)
+yv_arr = np.array(log_yv)
+u_arr = np.array(log_u)
 div_arr = np.array(log_div)
 
 fig = plt.figure(figsize=(12, 8))
-gs  = gridspec.GridSpec(3, 1, hspace=0.45)
+gs = gridspec.GridSpec(3, 1, hspace=0.45)
 
 ax1 = fig.add_subplot(gs[0])
-ax1.plot(t_arr, yp_arr, lw=1.8, color="steelblue",  label="y_physical  (real plant)")
-ax1.plot(t_arr, yv_arr, lw=1.5, color="darkorange", linestyle="--", label="y_virtual   (twin model)")
-ax1.axhline(SETPOINT, color="k", linestyle=":", alpha=0.45, label=f"setpoint = {SETPOINT}")
-ax1.axvline(DRIFT_AT, color="red", linestyle="--", alpha=0.5, lw=1.2, label=f"wear injected t={DRIFT_AT}s")
+ax1.plot(t_arr, yp_arr, lw=1.8, color="steelblue", label="y_physical  (real plant)")
+ax1.plot(
+    t_arr,
+    yv_arr,
+    lw=1.5,
+    color="darkorange",
+    linestyle="--",
+    label="y_virtual   (twin model)",
+)
+ax1.axhline(
+    SETPOINT, color="k", linestyle=":", alpha=0.45, label=f"setpoint = {SETPOINT}"
+)
+ax1.axvline(
+    DRIFT_AT,
+    color="red",
+    linestyle="--",
+    alpha=0.5,
+    lw=1.2,
+    label=f"wear injected t={DRIFT_AT}s",
+)
 ax1.set_ylabel("Output y(t)")
 ax1.set_title("Digital Twin — Physical vs Virtual Model")
 ax1.legend(fontsize=8, loc="lower right")
@@ -187,12 +215,24 @@ ax1.grid(True, alpha=0.3)
 
 ax2 = fig.add_subplot(gs[1])
 ax2.plot(t_arr, div_arr, lw=1.6, color="crimson", label="|y_physical - y_virtual|")
-ax2.axhline(ALERT_THR, color="red", linestyle="--", lw=1.2, alpha=0.7,
-            label=f"alert threshold = {ALERT_THR}")
+ax2.axhline(
+    ALERT_THR,
+    color="red",
+    linestyle="--",
+    lw=1.2,
+    alpha=0.7,
+    label=f"alert threshold = {ALERT_THR}",
+)
 ax2.axvline(DRIFT_AT, color="red", linestyle="--", alpha=0.5, lw=1.2)
-ax2.fill_between(t_arr, div_arr, ALERT_THR,
-                 where=(div_arr > ALERT_THR), alpha=0.25, color="red",
-                 label="divergence zone")
+ax2.fill_between(
+    t_arr,
+    div_arr,
+    ALERT_THR,
+    where=(div_arr > ALERT_THR),
+    alpha=0.25,
+    color="red",
+    label="divergence zone",
+)
 ax2.set_ylabel("Divergence")
 ax2.set_title("Anomaly Detection — Divergence Metric")
 ax2.legend(fontsize=8)

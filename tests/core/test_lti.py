@@ -1,5 +1,5 @@
 """Tests for LTIModel base class helpers."""
-import numpy as np
+
 import pytest
 
 from synapsys.core.lti import LTIModel

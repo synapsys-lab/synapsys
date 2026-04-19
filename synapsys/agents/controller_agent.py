@@ -1,12 +1,15 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 import numpy as np
 
 from ..transport.base import TransportStrategy
 from .lifecycle import BaseAgent
 from .sync_engine import SyncEngine
+
+if TYPE_CHECKING:
+    from ..broker.broker import MessageBroker
 
 
 class ControllerAgent(BaseAgent):
@@ -46,7 +49,7 @@ class ControllerAgent(BaseAgent):
         channel_y: str = "y",
         channel_u: str = "u",
         *,
-        broker: object | None = None,
+        broker: "MessageBroker | None" = None,
     ):
         super().__init__(name, transport, sync, broker=broker)
         self._law = control_law

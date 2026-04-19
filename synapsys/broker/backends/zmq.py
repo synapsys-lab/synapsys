@@ -66,7 +66,11 @@ class ZMQBrokerBackend(BrokerBackend):
                     name = parts[0].decode()
                     if name in self._sub_topics:
                         t = self._sub_topics[name]
-                        arr = np.frombuffer(parts[1], dtype=t.dtype).reshape(t.shape).copy()
+                        arr = (
+                            np.frombuffer(parts[1], dtype=t.dtype)
+                            .reshape(t.shape)
+                            .copy()
+                        )
                         with self._cache_lock:
                             self._cache[name] = arr
             except zmq.Again:
@@ -78,14 +82,16 @@ class ZMQBrokerBackend(BrokerBackend):
     def write(self, topic: Topic, data: np.ndarray) -> None:
         if self._pub_socket is None:
             raise RuntimeError(f"No PUB socket configured for topic '{topic.name}'")
-        self._pub_socket.send_multipart([
-            topic.name.encode(),
-            np.asarray(data, dtype=topic.dtype).tobytes(),
-        ])
+        self._pub_socket.send_multipart(
+            [
+                topic.name.encode(),
+                np.asarray(data, dtype=topic.dtype).tobytes(),
+            ]
+        )
 
     def read(self, topic: Topic) -> np.ndarray:
         with self._cache_lock:
-            return self._cache[topic.name].copy()
+            return np.array(self._cache[topic.name])
 
     def close(self) -> None:
         self._running = False

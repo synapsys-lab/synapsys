@@ -58,12 +58,13 @@ class TestTransferFunction:
     def test_evolve_discrete(self):
         """TransferFunction.evolve() delegates to StateSpace and advances one step."""
         from synapsys.api import c2d
+
         # G(s) = 1/(s+1) discretised with ZOH at dt=0.1
         Gd = c2d(TransferFunction([1], [1, 1]), dt=0.1)
         x = np.zeros(Gd.n_states)
         # Apply unit step for several ticks — output should rise toward 1
         y_vals = []
-        for _ in range(60):   # 6 s >> τ=1 s, so output ≈ 1 − e⁻⁶ ≈ 0.9975
+        for _ in range(60):  # 6 s >> τ=1 s, so output ≈ 1 − e⁻⁶ ≈ 0.9975
             x, y = Gd.evolve(x, np.array([1.0]))
             y_vals.append(float(y[0]))
         # Discrete first-order step response converges to DC gain = 1
@@ -83,7 +84,7 @@ class TestTransferFunctionEdgeCases:
             TransferFunction([1], [1, 1], dt=-0.1)
 
     def test_zeros_constant_numerator_returns_empty(self):
-        """zeros() with constant numerator returns empty — covers transfer_function.py:76."""
+        """zeros() with constant numerator returns empty array."""
         G = TransferFunction([3], [1, 1])
         z = G.zeros()
         assert len(z) == 0
@@ -110,6 +111,7 @@ class TestTransferFunctionEdgeCases:
     def test_bode_discrete(self):
         """bode() on discrete TF — covers the discrete branch of bode()."""
         from synapsys.api.matlab_compat import c2d
+
         Gd = c2d(TransferFunction([1], [1, 1]), dt=0.1)
         w, mag, phase = Gd.bode()
         assert len(w) > 0
@@ -117,6 +119,7 @@ class TestTransferFunctionEdgeCases:
     def test_add_with_non_tf_other(self):
         """__add__ with non-TF calls other.to_transfer_function() — covers line 178."""
         from synapsys.core.state_space import StateSpace
+
         G_tf = TransferFunction([1], [1, 1])
         G_ss = StateSpace([[-2]], [[1]], [[1]], [[0]])
         result = G_tf + G_ss
@@ -125,6 +128,7 @@ class TestTransferFunctionEdgeCases:
     def test_mul_with_non_tf_other(self):
         """__mul__ with non-TF calls other.to_transfer_function() — covers line 190."""
         from synapsys.core.state_space import StateSpace
+
         G_tf = TransferFunction([1], [1, 1])
         G_ss = StateSpace([[-2]], [[1]], [[1]], [[0]])
         result = G_tf * G_ss
@@ -151,8 +155,9 @@ class TestTransferFunctionEdgeCases:
         assert "dt=0.1" in r
 
     def test_truediv_with_non_tf_other(self):
-        """__truediv__ with non-TF calls other.to_transfer_function() — covers line 200."""
+        """__truediv__ with non-TF calls other.to_transfer_function()."""
         from synapsys.core.state_space import StateSpace
+
         G_tf = TransferFunction([1], [1, 1])
         G_ss = StateSpace([[-2]], [[1]], [[1]], [[0]])
         result = G_tf / G_ss

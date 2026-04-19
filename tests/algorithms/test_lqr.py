@@ -65,7 +65,7 @@ class TestLQR:
         A = np.array([[-1.0]])
         B = np.array([[1.0]])
         Q = np.eye(1)
-        K_low,  _ = lqr(A, B, Q, np.array([[1.0]]))
+        K_low, _ = lqr(A, B, Q, np.array([[1.0]]))
         K_high, _ = lqr(A, B, Q, np.array([[100.0]]))
         assert np.abs(K_low[0, 0]) > np.abs(K_high[0, 0])
 

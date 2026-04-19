@@ -40,7 +40,7 @@ class TestPlantAgent:
 
         # Each agent gets its own client view (as they would in separate processes).
         t_plant = SharedMemoryTransport(BUS, CHANNELS, create=False)
-        t_ctrl  = SharedMemoryTransport(BUS, CHANNELS, create=False)
+        t_ctrl = SharedMemoryTransport(BUS, CHANNELS, create=False)
 
         sync_p = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
         sync_c = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
@@ -75,9 +75,11 @@ class TestPlantAgent:
 # ACLMessage — reply() and __repr__
 # ---------------------------------------------------------------------------
 
+
 class TestACLMessage:
     def test_reply_swaps_sender_and_receiver(self):
         from synapsys.agents.acl import ACLMessage, Performative
+
         msg = ACLMessage(Performative.INFORM, "agent_a", "agent_b", {"val": 1})
         reply = msg.reply(Performative.AGREE, {"ok": True})
         assert reply.sender == "agent_b"
@@ -86,6 +88,7 @@ class TestACLMessage:
 
     def test_repr_contains_performative_and_agents(self):
         from synapsys.agents.acl import ACLMessage, Performative
+
         msg = ACLMessage(Performative.INFORM, "sender", "receiver", {})
         r = repr(msg)
         assert "inform" in r
@@ -97,26 +100,31 @@ class TestACLMessage:
 # BaseAgent — blocking start and unhandled exception path
 # ---------------------------------------------------------------------------
 
+
 class TestBaseAgentLifecycle:
     def _make_broker(self, bus_name: str):
         """Return a minimal broker with plant/y and plant/u topics."""
         import numpy as np
-        from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+
+        from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
+
         topic_y = Topic("plant/y", shape=(1,))
         topic_u = Topic("plant/u", shape=(1,))
         broker = MessageBroker()
         broker.declare_topic(topic_y)
         broker.declare_topic(topic_u)
-        broker.add_backend(SharedMemoryBackend(bus_name, [topic_y, topic_u], create=True))
+        broker.add_backend(
+            SharedMemoryBackend(bus_name, [topic_y, topic_u], create=True)
+        )
         broker.publish("plant/y", np.zeros(1))
         broker.publish("plant/u", np.zeros(1))
         return broker
 
     def test_start_blocking_runs_in_current_thread(self):
         """start(blocking=True) runs _run() synchronously — covers lifecycle.py:89."""
-        import numpy as np
         from synapsys.agents import PlantAgent, SyncEngine, SyncMode
         from synapsys.api.matlab_compat import c2d, ss
+
         broker = self._make_broker("lifecycle_blocking_bus")
         plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=0.05)
         sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.05)
@@ -129,22 +137,32 @@ class TestBaseAgentLifecycle:
                     self_inner._running = False
 
         agent = SelfStoppingPlant(
-            "self_stop", plant_d, None, sync,
-            channel_y="plant/y", channel_u="plant/u", broker=broker,
+            "self_stop",
+            plant_d,
+            None,
+            sync,
+            channel_y="plant/y",
+            channel_u="plant/u",
+            broker=broker,
         )
-        agent.start(blocking=True)   # returns only when _running becomes False
+        agent.start(blocking=True)  # returns only when _running becomes False
         broker.close()
         assert steps[0] >= 3
 
     def test_unhandled_exception_in_step_is_caught(self):
         """Exception in step() is caught by _run() — covers lifecycle.py:112-113."""
-        from synapsys.agents.lifecycle import BaseAgent
         from synapsys.agents import SyncEngine, SyncMode
+        from synapsys.agents.lifecycle import BaseAgent
 
         class BoomAgent(BaseAgent):
-            def setup(self): pass
-            def step(self): raise RuntimeError("boom")
-            def teardown(self): pass
+            def setup(self):
+                pass
+
+            def step(self):
+                raise RuntimeError("boom")
+
+            def teardown(self):
+                pass
 
         sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
         agent = BoomAgent("boom", None, sync)
@@ -158,13 +176,15 @@ class TestBaseAgentLifecycle:
 # PlantAgent — x0 wrong size validation
 # ---------------------------------------------------------------------------
 
+
 class TestPlantAgentX0:
     def test_x0_wrong_size_raises(self):
-        """x0 with wrong number of elements raises ValueError — covers plant_agent.py:63-69."""
+        """x0 with wrong number of elements raises ValueError."""
         import numpy as np
+
         from synapsys.agents import PlantAgent, SyncEngine, SyncMode
         from synapsys.api.matlab_compat import c2d, ss
-        from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+        from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
         plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=0.01)
         topic_y = Topic("plant/y", shape=(1,))
@@ -172,14 +192,20 @@ class TestPlantAgentX0:
         broker = MessageBroker()
         broker.declare_topic(topic_y)
         broker.declare_topic(topic_u)
-        broker.add_backend(SharedMemoryBackend("x0_test_bus", [topic_y, topic_u], create=True))
+        broker.add_backend(
+            SharedMemoryBackend("x0_test_bus", [topic_y, topic_u], create=True)
+        )
 
         with pytest.raises(ValueError, match="x0 must have"):
             PlantAgent(
-                "plant", plant_d, None, SyncEngine(SyncMode.LOCK_STEP, dt=0.01),
-                channel_y="plant/y", channel_u="plant/u",
+                "plant",
+                plant_d,
+                None,
+                SyncEngine(SyncMode.LOCK_STEP, dt=0.01),
+                channel_y="plant/y",
+                channel_u="plant/u",
                 broker=broker,
-                x0=np.array([1.0, 2.0]),   # wrong: plant has 1 state
+                x0=np.array([1.0, 2.0]),  # wrong: plant has 1 state
             )
         broker.close()
 
@@ -187,6 +213,7 @@ class TestPlantAgentX0:
 # ---------------------------------------------------------------------------
 # HardwareAgent — TimeoutError and generic exception paths
 # ---------------------------------------------------------------------------
+
 
 class TestHardwareAgentTimeouts:
     BUS = "hw_timeout_cov"
@@ -220,7 +247,7 @@ class TestHardwareAgentTimeouts:
         owner.close()
 
     def test_step_write_timeout_is_caught(self):
-        """TimeoutError from write_inputs is caught in step() — covers hardware_agent.py:109-110."""
+        """TimeoutError from write_inputs is caught in step()."""
         from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
         from synapsys.hw import MockHardwareInterface
 
@@ -239,7 +266,7 @@ class TestHardwareAgentTimeouts:
         owner.close()
 
     def test_teardown_timeout_is_caught(self):
-        """TimeoutError from write_inputs during teardown — covers hardware_agent.py:121-124."""
+        """TimeoutError from write_inputs during teardown is caught."""
         from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
         from synapsys.hw import MockHardwareInterface
 
@@ -253,7 +280,7 @@ class TestHardwareAgentTimeouts:
         agent.teardown()  # must not raise
 
     def test_teardown_generic_exception_is_caught(self):
-        """Generic exception from write_inputs during teardown — covers hardware_agent.py:126-130."""
+        """Generic exception from write_inputs during teardown is caught."""
         from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
         from synapsys.hw import MockHardwareInterface
 
@@ -271,6 +298,7 @@ class TestHardwareAgentTimeouts:
 # PlantAgent — x0 correct size (success path)
 # ---------------------------------------------------------------------------
 
+
 class TestPlantAgentX0Valid:
     def test_x0_correct_size_sets_initial_state(self):
         """PlantAgent with valid x0 assigns it — covers plant_agent.py:69."""
@@ -279,7 +307,5 @@ class TestPlantAgentX0Valid:
 
         plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=0.01)
         sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
-        agent = PlantAgent(
-            "p", plant_d, None, sync, x0=np.array([0.5])
-        )
+        agent = PlantAgent("p", plant_d, None, sync, x0=np.array([0.5]))
         np.testing.assert_allclose(agent._x, [0.5])

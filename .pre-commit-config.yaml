@@ -1,0 +1,25 @@
+repos:
+  # ── Ruff: lint + format ───────────────────────────────────────────────────
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+
+  # ── Mypy + Pytest (local — uses project venv via uv run) ──────────────────
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        language: system
+        entry: uv run mypy synapsys/
+        pass_filenames: false
+        types: [python]
+
+      - id: pytest
+        name: pytest
+        language: system
+        entry: uv run pytest --tb=short -q --cov=synapsys --cov-fail-under=100
+        pass_filenames: false
+        always_run: true

@@ -1,4 +1,5 @@
 """Tests for TransferFunctionMatrix — driven before any production code."""
+
 import numpy as np
 import pytest
 
@@ -9,12 +10,15 @@ from synapsys.core.transfer_function_matrix import TransferFunctionMatrix
 # Shared fixtures
 # ---------------------------------------------------------------------------
 
+
 def _2x2() -> TransferFunctionMatrix:
     """G = [[1/(s+1), 2/(s+2)], [3/(s+3), 4/(s+4)]]"""
-    return TransferFunctionMatrix([
-        [TransferFunction([1], [1, 1]), TransferFunction([2], [1, 2])],
-        [TransferFunction([3], [1, 3]), TransferFunction([4], [1, 4])],
-    ])
+    return TransferFunctionMatrix(
+        [
+            [TransferFunction([1], [1, 1]), TransferFunction([2], [1, 2])],
+            [TransferFunction([3], [1, 3]), TransferFunction([4], [1, 4])],
+        ]
+    )
 
 
 def _1x1() -> TransferFunctionMatrix:
@@ -23,15 +27,18 @@ def _1x1() -> TransferFunctionMatrix:
 
 def _diagonal_2x2() -> TransferFunctionMatrix:
     """G = diag(1/(s+1), 1/(s+2)) — useful for step/evolve checks."""
-    return TransferFunctionMatrix([
-        [TransferFunction([1], [1, 1]), TransferFunction([0], [1])],
-        [TransferFunction([0], [1]), TransferFunction([1], [1, 2])],
-    ])
+    return TransferFunctionMatrix(
+        [
+            [TransferFunction([1], [1, 1]), TransferFunction([0], [1])],
+            [TransferFunction([0], [1]), TransferFunction([1], [1, 2])],
+        ]
+    )
 
 
 # ---------------------------------------------------------------------------
 # Construction and dimensions
 # ---------------------------------------------------------------------------
+
 
 class TestConstruction:
     def test_dimensions_2x2(self):
@@ -45,11 +52,15 @@ class TestConstruction:
         assert G.n_inputs == 1
 
     def test_dimensions_1x3(self):
-        G = TransferFunctionMatrix([[
-            TransferFunction([1], [1, 1]),
-            TransferFunction([1], [1, 2]),
-            TransferFunction([1], [1, 3]),
-        ]])
+        G = TransferFunctionMatrix(
+            [
+                [
+                    TransferFunction([1], [1, 1]),
+                    TransferFunction([1], [1, 2]),
+                    TransferFunction([1], [1, 3]),
+                ]
+            ]
+        )
         assert G.n_outputs == 1
         assert G.n_inputs == 3
 
@@ -72,18 +83,24 @@ class TestConstruction:
     def test_n_states_zero_num_nontrivial_den(self):
         # TransferFunction([0], [1, 2]) has TF.n_states=1 but contributes 0
         # states to the SS realisation (zero-numerator skip)
-        G = TransferFunctionMatrix([[
-            TransferFunction([1], [1, 1]),
-            TransferFunction([0], [1, 2]),  # zero num, non-trivial den
-        ]])
+        G = TransferFunctionMatrix(
+            [
+                [
+                    TransferFunction([1], [1, 1]),
+                    TransferFunction([0], [1, 2]),  # zero num, non-trivial den
+                ]
+            ]
+        )
         assert G.n_states == G.to_state_space().n_states
 
     def test_jagged_rows_raises(self):
         with pytest.raises(ValueError, match="same number"):
-            TransferFunctionMatrix([
-                [TransferFunction([1], [1, 1])],
-                [TransferFunction([1], [1, 1]), TransferFunction([1], [1, 2])],
-            ])
+            TransferFunctionMatrix(
+                [
+                    [TransferFunction([1], [1, 1])],
+                    [TransferFunction([1], [1, 1]), TransferFunction([1], [1, 2])],
+                ]
+            )
 
     def test_empty_raises(self):
         with pytest.raises(ValueError):
@@ -91,21 +108,26 @@ class TestConstruction:
 
     def test_mixed_dt_raises(self):
         with pytest.raises(ValueError, match="dt"):
-            TransferFunctionMatrix([
-                [TransferFunction([1], [1, 1], dt=0.0),
-                 TransferFunction([1], [1, 2], dt=0.1)],
-            ])
+            TransferFunctionMatrix(
+                [
+                    [
+                        TransferFunction([1], [1, 1], dt=0.0),
+                        TransferFunction([1], [1, 2], dt=0.1),
+                    ],
+                ]
+            )
 
 
 # ---------------------------------------------------------------------------
 # from_arrays factory
 # ---------------------------------------------------------------------------
 
+
 class TestFromArrays:
     def test_shared_denominator(self):
         G = TransferFunctionMatrix.from_arrays(
             num=[[1, 2], [3, 4]],
-            den=[1, 3, 2],   # shared: (s+1)(s+2)
+            den=[1, 3, 2],  # shared: (s+1)(s+2)
         )
         assert G.n_outputs == 2
         assert G.n_inputs == 2
@@ -123,6 +145,7 @@ class TestFromArrays:
 # ---------------------------------------------------------------------------
 # Item access
 # ---------------------------------------------------------------------------
+
 
 class TestItemAccess:
     def test_getitem_returns_transfer_function(self):
@@ -144,6 +167,7 @@ class TestItemAccess:
 # LTIModel properties
 # ---------------------------------------------------------------------------
 
+
 class TestAnalysis:
     def test_poles_contains_all_element_poles(self):
         G = _2x2()
@@ -154,10 +178,14 @@ class TestAnalysis:
         assert _2x2().is_stable()
 
     def test_is_stable_false_when_one_element_unstable(self):
-        G = TransferFunctionMatrix([
-            [TransferFunction([1], [1, -1]),   # unstable pole at +1
-             TransferFunction([1], [1, 2])],
-        ])
+        G = TransferFunctionMatrix(
+            [
+                [
+                    TransferFunction([1], [1, -1]),  # unstable pole at +1
+                    TransferFunction([1], [1, 2]),
+                ],
+            ]
+        )
         assert not G.is_stable()
 
     def test_zeros_returns_ndarray(self):
@@ -166,10 +194,12 @@ class TestAnalysis:
 
     def test_zeros_diagonal_with_known_zero(self):
         # G = diag((s+3)/(s+1), 1/(s+2)) — transmission zero at -3
-        G = TransferFunctionMatrix([
-            [TransferFunction([1, 3], [1, 1]), TransferFunction([0], [1])],
-            [TransferFunction([0], [1]),        TransferFunction([1], [1, 2])],
-        ])
+        G = TransferFunctionMatrix(
+            [
+                [TransferFunction([1, 3], [1, 1]), TransferFunction([0], [1])],
+                [TransferFunction([0], [1]), TransferFunction([1], [1, 2])],
+            ]
+        )
         z = G.zeros()
         np.testing.assert_allclose(np.sort(np.real(z)), [-3.0], atol=1e-6)
 
@@ -184,9 +214,11 @@ class TestAnalysis:
 # to_state_space
 # ---------------------------------------------------------------------------
 
+
 class TestToStateSpace:
     def test_returns_statespace(self):
         from synapsys.core.state_space import StateSpace
+
         assert isinstance(_2x2().to_state_space(), StateSpace)
 
     def test_dimensions(self):
@@ -217,6 +249,7 @@ class TestToStateSpace:
 # to_transfer_function
 # ---------------------------------------------------------------------------
 
+
 class TestToTransferFunction:
     def test_1x1_returns_transfer_function(self):
         G = _1x1()
@@ -231,6 +264,7 @@ class TestToTransferFunction:
 # ---------------------------------------------------------------------------
 # Algebra
 # ---------------------------------------------------------------------------
+
 
 class TestAlgebra:
     def test_neg_flips_numerator_sign(self):
@@ -266,11 +300,13 @@ class TestAlgebra:
 
     def test_mul_series_incompatible_raises(self):
         G1 = _2x2()
-        G3 = TransferFunctionMatrix([
-            [TransferFunction([1], [1, 1])],
-            [TransferFunction([1], [1, 2])],
-            [TransferFunction([1], [1, 3])],
-        ])
+        G3 = TransferFunctionMatrix(
+            [
+                [TransferFunction([1], [1, 1])],
+                [TransferFunction([1], [1, 2])],
+                [TransferFunction([1], [1, 3])],
+            ]
+        )
         with pytest.raises(ValueError, match="inner"):
             G1 * G3
 
@@ -278,6 +314,7 @@ class TestAlgebra:
 # ---------------------------------------------------------------------------
 # Simulation (delegates to StateSpace)
 # ---------------------------------------------------------------------------
+
 
 class TestSimulation:
     def test_step_returns_arrays(self):
@@ -301,6 +338,7 @@ class TestSimulation:
     def test_evolve_returns_correct_shapes(self):
         Gd = _diagonal_2x2().to_state_space()
         from synapsys.api.matlab_compat import c2d
+
         Gd_disc = c2d(Gd, dt=0.1)
         x = np.zeros(Gd_disc.n_states)
         u = np.array([1.0, 1.0])
@@ -320,7 +358,7 @@ class TestSimulation:
 
 class TestFromArraysEdgeCases:
     def test_scalar_den_triggers_except_branch(self):
-        """from_arrays with scalar den triggers except → per_element=False — covers tfm.py:82."""
+        """from_arrays with scalar den triggers except → per_element=False."""
         # den=1 → den[0] raises TypeError → except fires → per_element=False
         G = TransferFunctionMatrix.from_arrays([[1]], 1)
         assert G.n_outputs == 1

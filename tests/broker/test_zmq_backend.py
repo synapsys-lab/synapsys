@@ -3,8 +3,8 @@ import time
 import numpy as np
 import pytest
 
-from synapsys.broker.topic import Topic
 from synapsys.broker.backends.zmq import ZMQBrokerBackend
+from synapsys.broker.topic import Topic
 
 ADDR = "tcp://127.0.0.1:15779"
 

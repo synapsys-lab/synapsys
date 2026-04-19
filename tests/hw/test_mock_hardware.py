@@ -67,7 +67,7 @@ class TestMockHardwareInterface:
             t0 = time.monotonic()
             hw.read_outputs()
             elapsed = time.monotonic() - t0
-        assert elapsed >= 0.025   # at least 25 ms
+        assert elapsed >= 0.025  # at least 25 ms
 
 
 class TestHardwareAgent:
@@ -87,7 +87,7 @@ class TestHardwareAgent:
 
         owner = SharedMemoryTransport(self.BUS, channels, create=True)
         owner.write("y", np.array([0.0]))
-        owner.write("u", np.array([1.0]))   # constant control input
+        owner.write("u", np.array([1.0]))  # constant control input
 
         t_hw = SharedMemoryTransport(self.BUS, channels)
         sync = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
@@ -95,7 +95,7 @@ class TestHardwareAgent:
 
         with hw:
             agent.start(blocking=False)
-            time.sleep(0.12)   # ~12 ticks at 100 Hz
+            time.sleep(0.12)  # ~12 ticks at 100 Hz
             agent.stop()
 
         y_final = owner.read("y")[0]
@@ -108,6 +108,7 @@ class TestHardwareAgent:
     def test_hardware_agent_zero_on_teardown(self):
         """HardwareAgent.teardown() sends zero to hardware."""
         received_zeros: list[np.ndarray] = []
+
         def original_fn(u: np.ndarray) -> np.ndarray:
             return np.zeros(1)
 
@@ -123,8 +124,9 @@ class TestHardwareAgent:
         owner.write("u", np.array([0.0]))
 
         t_hw = SharedMemoryTransport(self.BUS + "_td", channels)
-        agent = HardwareAgent("hw_td", hw, t_hw,
-                              SyncEngine(SyncMode.WALL_CLOCK, dt=0.05))
+        agent = HardwareAgent(
+            "hw_td", hw, t_hw, SyncEngine(SyncMode.WALL_CLOCK, dt=0.05)
+        )
         with hw:
             agent.start(blocking=False)
             time.sleep(0.06)

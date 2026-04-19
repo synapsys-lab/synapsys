@@ -4,15 +4,13 @@ Integration tests: agents wired through MessageBroker.
 Scenario A: PlantAgent + ControllerAgent converge (broker replaces transport).
 Scenario B: 3-agent — ReconfigAgent publishes new gains; ControllerAgent reacts.
 """
-import time
 
 import numpy as np
-import pytest
 
-from synapsys.api import ss, c2d
 from synapsys.agents import ControllerAgent, PlantAgent, SyncEngine, SyncMode
 from synapsys.agents.lifecycle import BaseAgent
 from synapsys.algorithms import PID
+from synapsys.api import c2d, ss
 from synapsys.broker.backends.shared_memory import SharedMemoryBackend
 from synapsys.broker.broker import MessageBroker
 from synapsys.broker.topic import Topic
@@ -29,6 +27,7 @@ def _build_broker(bus_name: str, topics: list[Topic]) -> MessageBroker:
 
 # ── Scenario A ────────────────────────────────────────────────────────────────
 
+
 class TestBrokerConvergence:
     """Plant+Controller via broker converges the same as via transport."""
 
@@ -42,7 +41,9 @@ class TestBrokerConvergence:
 
         setpoint = 3.0
         pid = PID(Kp=4.0, Ki=1.0, dt=0.05)
-        law = lambda y: np.array([pid.compute(setpoint=setpoint, measurement=y[0])])
+
+        def law(y: np.ndarray) -> np.ndarray:
+            return np.array([pid.compute(setpoint=setpoint, measurement=y[0])])
 
         broker.publish("A/y", np.zeros(1))
         broker.publish("A/u", np.zeros(1))
@@ -50,10 +51,18 @@ class TestBrokerConvergence:
         sync_p = SyncEngine(SyncMode.LOCK_STEP, dt=0.05)
         sync_c = SyncEngine(SyncMode.LOCK_STEP, dt=0.05)
 
-        plant = PlantAgent("plant", plant_d, None, sync_p,
-                           channel_y="A/y", channel_u="A/u", broker=broker)
-        ctrl = ControllerAgent("ctrl", law, None, sync_c,
-                               channel_y="A/y", channel_u="A/u", broker=broker)
+        plant = PlantAgent(
+            "plant",
+            plant_d,
+            None,
+            sync_p,
+            channel_y="A/y",
+            channel_u="A/u",
+            broker=broker,
+        )
+        ctrl = ControllerAgent(
+            "ctrl", law, None, sync_c, channel_y="A/y", channel_u="A/u", broker=broker
+        )
 
         plant.setup()
         for _ in range(400):
@@ -66,6 +75,7 @@ class TestBrokerConvergence:
 
 
 # ── Scenario B ────────────────────────────────────────────────────────────────
+
 
 class _ReconfigAgent(BaseAgent):
     """Publishes new PID setpoint after a configurable delay."""
@@ -115,10 +125,18 @@ class TestThreeAgentReconfig:
         sync_p = SyncEngine(SyncMode.LOCK_STEP, dt=0.05)
         sync_c = SyncEngine(SyncMode.LOCK_STEP, dt=0.05)
 
-        plant = PlantAgent("plant", plant_d, None, sync_p,
-                           channel_y="B/y", channel_u="B/u", broker=broker)
-        ctrl = ControllerAgent("ctrl", law, None, sync_c,
-                               channel_y="B/y", channel_u="B/u", broker=broker)
+        plant = PlantAgent(
+            "plant",
+            plant_d,
+            None,
+            sync_p,
+            channel_y="B/y",
+            channel_u="B/u",
+            broker=broker,
+        )
+        ctrl = ControllerAgent(
+            "ctrl", law, None, sync_c, channel_y="B/y", channel_u="B/u", broker=broker
+        )
         reconfig = _ReconfigAgent(broker, delay_steps=100)
 
         for _ in range(200):
@@ -129,5 +147,7 @@ class TestThreeAgentReconfig:
         assert reconfig.published, "ReconfigAgent never published"
 
         y_final = broker.read("B/y")[0]
-        assert abs(y_final - 10.0) < 0.5, f"Did not converge to new setpoint: y={y_final}"
+        assert abs(y_final - 10.0) < 0.5, (
+            f"Did not converge to new setpoint: y={y_final}"
+        )
         broker.close()

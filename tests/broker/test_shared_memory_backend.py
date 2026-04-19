@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from synapsys.broker.topic import Topic
 from synapsys.broker.backends.shared_memory import SharedMemoryBackend
+from synapsys.broker.topic import Topic
 
 
 @pytest.fixture
