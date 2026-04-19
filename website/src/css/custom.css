@@ -1218,3 +1218,195 @@ h1, h2, h3, h4, h5, h6 {
   [data-theme='dark'] body::before { display: none; }
   .doc-header__title::after { animation: none; }
 }
+
+/* ============================================================================
+   Blog — custom styles
+   ============================================================================ */
+
+/* ── Blog list page ──────────────────────────────────────────────────────── */
+.blog-list-page .container {
+  max-width: 1200px;
+}
+
+/* Blog post card on list page */
+.blog-list-page article {
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1.75rem 2rem;
+  margin-bottom: 1.5rem;
+  background: var(--ifm-background-surface-color);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.blog-list-page article::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--brand-gold);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.blog-list-page article:hover {
+  border-color: var(--brand-gold);
+  box-shadow: 0 4px 20px rgba(138,110,48,0.12);
+}
+
+.blog-list-page article:hover::before {
+  opacity: 1;
+}
+
+/* Post title */
+.blog-list-page article h2 a {
+  color: var(--ifm-heading-color);
+  text-decoration: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  transition: color 0.15s;
+}
+
+.blog-list-page article h2 a:hover {
+  color: var(--brand-gold);
+}
+
+/* ── Blog post page ──────────────────────────────────────────────────────── */
+.blog-post-page .container {
+  max-width: 1100px;
+}
+
+/* Post header */
+.blog-post-page header h1 {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+
+/* Decorative gold line under post title */
+.blog-post-page header::after {
+  content: '';
+  display: block;
+  width: 48px;
+  height: 3px;
+  background: var(--brand-gold);
+  margin: 1rem 0 1.5rem;
+  border-radius: 2px;
+}
+
+/* ── Tags ────────────────────────────────────────────────────────────────── */
+.tag_zVej,
+[class*='tag_'] {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  border-radius: 3px;
+  padding: 0.15em 0.55em;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+[class*='tag_']:hover {
+  border-color: var(--brand-gold);
+  color: var(--brand-gold);
+  background: rgba(138,110,48,0.06);
+}
+
+/* ── Author card ─────────────────────────────────────────────────────────── */
+.avatar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar__photo {
+  border: 2px solid var(--brand-gold);
+  border-radius: 50%;
+}
+
+.avatar__name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.avatar__subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── Reading time & date ─────────────────────────────────────────────────── */
+.blog-post-page time,
+[class*='blogPostInfoLine'] {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+.blog-sidebar-content {
+  position: sticky;
+  top: calc(var(--ifm-navbar-height) + 1rem);
+}
+
+[class*='blogSidebarTitle'] {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brand-gold);
+  margin-bottom: 0.75rem;
+}
+
+[class*='blogSidebarItem'] a {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  transition: color 0.15s;
+  text-decoration: none;
+}
+
+[class*='blogSidebarItem'] a:hover {
+  color: var(--brand-gold);
+}
+
+/* ── Tags page ───────────────────────────────────────────────────────────── */
+.tag-list-page h1 {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ── RSS badge in footer ─────────────────────────────────────────────────── */
+.footer a[href*='rss.xml']::before {
+  content: 'RSS ';
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--brand-gold);
+}
+
+/* ── Dark mode tweaks ────────────────────────────────────────────────────── */
+[data-theme='dark'] .blog-list-page article {
+  background: var(--ifm-background-surface-color);
+}
+
+[data-theme='dark'] .blog-list-page article:hover {
+  box-shadow: 0 4px 24px rgba(200,168,112,0.10);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .blog-list-page article {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .blog-post-page header h1 {
+    font-size: 1.6rem;
+  }
+}

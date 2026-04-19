@@ -1,0 +1,59 @@
+tutorial:
+  label: Tutorial
+  permalink: /tutorial
+  description: Step-by-step guides for using Synapsys
+
+research:
+  label: Research
+  permalink: /research
+  description: Academic and scientific applications of control theory
+
+control-theory:
+  label: Control Theory
+  permalink: /control-theory
+  description: Concepts and theory behind control systems
+
+lqr:
+  label: LQR
+  permalink: /lqr
+  description: Linear Quadratic Regulator — optimal state feedback control
+
+pid:
+  label: PID
+  permalink: /pid
+  description: Proportional-Integral-Derivative controllers
+
+mimo:
+  label: MIMO
+  permalink: /mimo
+  description: Multi-Input Multi-Output control systems
+
+neural-lqr:
+  label: Neural-LQR
+  permalink: /neural-lqr
+  description: Residual Neural-LQR combining classical stability with deep learning
+
+simulation:
+  label: Simulation
+  permalink: /simulation
+  description: System simulation, step response and frequency analysis
+
+sil:
+  label: SIL
+  permalink: /sil
+  description: Software-in-the-Loop testing and deployment
+
+hil:
+  label: HIL
+  permalink: /hil
+  description: Hardware-in-the-Loop real-time control
+
+python:
+  label: Python
+  permalink: /python
+  description: Python-specific tips, patterns and integrations
+
+release:
+  label: Release
+  permalink: /release
+  description: Version announcements and changelogs
