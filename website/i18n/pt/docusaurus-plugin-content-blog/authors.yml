@@ -1,0 +1,22 @@
+oseias:
+  name: Oséias D. Farias
+  title: Trainee Dev IA · Engenheiro ML · Pesquisador Mestrando @ UFABC & UFPA
+  url: https://oseiasdfarias.github.io
+  image_url: https://github.com/Oseiasdfarias.png
+  page: true
+  description: |
+    Desenvolvedor backend (Python · Java · Quarkus · AWS) e pesquisador em sistemas de controle. Mestrando em Engenharia Elétrica na UFABC (Antifragilidade Artificial / FPGA) e em Computação Aplicada na UFPA (Deep Learning). Atualmente desenvolvendo a Lunella — plataforma de automação de atendimento com IA generativa na Verzel.
+
+    Autor do Synapsys · ORCID: 0009-0005-4960-0271 · Lattes: lattes.cnpq.br/2199717385351494
+  socials:
+    github: Oseiasdfarias
+    linkedin: oseiasfarias
+
+synapsys:
+  name: Synapsys Team
+  title: Synapsys Lab
+  url: https://github.com/synapsys-lab
+  image_url: https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/logo.svg
+  page: true
+  socials:
+    github: synapsys-lab

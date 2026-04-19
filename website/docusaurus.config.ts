@@ -33,7 +33,20 @@ const config: Config = {
   markdown: { mermaid: true },
   themes: ['@docusaurus/theme-mermaid'],
 
-  plugins: ['docusaurus-plugin-image-zoom'],
+  plugins: [
+    'docusaurus-plugin-image-zoom',
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        language: ['en', 'pt'],
+        indexBlog: true,
+        indexDocs: true,
+        indexPages: true,
+        docsRouteBasePath: '/docs',
+      },
+    ],
+  ],
 
   presets: [
     [
