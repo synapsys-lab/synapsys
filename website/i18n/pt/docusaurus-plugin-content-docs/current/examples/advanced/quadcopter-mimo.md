@@ -1,4 +1,5 @@
 ---
+format: md
 id: quadcopter-mimo
 title: Quadricóptero MIMO Neural-LQR 3D
 sidebar_position: 6

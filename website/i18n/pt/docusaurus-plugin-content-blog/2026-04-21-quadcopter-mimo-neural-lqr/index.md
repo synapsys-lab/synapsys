@@ -1,4 +1,5 @@
 ---
+format: md
 slug: quadcopter-mimo-neural-lqr
 title: "Controle MIMO de um Quadrotor com Neural-LQR"
 description: >
@@ -10,8 +11,6 @@ tags: [research, mimo, lqr, neural-lqr, simulation, python]
 hide_table_of_contents: false
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 <div align="center">
 
@@ -24,7 +23,7 @@ rotacional totalmente acoplada — é o benchmark MIMO da robótica aérea. Este
 percorre o pipeline completo de projeto: física → linearização → LQR → residual
 Neural-LQR → simulação 3D.
 
-{/* truncate */}
+<!-- truncate -->
 
 ## Modelo em espaço de estados
 

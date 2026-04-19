@@ -1,4 +1,5 @@
 ---
+format: md
 id: digital-twin
 title: Digital Twin
 sidebar_position: 5

@@ -1,4 +1,5 @@
 ---
+format: md
 id: sil-ai-controller
 title: SIL + Neural-LQR Controller
 sidebar_position: 2

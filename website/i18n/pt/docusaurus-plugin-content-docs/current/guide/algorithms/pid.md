@@ -1,4 +1,5 @@
 ---
+format: md
 id: pid
 title: Controlador PID
 sidebar_position: 1
