@@ -6,7 +6,7 @@ sidebar_position: 99
 
 # Roadmap
 
-## Current state — v0.2.1
+## Current state — v0.2.2
 
 The library is complete and tested (222 tests, Python 3.10–3.12, 90 % coverage).
 

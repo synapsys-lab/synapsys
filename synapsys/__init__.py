@@ -1,6 +1,6 @@
 """Synapsys — modern Python control systems framework."""
 
-__version__ = "0.2.1"
+__version__ = "0.2.2"
 
 # ── Convenience re-exports ────────────────────────────────────────────────────
 # Users can write `from synapsys import tf` instead of `from synapsys.api import tf`
