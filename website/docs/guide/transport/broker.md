@@ -184,4 +184,4 @@ Calling `broker.close()` closes all registered backends. For `SharedMemoryBacken
 
 ## API Reference
 
-See the full reference at [synapsys.broker →](../../api/transport#synapsysbroker).
+See the full reference at [synapsys.broker →](../../api/transport).
