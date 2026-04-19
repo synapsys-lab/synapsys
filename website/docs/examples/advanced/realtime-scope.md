@@ -107,3 +107,11 @@ uv run python examples/advanced/03_realtime_scope/03_realtime_scope.py
 ```
 
 Press `Ctrl+C` to stop the monitor. The plant and controller keep running.
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/03_realtime_scope/03_realtime_scope.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/03_realtime_scope/03_realtime_scope.py) | Headless terminal monitor — read-only observer connecting to the `sil_2dof` bus |

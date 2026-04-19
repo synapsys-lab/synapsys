@@ -118,3 +118,12 @@ uv run python examples/distributed/01_shared_memory/controller.py
 ```
 
 You should see `y` converge to `5.0` within the first few steps. The plant runs for 200 steps (~10 s) then exits. Press `Ctrl+C` to stop the controller.
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/distributed/01_shared_memory/plant.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/distributed/01_shared_memory/plant.py) | Plant process — creates shared memory bus, runs `PlantAgent` |
+| [`examples/distributed/01_shared_memory/controller.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/distributed/01_shared_memory/controller.py) | Controller process — connects to bus, runs `ControllerAgent` with PID |

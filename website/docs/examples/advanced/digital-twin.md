@@ -137,3 +137,11 @@ Expected terminal output:
 ...
 Simulation complete. N ticks with divergence > 0.15.
 ```
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/05_digital_twin/05_digital_twin.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/05_digital_twin/05_digital_twin.py) | Complete example — physical plant, virtual twin, PID, wear injection, divergence monitoring, 3-panel plot |

@@ -206,3 +206,12 @@ Replace the `NeuralLQR` forward pass with any `nn.Module` trained by PPO, SAC or
 :::tip[Multi-setpoint tracking]
 Change `X2_REF` at runtime, or implement a time-varying reference inside `control_law()`. The MLP's hidden layers can learn non-linear compensation beyond what the linear LQR initialisation provides.
 :::
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/02_sil_ai_controller/02a_sil_plant.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/02_sil_ai_controller/02a_sil_plant.py) | Plant process — 2-DOF double-integrator via `PlantAgent` + shared memory broker |
+| [`examples/advanced/02_sil_ai_controller/02b_sil_ai_controller.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/02_sil_ai_controller/02b_sil_ai_controller.py) | Controller process — Neural-LQR (`NeuralLQR` class, PyTorch), live matplotlib telemetry |

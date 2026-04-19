@@ -107,3 +107,11 @@ plt.show()
 ```bash
 uv run python examples/advanced/01_custom_signals/01_custom_signals.py
 ```
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/01_custom_signals/01_custom_signals.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/01_custom_signals/01_custom_signals.py) | Complete example — MIL batch simulation, SIL ramp injection, custom signal superposition |
