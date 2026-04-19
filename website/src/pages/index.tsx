@@ -7,7 +7,7 @@ import Layout from '@theme/Layout';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
-import MassSpringDamper from '@site/src/components/MassSpringDamper';
+import LibraryMap from '@site/src/components/LibraryMap';
 import {
   BookOpen,
   Cpu,
@@ -109,7 +109,7 @@ export default function Home(): ReactElement {
             {/* ── Content column ── */}
             <div className="doc-header__content-col">
               <div className="doc-header__meta">
-                <a href={PYPI} className="doc-badge doc-badge--pypi" target="_blank" rel="noreferrer">v0.1.0 · PyPI</a>
+                <a href={PYPI} className="doc-badge doc-badge--pypi" target="_blank" rel="noreferrer">v0.2.1 · PyPI</a>
                 <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
                 <span className="doc-badge doc-badge--neutral">MIT</span>
                 <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>
@@ -366,44 +366,45 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
         </div>
       </section>
 
-      {/* ── AI Integration showcase ───────────────────────────────────────── */}
+      {/* ── AI Integration showcase — Quadcopter MIMO ────────────────────── */}
       <section className="content-section content-section--alt">
         <div className="content-section__inner">
           <h2 className="content-section__title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <BrainCircuit size={22} strokeWidth={1.75} />
-            <Translate id="home.ai.title">AI + Control Systems Integration</Translate>
+            <Translate id="home.ai.title">AI + Control Systems — Quadcopter MIMO Demo</Translate>
           </h2>
           <p className="content-section__lead">
             <Translate id="home.ai.desc">
-              Synapsys is built for modern control research workflows. Any PyTorch, JAX or
-              scikit-learn model can be plugged directly into a ControllerAgent via
-              a single np.ndarray → np.ndarray callback — enabling
-              physics-informed neural networks, reinforcement learning policies and data-driven
-              controllers to run in real-time SIL/HIL loops.
+              Any PyTorch, Keras or JAX model plugs directly into a ControllerAgent via a single
+              np.ndarray → np.ndarray callback. Below: a 12-state MIMO quadcopter controlled by a
+              residual Neural-LQR (δu = −K·e + MLP(e)) — the MLP starts zeroed so the system
+              launches as pure LQR and can be fine-tuned via RL without losing stability.
             </Translate>
           </p>
 
           <div className="ai-showcase">
-            <div className="ai-showcase__model">
-              <MassSpringDamper />
-              <div className="ai-showcase__caption" style={{ textAlign: 'center', marginTop: '-0.5rem', marginBottom: '1.5rem' }}>
-                <Translate id="home.ai.model.label">
-                  Physical model — 2-DOF mass-spring-damper
+            <div className="ai-showcase__figure">
+              <img
+                src={useBaseUrl('/img/examples/06_quadcopter_3d.gif')}
+                alt="Real-time 3D animation of the quadcopter tracking a figure-8 trajectory"
+                className="ai-showcase__img"
+              />
+              <p className="ai-showcase__caption">
+                <Translate id="home.ai.quad3d.caption">
+                  PyVista 3D window (50 Hz) — drone mesh, trajectory trail, static reference curve and live HUD.
                 </Translate>
-              </div>
+              </p>
             </div>
 
             <div className="ai-showcase__figure">
               <img
-                src={useBaseUrl('/img/examples/03_sil_ai_controller.gif')}
-                alt="Neural-LQR controller on 2-DOF mass-spring-damper: animated position tracking, velocities, control force and phase portrait"
+                src={useBaseUrl('/img/examples/06_quadcopter_telemetry.gif')}
+                alt="Live telemetry: top-down x-y trajectory, altitude, Euler angles and control inputs"
                 className="ai-showcase__img"
               />
               <p className="ai-showcase__caption">
-                <Translate id="home.ai.caption">
-                  Neural-LQR on a 2-DOF mass-spring-damper — MLP initialized
-                  with LQR optimal gains tracking setpoint x₂ = 1 m. Phase portrait shows
-                  convergence to equilibrium. Run live via the SIL example.
+                <Translate id="home.ai.quadtelem.caption">
+                  matplotlib telemetry (10 Hz) — x-y position, altitude z(t), Euler angles φ θ ψ and control deviations δu.
                 </Translate>
               </p>
             </div>
@@ -411,27 +412,27 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
             <div className="ai-showcase__cards">
               {[
                 {
-                  id: "init",
-                  title: 'Physics-Informed Init',
-                  desc: 'Output layer initialized with LQR gains (solves ARE). Guarantees closed-loop stability from step 0 — no random exploration phase needed.',
+                  id: "residual",
+                  title: 'Residual Neural-LQR',
+                  desc: 'δu = −K·e + MLP(e). Output layer zeroed at init → starts as pure LQR. The residual is trained later via RL or imitation learning.',
                 },
                 {
-                  id: "rl",
-                  title: 'RL Fine-Tuning Ready',
-                  desc: 'Hidden layers trained by PPO/SAC/DDPG. The LQR baseline provides a shaped reward landscape, dramatically reducing sample complexity.',
+                  id: "mimo",
+                  title: '12-State MIMO Plant',
+                  desc: 'Linearised hover model (x, y, z, φ, θ, ψ, ẋ, ẏ, ż, p, q, r) built with ss() + c2d(). LQR gain K∈ℝ⁴ˣ¹² from lqr().',
                 },
                 {
-                  id: "nn",
-                  title: 'Any nn.Module Works',
-                  desc: 'LSTM, Transformer, diffusion policy — the ControllerAgent callback wraps any model. Only the numpy↔tensor boundary changes.',
+                  id: "pytorch",
+                  title: 'PyTorch / Keras Ready',
+                  desc: 'The controller is a plain Python callable. Swap in any nn.Module — LSTM, Transformer, diffusion policy — without changing the simulation loop.',
                 },
                 {
-                  id: "sil",
-                  title: 'Real-Time SIL Loop',
-                  desc: 'Forward pass runs in a dedicated thread at 100 Hz over shared memory. Latency budget: < 1 ms inference + < 1 µs IPC.',
+                  id: "distributed",
+                  title: 'Distributed & Real-Time',
+                  desc: 'Plant and controller can run in separate processes or machines via SharedMemoryTransport or ZMQTransport — same API, zero code changes.',
                 },
               ].map((card) => (
-                <div key={card.title} className="ai-showcase__card">
+                <div key={card.id} className="ai-showcase__card">
                   <span className="ai-showcase__card-title">{translate({ id: `home.ai.card.${card.id}.title`, message: card.title })}</span>
                   <span className="ai-showcase__card-desc">{translate({ id: `home.ai.card.${card.id}.desc`, message: card.desc })}</span>
                 </div>
@@ -441,10 +442,26 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
 
           <p className="pipeline__note" style={{ marginTop: '1.5rem' }}>
             <Translate id="home.ai.note.prefix">Full walkthrough: </Translate>
-            <Link to="/docs/examples/advanced/sil-ai-controller">
-              <Translate id="home.ai.note.link">SIL + Neural-LQR example →</Translate>
+            <Link to="/docs/examples/advanced/quadcopter-mimo">
+              <Translate id="home.ai.note.link">Quadcopter MIMO Neural-LQR example →</Translate>
             </Link>
           </p>
+        </div>
+      </section>
+
+      {/* ── Library map ───────────────────────────────────────────────────── */}
+      <section className="content-section">
+        <div className="content-section__inner">
+          <h2 className="content-section__title">
+            <Translate id="home.libmap.title">Full Library Map</Translate>
+          </h2>
+          <p className="content-section__lead">
+            <Translate id="home.libmap.desc">
+              Seven focused packages — from LTI mathematics to real-time hardware.
+              Click any card to jump to the API reference.
+            </Translate>
+          </p>
+          <LibraryMap />
         </div>
       </section>
 
