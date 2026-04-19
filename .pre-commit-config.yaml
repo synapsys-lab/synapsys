@@ -23,3 +23,10 @@ repos:
         entry: uv run pytest --tb=short -q --cov=synapsys --cov-fail-under=100
         pass_filenames: false
         always_run: true
+
+      - id: docusaurus-build
+        name: docusaurus build (docs changed)
+        language: system
+        entry: bash -c 'cd website && npm run build'
+        pass_filenames: false
+        files: ^website/(docs|i18n|src|static|docusaurus\.config\.[jt]s|sidebars\.[jt]s)
