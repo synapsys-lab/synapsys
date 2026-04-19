@@ -1,0 +1,17 @@
+oseias:
+  name: Oseias D. Farias
+  title: Control Systems Engineer & Researcher
+  url: https://github.com/Oseiasdfarias
+  image_url: https://github.com/Oseiasdfarias.png
+  page: true
+  socials:
+    github: Oseiasdfarias
+
+synapsys:
+  name: Synapsys Team
+  title: Synapsys Lab
+  url: https://github.com/synapsys-lab
+  image_url: https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/logo.svg
+  page: true
+  socials:
+    github: synapsys-lab

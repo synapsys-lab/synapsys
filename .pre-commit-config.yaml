@@ -27,6 +27,6 @@ repos:
       - id: docusaurus-build
         name: docusaurus build (docs changed)
         language: system
-        entry: bash -c 'cd website && npm run build'
+        entry: bash -c 'export NVM_DIR="$HOME/.nvm" && . "$NVM_DIR/nvm.sh" && cd website && npm run build'
         pass_filenames: false
-        files: ^website/(docs|i18n|src|static|docusaurus\.config\.[jt]s|sidebars\.[jt]s)
+        files: ^website/(docs|i18n|src|static|blog|docusaurus\.config\.[jt]s|sidebars\.[jt]s)
