@@ -6,7 +6,7 @@ sidebar_position: 3
 
 # Architecture
 
-Synapsys is built in **six layers**. Each layer has a single responsibility and depends only on the layers below. This means you can use the mathematical core alone without touching the agent infrastructure, or swap the transport without changing any control logic.
+Synapsys is built in **seven layers**. Each layer has a single responsibility and depends only on the layers below. This means you can use the mathematical core alone without touching the agent infrastructure, or swap the transport backend without changing any control logic.
 
 ## Layer diagram
 
@@ -45,19 +45,28 @@ flowchart TB
         direction TB
         A1["FIPA ACL Messages\nINFORM, REQUEST, ..."]
         A2["SyncEngine\nWALL_CLOCK / LOCK_STEP"]
-        A3["BaseAgent -> PlantAgent, ControllerAgent"]
+        A3["BaseAgent → PlantAgent, ControllerAgent, HardwareAgent"]
     end
 
-    subgraph Transport["5. Transport — synapsys.transport"]
+    subgraph BrokerLayer["5. Broker — synapsys.broker"]
+        direction TB
+        B1["MessageBroker\nMediator / router"]
+        B2["Topic\nTyped, shaped signal descriptor"]
+        B3["SharedMemoryBackend\nZMQBrokerBackend"]
+        B1 --> B2
+        B1 --> B3
+    end
+
+    subgraph Transport["6. Transport — synapsys.transport"]
         direction TB
         T1{"TransportStrategy (ABC)"}
-        T2["SharedMemoryTransport\nZero-copy latency"]
+        T2["SharedMemoryTransport\nZero-copy IPC"]
         T3["ZMQTransport / ZMQReqRepTransport\nTCP network"]
         T1 --> T2
         T1 --> T3
     end
 
-    subgraph Hardware["6. Hardware — synapsys.hw"]
+    subgraph Hardware["7. Hardware — synapsys.hw"]
         direction LR
         H1["HardwareInterface (ABC)"]
         H2["FPGA / FPAA (planned)"]
@@ -67,7 +76,8 @@ flowchart TB
     UserAPI ==> CoreMath
     UserAPI ==> MAS
     CoreMath ==> ControlLogic
-    MAS ==> Transport
+    MAS ==> BrokerLayer
+    BrokerLayer ==> Transport
     Transport -.-> Hardware
     ControlLogic -.-> MAS
 ```
@@ -88,13 +98,15 @@ T = (C * G).feedback()   # closed loop: C in series with G
 
 `TransferFunctionMatrix` extends this algebra to MIMO plants: `*` performs matrix multiplication (series) and `+` is element-wise (parallel). Simulation and analysis delegate to a minimal `StateSpace` realisation built lazily by `to_state_space()`.
 
-### Strategy pattern in transport
+### Broker as mediator
 
-`PlantAgent` and `ControllerAgent` do not know **how** data is sent. They call `transport.write()` and `transport.read()`. The concrete implementation is injected at construction time — no control logic changes needed.
+`PlantAgent`, `ControllerAgent`, and `HardwareAgent` do not know **how** data is sent. They call `self._read(channel)` and `self._write(channel, data)`, which dispatch to the `MessageBroker` injected at construction time. The broker routes each channel to the appropriate backend (`SharedMemoryBackend`, `ZMQBrokerBackend`, or a custom one) — no control logic changes needed.
+
+This mediator pattern enables **many-to-many topologies**: a `ControllerAgent` can simultaneously receive plant output (`plant/y`) and live parameter updates from a `ReconfigAgent` (`ctrl/config`) through the same broker instance.
 
 ### Transport lifecycle
 
-The transport is **owned by the caller**, not the agent. The agent never calls `transport.close()`. This prevents double-free when multiple agents share views of the same memory block.
+The transport backend is **owned by the caller** via the `MessageBroker`. Agents never call `backend.close()` directly. This prevents double-free when multiple agents share views of the same memory block. Always call `broker.close()` in a `finally` block or at program exit.
 
 ### Continuous vs discrete
 

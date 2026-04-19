@@ -135,9 +135,9 @@ Synapsys is under active development. The API may change between versions.
 |--------|--------|
 | `synapsys.core` — LTI, StateSpace, TransferFunction | Stable |
 | `synapsys.algorithms` — PID, LQR | Stable |
-| `synapsys.agents` — PlantAgent, ControllerAgent | Functional |
-| `synapsys.broker` — MessageBroker, Topic, backends | Functional |
-| `synapsys.transport` — SharedMemory, ZMQ | Functional |
+| `synapsys.broker` — MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend | Stable |
+| `synapsys.agents` — PlantAgent, ControllerAgent, HardwareAgent | Functional |
+| `synapsys.transport` — SharedMemory, ZMQ (low-level) | Functional |
 | `synapsys.api` — MATLAB-compat layer | Stable |
 | `synapsys.hw` — Hardware abstraction | Interface only |
 | MPC, adaptive control | Planned |

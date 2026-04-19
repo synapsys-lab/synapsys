@@ -34,6 +34,12 @@ uv sync --extra dev
 | Extra | Command | What it adds |
 |-------|---------|--------------|
 | `dev` | `uv sync --extra dev` | pytest, ruff, mypy, matplotlib |
+| `ml` | `pip install synapsys torch` | PyTorch for Neural-LQR and RL controller examples |
+| `viz` | `pip install synapsys pyvista imageio` | PyVista 3D visualisation and GIF export (quadcopter example) |
+
+:::note
+`ml` and `viz` are not packaged as PyPI extras because their wheel sizes and platform support vary widely. Install them separately as shown above.
+:::
 
 ## Verify installation
 

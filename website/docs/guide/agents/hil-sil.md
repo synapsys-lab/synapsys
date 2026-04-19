@@ -162,21 +162,42 @@ flowchart LR
 
 ### HIL Bridge Concept
 
-Instead of instantiating a `ControllerAgent`, you bind the plant's transport to a hardware bridge layer (`synapsys.hw`). *Note: Concrete hardware interfaces are planned for v0.5.*
+Instead of instantiating a `ControllerAgent`, you bind the plant's broker to a `HardwareAgent` that bridges the broker bus to a physical device via `synapsys.hw`.
+
+:::warning[Planned feature — v0.5]
+Concrete hardware interfaces (`SerialHardwareInterface`, `OPCUAHardwareInterface`, `FPGAHardwareInterface`) are **not yet implemented**. The code below illustrates the intended pattern using the available `MockHardwareInterface`. Replace `MockHardwareInterface` with the appropriate concrete class once v0.5 is released.
+:::
 
 ```python
-from synapsys.hw import SerialHardwareInterface
+from synapsys.hw import MockHardwareInterface   # replace with SerialHardwareInterface in v0.5
+from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+import numpy as np
 
-# Connect to the physical controller via USB/UART
-hw_bridge = SerialHardwareInterface(port="/dev/ttyACM0", baudrate=115200)
+topic_y = Topic("hw/y", shape=(1,))
+topic_u = Topic("hw/u", shape=(1,))
 
-while True:
-    y = transport_plant.read("y")
-    hw_bridge.write(y)           # Send sensor data over Serial
-    
-    u = hw_bridge.read()         # Wait for MCU control action
-    transport_plant.write("u", u)
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("hil_bus", [topic_y, topic_u], create=True))
+broker.publish("hw/y", np.zeros(1))
+broker.publish("hw/u", np.zeros(1))
+
+# MockHardwareInterface simulates a real device — swap for SerialHardwareInterface later
+hw = MockHardwareInterface(n_inputs=1, n_outputs=1)
+sync = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
+
+agent = HardwareAgent(
+    "hw_plant", hw, None, sync,
+    channel_y="hw/y", channel_u="hw/u", broker=broker,
+)
+
+with hw:
+    agent.start(blocking=True)
 ```
+
+Each tick: reads `y` from hardware → publishes `y` to broker → reads `u` from broker → writes `u` to hardware. On `TimeoutError`, the last known `y`/`u` are held (Zero-Order Hold).
 
 :::note
 **Advantage:** You can rigorously test boundary conditions, system failures, and corner cases on the final compiled C/C++ firmware without risking physical damage to an expensive, actual plant (e.g., drones, industrial motors).

@@ -6,15 +6,16 @@ sidebar_position: 99
 
 # Roadmap
 
-## Current state — v0.2.0
+## Current state — v0.2.1
 
-The library is complete and tested (184 tests, Python 3.10–3.12, 90 % coverage).
+The library is complete and tested (222 tests, Python 3.10–3.12, 90 % coverage).
 
 | Module | Status |
 |--------|--------|
 | `synapsys.core` — TransferFunction, StateSpace, TransferFunctionMatrix (continuous + discrete) | Done |
 | `synapsys.algorithms` — PID (anti-windup), LQR (Q/R validated) | Done |
-| `synapsys.agents` — PlantAgent, ControllerAgent, FIPA ACL, SyncEngine | Done |
+| `synapsys.agents` — PlantAgent, ControllerAgent, HardwareAgent, FIPA ACL, SyncEngine | Done |
+| `synapsys.broker` — MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend | Done |
 | `synapsys.transport` — SharedMemory (zero-copy), ZMQ (PUB/SUB, REQ/REP) | Done |
 | `synapsys.api` — tf(), ss(), c2d(), step(), bode(), feedback() (SISO + MIMO) | Done |
 | `synapsys.hw` — Interface defined, no concrete implementations yet | Pending |

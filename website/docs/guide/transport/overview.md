@@ -6,32 +6,59 @@ sidebar_position: 1
 
 # Transport Layer — Overview
 
-The transport layer abstracts **how data flows** between agents. Every implementation follows the `TransportStrategy` interface:
+The transport layer abstracts **how data flows** between agents. Synapsys offers two levels of abstraction:
+
+| Level | Interface | When to use |
+|---|---|---|
+| **High-level** | `MessageBroker` + `Topic` | Recommended for all new code — named, typed channels, multi-agent topologies |
+| **Low-level** | `TransportStrategy` | Direct access for custom integrations or legacy code |
+
+---
+
+## Recommended: MessageBroker
+
+The `MessageBroker` is a mediator that routes named `Topic`s through pluggable backends. Agents publish and subscribe to topic names — they never hold transport references directly.
 
 ```python
-transport.write("channel", np.array([1.0, 2.0]))
-data = transport.read("channel")   # -> np.ndarray
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+import numpy as np
+
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("demo_bus", [topic_y, topic_u], create=True))
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
 ```
 
-## Choosing a transport
+See [MessageBroker →](broker.md) for the full guide.
+
+---
+
+## Choosing a transport backend
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
 flowchart LR
     Q{Plant and controller\non the same machine?}
-    Q -->|Yes| SM["SharedMemoryTransport\nZero-copy, latency ~µs"]
-    Q -->|No| ZQ{Synchrony\nrequired?}
-    ZQ -->|Asynchronous| PUB["ZMQTransport\nPUB/SUB"]
-    ZQ -->|Lock-step| REP["ZMQReqRepTransport\nREQ/REP"]
+    Q -->|Yes| SM["SharedMemoryBackend\nZero-copy, latency < 1 µs"]
+    Q -->|No| ZQ["ZMQBrokerBackend\nTCP PUB/SUB, ~100 µs"]
 ```
 
-| Transport | Typical latency | Topology | Use case |
+| Backend | Latency | Topology | Use case |
 |---|---|---|---|
-| `SharedMemoryTransport` | < 1 µs | same machine | High-frequency simulation |
-| `ZMQTransport` (PUB/SUB) | ~100 µs–1 ms | network | Controller on another machine, multiple observers |
-| `ZMQReqRepTransport` | ~100 µs–1 ms | network | Lock-step simulation over the network |
+| `SharedMemoryBackend` | < 1 µs | Same machine | High-frequency real-time simulation |
+| `ZMQBrokerBackend` | ~100 µs–1 ms | Network | Controller on another machine, async pub/sub |
+| `ZMQReqRepTransport` *(low-level)* | ~100 µs–1 ms | Network | Lock-step simulation over the network |
 
-## Common interface
+---
+
+## Low-level interface (advanced)
+
+`TransportStrategy` is the abstract base for all backends. You can use it directly when you need fine-grained control or are building a custom integration:
 
 ```python
 import numpy as np
@@ -43,7 +70,7 @@ with SharedMemoryTransport("bus", {"y": 2, "u": 1}, create=True) as t:
     y = t.read("y")
 ```
 
-## Implementing a custom transport
+### Implementing a custom transport
 
 ```python
 import numpy as np
@@ -60,3 +87,5 @@ class RedisTransport(TransportStrategy):
     def close(self) -> None:
         self._redis.close()
 ```
+
+To plug a custom transport into the broker layer, wrap it in a `BrokerBackend` subclass — see [`synapsys/broker/backends/base.py`](https://github.com/synapsys-lab/synapsys/tree/main/synapsys/broker/backends/base.py).

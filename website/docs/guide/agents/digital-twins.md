@@ -34,6 +34,49 @@ flowchart LR
 
 By continuously evaluating the virtual state matrix (`x_virtual`) using the exact physical input signals `u(t)` received from the hardware, engineers can compare the mathematical `.evolve(x, u)` output with the real physical sensor data. **Divergence** between the two implies that the physical plant has changed—a common indicator of mechanical wear, unpredicted friction buildup, or imminent system faults.
 
+### Virtual twin loop
+
+The twin runs in the main thread, fed by the same `u` the physical plant receives:
+
+```python
+import numpy as np
+from synapsys.api import c2d, ss
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+
+# Nominal model — stays fixed even when the physical plant drifts
+plant_nominal = c2d(ss([[-1]], [[1]], [[1]], [[0]]), dt=0.01)
+x_virtual = np.zeros(plant_nominal.n_states)
+
+topic_y = Topic("twin/y", shape=(1,))
+topic_u = Topic("twin/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("twin_bus", [topic_y, topic_u], create=False))
+
+THRESHOLD = 0.15
+alerts = 0
+
+while True:
+    # Read physical output and current control input from the bus
+    y_physical = broker.read("twin/y")[0]
+    u_current  = broker.read("twin/u")[0]
+
+    # Step the virtual twin with the SAME u — only internal model differs
+    x_virtual, y_virtual_arr = plant_nominal.evolve(
+        x_virtual, np.array([u_current])
+    )
+    y_virtual = float(y_virtual_arr[0])
+
+    divergence = abs(y_physical - y_virtual)
+    if divergence > THRESHOLD:
+        alerts += 1
+        print(f"ALERT: divergence = {divergence:.2f} > {THRESHOLD}")
+```
+
+See the [Digital Twin example](../../examples/advanced/digital-twin) for the full simulation including wear injection and real-time plotting.
+
 ---
 
 ## 2. Real-Time Plotting and Oscilloscopes
