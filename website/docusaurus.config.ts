@@ -45,7 +45,25 @@ const config: Config = {
           remarkPlugins: [remarkMath],
           rehypePlugins: [rehypeKatex],
         },
-        blog: false,
+        blog: {
+          blogTitle: 'Synapsys Blog',
+          blogDescription:
+            'Tutorials, case studies and research insights for control systems engineers and researchers.',
+          blogSidebarTitle: 'Recent posts',
+          blogSidebarCount: 12,
+          postsPerPage: 6,
+          showReadingTime: true,
+          remarkPlugins: [remarkMath],
+          rehypePlugins: [rehypeKatex],
+          feedOptions: {
+            type: ['rss', 'atom'],
+            title: 'Synapsys Blog',
+            description:
+              'Tutorials, case studies and research insights from the Synapsys control systems framework.',
+            copyright: `Copyright © ${new Date().getFullYear()} Synapsys Contributors`,
+            language: 'en',
+          },
+        },
         theme: { customCss: './src/css/custom.css' },
       } satisfies Preset.Options,
     ],
@@ -79,6 +97,7 @@ const config: Config = {
         },
         { to: '/docs/api/core',  label: 'API',     position: 'left' },
         { to: '/docs/roadmap',   label: 'Roadmap', position: 'left' },
+        { to: '/blog',           label: 'Blog',    position: 'left' },
         { type: 'localeDropdown', position: 'right' },
         { href: GITHUB, label: 'GitHub', position: 'right' },
       ],
@@ -105,8 +124,9 @@ const config: Config = {
         {
           title: 'More',
           items: [
-            { label: 'Roadmap', to: '/docs/roadmap' },
-            { label: 'PyPI',    href: 'https://pypi.org/project/synapsys/' },
+            { label: 'Blog',      to: '/blog' },
+            { label: 'Roadmap',   to: '/docs/roadmap' },
+            { label: 'PyPI',      href: 'https://pypi.org/project/synapsys/' },
             { label: 'Changelog', href: `${GITHUB}/blob/main/CHANGELOG.md` },
           ],
         },
