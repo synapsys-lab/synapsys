@@ -1,4 +1,5 @@
 ---
+format: md
 id: step-response
 title: Step Response
 sidebar_position: 1
