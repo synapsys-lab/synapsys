@@ -11,8 +11,9 @@
 [![Python](https://img.shields.io/pypi/pyversions/synapsys.svg)](https://pypi.org/project/synapsys/)
 [![Docs](https://img.shields.io/badge/docs-synapsys--lab.github.io-blue)](https://synapsys-lab.github.io/synapsys/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Coverage](https://img.shields.io/badge/coverage-90%25-brightgreen.svg)](#testing)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](#testing)
 [![Code style: ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 
 [Documentation](https://synapsys-lab.github.io/synapsys/) · [Quickstart](#quickstart) · [PyPI](https://pypi.org/project/synapsys/) · [Examples](examples/) · [Changelog](CHANGELOG.md)
 
@@ -41,10 +42,6 @@ G_mimo = tf([[[ 1], [0]],
             [[[1,1],[1]],
              [[1],[1,2]]])
 T_mimo = feedback(G_mimo)     # returns StateSpace closed-loop
-```
-
-```bash
-pip install synapsys
 ```
 
 ---
@@ -92,11 +89,21 @@ and the residual can be trained later via RL or imitation learning without desta
 
 ## Installation
 
-```bash
-pip install synapsys
-```
-
 **Requirements:** Python >= 3.10, NumPy >= 1.24, SciPy >= 1.10, pyzmq >= 25.0
+
+```bash
+# pip
+pip install synapsys
+
+# uv
+uv add synapsys
+
+# Poetry
+poetry add synapsys
+
+# conda / mamba  (conda-forge)
+conda install -c conda-forge synapsys
+```
 
 For 3D visualisation (quadcopter example):
 
@@ -193,7 +200,9 @@ with SharedMemoryTransport("demo", {"y": 1, "u": 1}, create=True) as bus:
     bus.write("u", np.zeros(1))
 
     pid  = PID(Kp=4.0, Ki=1.0, dt=0.01)
-    law  = lambda y: np.array([pid.compute(setpoint=3.0, measurement=y[0])])
+    def law(y: np.ndarray) -> np.ndarray:
+        return np.array([pid.compute(setpoint=3.0, measurement=y[0])])
+
     sync = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
 
     PlantAgent("plant", plant_d, bus, sync).start(blocking=False)
@@ -230,11 +239,11 @@ agent = HardwareAgent("hw", hw, bus, sync)
 | [`distributed/plant.py`](examples/distributed/plant.py) + [`controller.py`](examples/distributed/controller.py) | Two-process PID loop via shared memory |
 | [`distributed/plant_zmq.py`](examples/distributed/plant_zmq.py) | Same loop over ZeroMQ (cross-machine) |
 | [`advanced/01_custom_signals.py`](examples/advanced/01_custom_signals.py) | Custom reference signals with `lsim()` |
-| [`advanced/02b_sil_ai_controller.py`](examples/advanced/02_sil_ai_controller/02b_sil_ai_controller.py) | SIL + Neural-LQR PyTorch controller on 2-DOF mass-spring-damper |
+| [`advanced/02_sil_ai_controller/02b_sil_ai_controller.py`](examples/advanced/02_sil_ai_controller/02b_sil_ai_controller.py) | SIL + Neural-LQR PyTorch controller on 2-DOF mass-spring-damper |
 | [`advanced/03_realtime_scope.py`](examples/advanced/03_realtime_scope.py) | Text-mode real-time oscilloscope |
 | [`advanced/04_realtime_matplotlib.py`](examples/advanced/04_realtime_matplotlib.py) | Live matplotlib oscilloscope |
-| [`advanced/05_digital_twin.py`](examples/advanced/05_digital_twin.py) | Digital twin with mechanical wear detection |
-| [`advanced/06_quadcopter_mimo/`](examples/advanced/06_quadcopter_mimo/) | 12-state quadcopter MIMO Neural-LQR with PyVista 3D and config GUI |
+| [`advanced/05_digital_twin/05_digital_twin.py`](examples/advanced/05_digital_twin/05_digital_twin.py) | Digital twin with mechanical wear detection |
+| [`advanced/06_quadcopter_mimo/`](examples/advanced/06_quadcopter_mimo/) | 12-state quadcopter MIMO Neural-LQR with PyVista 3D, config GUI, GIF export |
 | [`quickstart_en.ipynb`](examples/quickstart_en.ipynb) | Interactive Jupyter notebook walkthrough |
 
 ---
@@ -247,12 +256,13 @@ synapsys/
 ├── core/           # LTI math — TransferFunction, StateSpace, TransferFunctionMatrix, LTIModel
 ├── algorithms/     # PID (discrete, anti-windup), LQR (ARE solver)
 ├── agents/         # PlantAgent, ControllerAgent, HardwareAgent, SyncEngine
+├── broker/         # MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend
 ├── transport/      # SharedMemoryTransport, ZMQTransport, ZMQReqRepTransport
 ├── hw/             # HardwareInterface (abstract) + MockHardwareInterface
 └── utils/          # StateEquations, mat(), col(), row()
 ```
 
-The transport layer is the key abstraction: agents communicate exclusively through a `TransportStrategy` interface. Swapping the concrete transport (shared memory, ZMQ, or real hardware) requires changing one line — algorithms and agents are untouched.
+The transport layer is the key abstraction: agents communicate exclusively through a `TransportStrategy` interface. The `broker/` module adds a higher-level pub/sub bus (backed by shared memory or ZMQ) for multi-agent scenarios. Swapping the concrete transport or broker backend requires changing one line — algorithms and agents are untouched.
 
 ---
 
@@ -267,9 +277,10 @@ uv run ruff check synapsys tests   # linting
 
 | Metric | Value |
 |--------|-------|
-| Test suite | 184 tests |
-| Coverage | 90% |
+| Test suite | 287 tests |
+| Coverage | 100% |
 | Type checking | mypy strict — 0 errors |
+| Pre-commit hooks | ruff lint + format, mypy, pytest |
 | Python versions | 3.10, 3.11, 3.12 |
 
 ---
@@ -281,6 +292,7 @@ uv run ruff check synapsys tests   # linting
 | v0.1.0 | Released | SISO LTI, PID, LQR, multi-agent, shared memory, ZMQ, hardware abstraction, Neural-LQR example |
 | v0.2.0 | Released | MIMO support — `TransferFunctionMatrix`, MIMO `feedback()`, transmission zeros (Rosenbrock pencil), LQR Q/R validation, covariant type annotations |
 | v0.2.1 | Released | Quadcopter MIMO Neural-LQR example with PyVista 3D, config GUI, GIF export, version sync fix |
+| v0.2.2 | Released | `MessageBroker` pub/sub bus, 100% test coverage, mypy strict, pre-commit hooks |
 | v0.3 | Planned | `margin()`, `rlocus()`, `pole_placement()`, Kalman filter, Luenberger observer |
 | v0.5 | Planned | Real hardware drivers (serial, CAN, FPGA via PYNQ) |
 
@@ -323,8 +335,19 @@ Contributions are welcome. Please open an issue to discuss what you would like t
 git clone https://github.com/synapsys-lab/synapsys.git
 cd synapsys
 uv sync --extra dev
-uv run pytest          # make sure everything passes before you start
+uv run pre-commit install   # install git hooks (ruff, mypy, pytest)
+uv run pytest               # make sure everything passes before you start
 ```
+
+---
+
+## Contributors
+
+<div align="center">
+  <a href="https://github.com/synapsys-lab/synapsys/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=synapsys-lab/synapsys" alt="Contributors" />
+  </a>
+</div>
 
 ---
 
