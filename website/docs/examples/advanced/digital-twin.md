@@ -70,9 +70,9 @@ grows past the alert threshold $\delta_{\text{thr}} = 0.15$ within a few ticks o
 The twin evolves **in the main thread** via `evolve()`, synchronised with each bus read:
 
 ```python
-# Read physical output from bus
-y_physical = monitor.read("y")[0]
-u_current  = monitor.read("u")[0]
+# Observer reads directly from the broker — no extra transport handle needed
+y_physical = broker.read("twin/y")[0]
+u_current  = broker.read("twin/u")[0]
 
 # Step the twin with the SAME u
 x_virtual, y_virtual_arr = plant_nominal.evolve(
@@ -132,8 +132,16 @@ uv run python examples/advanced/05_digital_twin/05_digital_twin.py
 
 Expected terminal output:
 ```
-[t=3.00s] ⚠  Wear injected: plant pole drifted -1 → -2
-[t=3.05s] 🔴 ALERT: divergence = 0.18 > 0.15
+[t=3.00s] Wear injected: plant pole drifted -1 -> -2
+[t=3.05s] ALERT: divergence = 0.18 > 0.15
 ...
 Simulation complete. N ticks with divergence > 0.15.
 ```
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/05_digital_twin/05_digital_twin.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/05_digital_twin/05_digital_twin.py) | Complete example — physical plant, virtual twin, PID, wear injection, divergence monitoring, 3-panel plot |

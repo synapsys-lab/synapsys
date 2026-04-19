@@ -1,6 +1,7 @@
-import numpy as np
-from synapsys.api import tf
 import matplotlib.pyplot as plt
+import numpy as np
+
+from synapsys.api import tf
 
 print("Running Custom Signals Batch Simulation...")
 

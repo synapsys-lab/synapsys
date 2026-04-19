@@ -8,13 +8,14 @@ from typing import Any
 
 class Performative(str, Enum):
     """FIPA ACL performatives relevant to control-system agents."""
-    INFORM    = "inform"     # agent reports a fact (e.g. plant state)
-    REQUEST   = "request"    # agent asks another to perform an action
-    AGREE     = "agree"      # accept a request
-    REFUSE    = "refuse"     # decline a request
-    FAILURE   = "failure"    # report a failed action
+
+    INFORM = "inform"  # agent reports a fact (e.g. plant state)
+    REQUEST = "request"  # agent asks another to perform an action
+    AGREE = "agree"  # accept a request
+    REFUSE = "refuse"  # decline a request
+    FAILURE = "failure"  # report a failed action
     SUBSCRIBE = "subscribe"  # subscribe to periodic updates
-    CANCEL    = "cancel"     # cancel a previous request/subscription
+    CANCEL = "cancel"  # cancel a previous request/subscription
 
 
 @dataclass
@@ -25,6 +26,7 @@ class ACLMessage:
     Agents exchange ACLMessages to coordinate simulation steps,
     report plant states, and issue control commands.
     """
+
     performative: Performative
     sender: str
     receiver: str

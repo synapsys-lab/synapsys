@@ -37,13 +37,9 @@ class StateSpace(LTIModel):
         if self._A.shape != (n, n):
             raise ValueError(f"A must be square, got {self._A.shape}")
         if self._B.shape[0] != n:
-            raise ValueError(
-                f"B rows must match A order ({n}), got {self._B.shape[0]}"
-            )
+            raise ValueError(f"B rows must match A order ({n}), got {self._B.shape[0]}")
         if self._C.shape[1] != n:
-            raise ValueError(
-                f"C cols must match A order ({n}), got {self._C.shape[1]}"
-            )
+            raise ValueError(f"C cols must match A order ({n}), got {self._C.shape[1]}")
         p, m = self._C.shape[0], self._B.shape[1]
         if self._D.shape != (p, m):
             raise ValueError(f"D must be ({p}×{m}), got {self._D.shape}")
@@ -165,9 +161,7 @@ class StateSpace(LTIModel):
     # Simulation
     # ------------------------------------------------------------------
 
-    def simulate(
-        self, t: np.ndarray, u: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+    def simulate(self, t: np.ndarray, u: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Simulate response to input u over time vector t. Returns (t, y)."""
         if self.is_discrete:
             sys = signal.dlti(self._A, self._B, self._C, self._D, dt=self._dt)
@@ -220,13 +214,11 @@ class StateSpace(LTIModel):
         u = np.atleast_2d(np.asarray(u, dtype=np.float64)).reshape(-1, 1)
         if x.shape[0] != self.n_states:
             raise ValueError(
-                f"x must have {self.n_states} element(s) (n_states), "
-                f"got {x.shape[0]}"
+                f"x must have {self.n_states} element(s) (n_states), got {x.shape[0]}"
             )
         if u.shape[0] != self.n_inputs:
             raise ValueError(
-                f"u must have {self.n_inputs} element(s) (n_inputs), "
-                f"got {u.shape[0]}"
+                f"u must have {self.n_inputs} element(s) (n_inputs), got {u.shape[0]}"
             )
         x_next = self._A @ x + self._B @ u
         y = self._C @ x + self._D @ u
@@ -265,10 +257,12 @@ class StateSpace(LTIModel):
                 f"(self.n_inputs={self.n_inputs} must equal "
                 f"other.n_outputs={other.n_outputs})."
             )
-        A = np.block([
-            [other._A, np.zeros((other.n_states, self.n_states))],
-            [self._B @ other._C, self._A],
-        ])
+        A = np.block(
+            [
+                [other._A, np.zeros((other.n_states, self.n_states))],
+                [self._B @ other._C, self._A],
+            ]
+        )
         B = np.vstack([other._B, self._B @ other._D])
         C = np.hstack([self._D @ other._C, self._C])
         D = self._D @ other._D

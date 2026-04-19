@@ -12,10 +12,8 @@
 
 ## Checklist
 
-- [ ] `uv run pytest` passes locally
-- [ ] `uv run ruff check .` clean
-- [ ] `uv run mypy synapsys` clean
+- [ ] `uv run pre-commit run --all-files` passes (ruff lint + format, mypy, pytest)
 - [ ] New public API has type hints and Google-style docstring
-- [ ] Tests added or updated (required for `feat` and `fix`)
+- [ ] Tests added or updated — coverage must remain at 100% (required for `feat` and `fix`)
 - [ ] `CHANGELOG.md` updated under `[Unreleased]` (required for `feat` and `fix`)
 - [ ] Branch was created from `develop`, not `main`

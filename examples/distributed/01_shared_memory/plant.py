@@ -3,38 +3,60 @@ Distributed simulation — Plant process.
 
 Run this FIRST, then start controller.py in a separate terminal.
 
-The plant exposes its state on a shared-memory bus with two channels:
-    y  — plant output (scalar)
-    u  — control input (scalar, written by the controller)
+The plant exposes its state on a MessageBroker backed by shared memory.
+Two topics are declared:
+    plant/y  — plant output (scalar)
+    plant/u  — control input (scalar, written by the controller)
 
 Usage:
-    python examples/distributed/plant.py
+    python examples/distributed/01_shared_memory/plant.py
 """
-import time
+
 import numpy as np
 
-from synapsys.transport.shared_memory import SharedMemoryTransport
+from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+from synapsys.api import c2d, ss
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
 BUS_NAME = "synapsys_demo"
-CHANNELS = {"y": 1, "u": 1}
-DT = 0.05   # 20 Hz
-N_STEPS = 200
+DT = 0.05  # 20 Hz
 
-with SharedMemoryTransport(BUS_NAME, CHANNELS, create=True) as bus:
-    bus.write("y", np.array([0.0]))
-    bus.write("u", np.array([0.0]))
-    print("Plant: bus ready.  Starting in 2 s — launch controller.py now.")
-    time.sleep(2.0)
+# G(s) = 1/(s+1) discretised with ZOH
+plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=DT)
 
-    for k in range(N_STEPS):
-        u = bus.read("u")[0]
-        y = bus.read("y")[0]
+# ── Broker setup ──────────────────────────────────────────────────────────────
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
 
-        # Discrete first-order dynamics: y(k+1) = 0.9*y(k) + 0.1*u(k)
-        y_next = 0.9 * y + 0.1 * u
-        bus.write("y", np.array([y_next]))
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend(BUS_NAME, [topic_y, topic_u], create=True))
 
-        print(f"k={k:03d}  u={u:7.3f}  y={y_next:7.3f}")
-        time.sleep(DT)
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
 
-print("Plant: simulation complete.")
+print(f"Plant: bus '{BUS_NAME}' ready.  Starting in 2 s — launch controller.py now.")
+import time
+
+time.sleep(2.0)
+
+# ── Agent ─────────────────────────────────────────────────────────────────────
+sync = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+agent = PlantAgent(
+    "plant",
+    plant_d,
+    None,
+    sync,
+    channel_y="plant/y",
+    channel_u="plant/u",
+    broker=broker,
+)
+
+print("Plant running.  Press Ctrl+C to stop.")
+try:
+    agent.start(blocking=True)
+except KeyboardInterrupt:
+    print("\nPlant: stopped.")
+finally:
+    broker.close()

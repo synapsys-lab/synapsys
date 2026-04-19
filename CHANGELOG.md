@@ -13,6 +13,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.2] — 2026-04-19
+
+### Added
+
+#### MessageBroker layer
+- `synapsys/broker/` — high-level pub/sub bus decoupled from the low-level `TransportStrategy`.
+  - `MessageBroker` — central bus; agents call `publish(topic, data)` / `subscribe(topic)` instead of raw read/write.
+  - `Topic` — typed channel descriptor with name and size validation.
+  - `SharedMemoryBackend` — zero-copy shared memory backend for single-host setups.
+  - `ZMQBrokerBackend` — ZeroMQ PUB/SUB backend for multi-process and multi-machine deployments.
+- `PlantAgent`, `ControllerAgent`, `HardwareAgent` — accept an optional `broker` parameter alongside the existing `transport` parameter.
+
+#### Quality
+- **100% line coverage** — 287 tests across all modules; `pytest --cov-fail-under=100` enforced in CI.
+- **pre-commit hooks** — `ruff lint`, `ruff format`, `mypy` and `pytest` run automatically on every `git commit` (`.pre-commit-config.yaml`).
+- **mypy strict** — all modules pass `mypy --strict` with 0 errors; `TYPE_CHECKING` guards eliminate circular imports in agent modules.
+
+#### Documentation
+- `README.md` — quadcopter and SIL GIFs, all package managers (`pip`, `uv`, `Poetry`, `conda`), updated architecture diagram (broker layer), 287-test / 100%-coverage stats, pre-commit badge, contributors section.
+- `synapsys-lab/.github` profile README updated with drone GIFs, MIMO section, full install options and contributors grid.
+
+### Fixed
+- Lambda control laws in examples replaced with proper `def` functions (ruff E731).
+- `zmq.py` `read()` return type narrowed from `Any` to `np.ndarray` (mypy strict).
+
+---
+
 ## [0.2.1] — 2026-04-18
 
 ### Added

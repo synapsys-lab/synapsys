@@ -20,7 +20,7 @@ class TestSyncEngineElapsed:
         eng = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
         time.sleep(0.05)
         eng.reset()
-        assert eng.elapsed < 0.02   # just reset, should be near zero
+        assert eng.elapsed < 0.02  # just reset, should be near zero
 
     def test_t_is_k_times_dt(self):
         eng = SyncEngine(SyncMode.LOCK_STEP, dt=0.1)

@@ -21,13 +21,13 @@ class TestPID:
 
     def test_integral_accumulates(self):
         pid = PID(Kp=0.0, Ki=1.0, dt=0.1)
-        pid.compute(1.0, 0.0)   # integral = 0.1
+        pid.compute(1.0, 0.0)  # integral = 0.1
         u = pid.compute(1.0, 0.0)  # integral = 0.2
         assert u == pytest.approx(0.2, rel=1e-6)
 
     def test_derivative(self):
         pid = PID(Kp=0.0, Kd=1.0, dt=0.1)
-        pid.compute(1.0, 0.0)   # prev_error = 1.0
+        pid.compute(1.0, 0.0)  # prev_error = 1.0
         u = pid.compute(0.5, 0.0)  # error = 0.5, deriv = (0.5-1.0)/0.1 = -5
         assert u == pytest.approx(-5.0, rel=1e-6)
 

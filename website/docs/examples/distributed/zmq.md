@@ -146,3 +146,12 @@ The plant runs for 300 steps (~15 s). Press `Ctrl+C` to stop the controller.
 :::warning[Port conflict]
 If a previous run left sockets open, run `fuser -k 5555/tcp 5556/tcp` before starting.
 :::
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/distributed/02_zmq/plant_zmq.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/distributed/02_zmq/plant_zmq.py) | Plant process — PUB `y` on `:5555`, SUB `u` on `:5556` |
+| [`examples/distributed/02_zmq/controller_zmq.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/distributed/02_zmq/controller_zmq.py) | Controller process — SUB `y` from `:5555`, PUB `u` on `:5556` |

@@ -208,6 +208,71 @@ flowchart LR
     NET -->|"SUB u"| P
 ```
 
+**Plant (Machine A):**
+
+```python
+import numpy as np
+from synapsys.api import ss, c2d
+from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+from synapsys.broker import MessageBroker, Topic, ZMQBrokerBackend
+
+DT = 0.01
+plant_d = c2d(ss([[-1]], [[1]], [[1]], [[0]]), dt=DT)
+
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+# PUB y on :5555 — controller subscribes there
+# SUB u on :5556 — controller publishes there
+broker.add_backend(ZMQBrokerBackend("tcp://0.0.0.0:5555", [topic_y], mode="pub"))
+broker.add_backend(ZMQBrokerBackend("tcp://0.0.0.0:5556", [topic_u], mode="sub"))
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
+
+agent = PlantAgent(
+    "plant", plant_d, None, SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
+agent.start(blocking=True)
+```
+
+**Controller (Machine B — set `PLANT_HOST` to Machine A's IP):**
+
+```python
+import os, numpy as np
+from synapsys.algorithms import PID
+from synapsys.agents import ControllerAgent, SyncEngine, SyncMode
+from synapsys.broker import MessageBroker, Topic, ZMQBrokerBackend
+
+DT = 0.01
+PLANT_HOST = os.environ.get("PLANT_HOST", "localhost")
+
+pid = PID(Kp=3.0, Ki=0.5, dt=DT)
+
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+# SUB y from plant :5555
+# PUB u to :5556 — plant subscribes there
+broker.add_backend(ZMQBrokerBackend(f"tcp://{PLANT_HOST}:5555", [topic_y], mode="sub"))
+broker.add_backend(ZMQBrokerBackend("tcp://0.0.0.0:5556", [topic_u], mode="pub"))
+broker.publish("plant/u", np.zeros(1))
+
+agent = ControllerAgent(
+    "ctrl",
+    lambda y: np.array([pid.compute(5.0, y[0])]),
+    None, SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
+agent.start(blocking=True)
+```
+
 ```bash
 # Machine A — plant
 python examples/distributed/02_zmq/plant_zmq.py

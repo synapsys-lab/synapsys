@@ -333,8 +333,8 @@ Saves `quadcopter_3d.gif` (~1.8 MB) and `quadcopter_telemetry.gif` (~4 MB) in un
 # Terminal 1 — start the linearised plant on shared memory
 python 06a_quadcopter_plant.py
 
-# Terminal 2 — connect an external controller via SharedMemoryTransport
-# (adapt 06b to read from bus instead of running its own simulation)
+# Terminal 2 — connect an external controller via MessageBroker + SharedMemoryBackend
+# (adapt 06b to read from the bus instead of running its own simulation)
 ```
 
 :::tip[Extending the Neural-LQR]
@@ -356,7 +356,7 @@ The hover model is valid only for $|\varphi|, |\theta| \leq 15°$. Aggressive ma
 | File | Purpose |
 |---|---|
 | `quadcopter_dynamics.py` | Physical constants, `build_matrices()`, `figure8_ref()`, LQR weights |
-| `06a_quadcopter_plant.py` | Two-process SIL plant via `PlantAgent` + `SharedMemoryTransport` |
+| `06a_quadcopter_plant.py` | Two-process SIL plant via `PlantAgent` + `SharedMemoryBackend` |
 | `06b_neural_lqr_3d.py` | Standalone simulation: config GUI, Neural-LQR, PyVista 3D, matplotlib |
 
 ### Key synapsys API calls
@@ -367,3 +367,13 @@ The hover model is valid only for $|\varphi|, |\theta| \leq 15°$. Aggressive ma
 | `c2d(sys_c, dt)` | Discretises to ZOH discrete-time `StateSpace` |
 | `sys_d.evolve(x, u)` | One-step state update: returns $(x_{k+1},\, y_k)$ |
 | `lqr(A, B, Q, R)` | Solves ARE, returns gain matrix $K$ and cost matrix $P$ |
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/06_quadcopter_mimo/quadcopter_dynamics.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/06_quadcopter_mimo/quadcopter_dynamics.py) | Physical constants, `build_matrices()`, reference trajectory generators, LQR weight matrices |
+| [`examples/advanced/06_quadcopter_mimo/06a_quadcopter_plant.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/06_quadcopter_mimo/06a_quadcopter_plant.py) | Two-process SIL plant — `PlantAgent` + `SharedMemoryBackend` |
+| [`examples/advanced/06_quadcopter_mimo/06b_neural_lqr_3d.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/06_quadcopter_mimo/06b_neural_lqr_3d.py) | Standalone simulation — tkinter GUI, Neural-LQR, PyVista 3D, matplotlib telemetry, GIF export |

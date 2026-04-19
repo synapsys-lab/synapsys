@@ -61,6 +61,8 @@ Abstract base class. Subclass and override `setup()`, `step()`, and `teardown()`
 | `start(blocking=True)` | Starts the simulation loop in the **current thread** (`True`) or a background daemon thread (`False`) |
 | `stop()` | Signals the agent to stop after the current tick |
 
+Use `self._read(channel)` / `self._write(channel, data)` in subclasses — these helpers dispatch to either the `broker` or the legacy `transport`, whichever is set.
+
 ## PlantAgent
 
 Simulates a discrete `StateSpace` plant in real time.
@@ -69,11 +71,13 @@ Simulates a discrete `StateSpace` plant in real time.
 PlantAgent(
     name: str,
     plant: StateSpace,
-    transport: TransportStrategy,
+    transport: TransportStrategy | None,   # pass None when using broker
     sync: SyncEngine,
-    channel_y: str = "y",   # channel name for plant output
-    channel_u: str = "u",   # channel name for control input
+    channel_y: str = "y",
+    channel_u: str = "u",
     x0: np.ndarray | None = None,
+    *,
+    broker: MessageBroker | None = None,   # recommended
 )
 ```
 
@@ -85,16 +89,18 @@ Applies a control law in real time.
 ControllerAgent(
     name: str,
     control_law: Callable[[np.ndarray], np.ndarray],
-    transport: TransportStrategy,
+    transport: TransportStrategy | None,   # pass None when using broker
     sync: SyncEngine,
-    channel_y: str = "y",   # channel name to read measurements from
-    channel_u: str = "u",   # channel name to write control commands to
+    channel_y: str = "y",
+    channel_u: str = "u",
+    *,
+    broker: MessageBroker | None = None,   # recommended
 )
 ```
 
 ## HardwareAgent
 
-Bridges a physical (or mock) hardware device into the transport layer.
+Bridges a physical (or mock) hardware device into the broker layer.
 Replaces `PlantAgent` in a HIL (Hardware-in-the-Loop) setup — the real
 device becomes the plant.
 
@@ -102,27 +108,41 @@ device becomes the plant.
 HardwareAgent(
     name: str,
     hardware: HardwareInterface,
-    transport: TransportStrategy,
+    transport: TransportStrategy | None,   # pass None when using broker
     sync: SyncEngine,
-    channel_y: str = "y",      # channel to publish sensor measurements
-    channel_u: str = "u",      # channel to read actuator commands from
-    timeout_ms: float = 100.0, # per-call hardware I/O timeout
+    channel_y: str = "y",
+    channel_u: str = "u",
+    timeout_ms: float = 100.0,
+    *,
+    broker: MessageBroker | None = None,   # recommended
 )
 ```
 
-Each tick: reads `y` from hardware → writes `y` to transport → reads `u` from
-transport → writes `u` to hardware. On `TimeoutError`, the last known `y`/`u`
+Each tick: reads `y` from hardware → publishes `y` to broker → reads `u` from
+broker → writes `u` to hardware. On `TimeoutError`, the last known `y`/`u`
 are held (Zero-Order Hold) and a warning is logged.
 
 ```python
 from synapsys.hw import MockHardwareInterface
 from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
-from synapsys.transport import SharedMemoryTransport
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+
+topic_y = Topic("hw/y", shape=(1,))
+topic_u = Topic("hw/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("hil_bus", [topic_y, topic_u], create=True))
+broker.publish("hw/y", np.zeros(1))
+broker.publish("hw/u", np.zeros(1))
 
 hw    = MockHardwareInterface(n_inputs=1, n_outputs=1)
-bus   = SharedMemoryTransport("hil_bus", {"y": 1, "u": 1}, create=True)
 sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
-agent = HardwareAgent("hw_plant", hw, bus, sync)
+agent = HardwareAgent(
+    "hw_plant", hw, None, sync,
+    channel_y="hw/y", channel_u="hw/u", broker=broker,
+)
 
 with hw:
     agent.start(blocking=False)

@@ -57,6 +57,7 @@ const sidebars: SidebarsConfig = {
           label: 'Transport Layer',
           items: [
             'guide/transport/overview',
+            'guide/transport/broker',
             'guide/transport/shared-memory',
             'guide/transport/zmq',
           ],

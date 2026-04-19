@@ -146,11 +146,9 @@ class TransferFunctionMatrix(LTIModel):
         true Smith-McMillan poles of the transfer-function matrix.
         Use ``to_state_space().poles()`` for the true system poles.
         """
-        all_poles: np.ndarray = np.concatenate([
-            self._tfs[i][j].poles()
-            for i in range(self._p)
-            for j in range(self._m)
-        ])
+        all_poles: np.ndarray = np.concatenate(
+            [self._tfs[i][j].poles() for i in range(self._p) for j in range(self._m)]
+        )
         return all_poles
 
     def zeros(self) -> np.ndarray:
@@ -164,9 +162,7 @@ class TransferFunctionMatrix(LTIModel):
         condition.  Use ``to_state_space().is_stable()`` for a rigorous test.
         """
         return all(
-            self._tfs[i][j].is_stable()
-            for i in range(self._p)
-            for j in range(self._m)
+            self._tfs[i][j].is_stable() for i in range(self._p) for j in range(self._m)
         )
 
     def to_state_space(self) -> StateSpace:
@@ -186,7 +182,8 @@ class TransferFunctionMatrix(LTIModel):
         # the Rosenbrock pencil used in zeros().
         ss_elems: list[list[StateSpace | None]] = [
             [
-                None if np.allclose(self._tfs[i][j].num, 0.0)
+                None
+                if np.allclose(self._tfs[i][j].num, 0.0)
                 else self._tfs[i][j].to_state_space()
                 for j in range(m)
             ]
@@ -224,9 +221,7 @@ class TransferFunctionMatrix(LTIModel):
     # Simulation (delegates to StateSpace realisation)
     # ------------------------------------------------------------------
 
-    def simulate(
-        self, t: np.ndarray, u: np.ndarray
-    ) -> tuple[np.ndarray, np.ndarray]:
+    def simulate(self, t: np.ndarray, u: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         """Simulate response to input ``u`` over time ``t``. Returns ``(t, y)``."""
         return self.to_state_space().simulate(t, u)
 
@@ -256,10 +251,9 @@ class TransferFunctionMatrix(LTIModel):
     # ------------------------------------------------------------------
 
     def __neg__(self) -> TransferFunctionMatrix:
-        return TransferFunctionMatrix([
-            [-self._tfs[i][j] for j in range(self._m)]
-            for i in range(self._p)
-        ])
+        return TransferFunctionMatrix(
+            [[-self._tfs[i][j] for j in range(self._m)] for i in range(self._p)]
+        )
 
     def __add__(self, other: TransferFunctionMatrix) -> TransferFunctionMatrix:
         """Parallel connection — element-wise addition."""
@@ -270,10 +264,12 @@ class TransferFunctionMatrix(LTIModel):
                 f"Incompatible shape for parallel connection: "
                 f"({self._p}×{self._m}) vs ({other._p}×{other._m})."
             )
-        return TransferFunctionMatrix([
-            [self._tfs[i][j] + other._tfs[i][j] for j in range(self._m)]
-            for i in range(self._p)
-        ])
+        return TransferFunctionMatrix(
+            [
+                [self._tfs[i][j] + other._tfs[i][j] for j in range(self._m)]
+                for i in range(self._p)
+            ]
+        )
 
     def __mul__(self, other: TransferFunctionMatrix) -> TransferFunctionMatrix:
         """Series connection — matrix multiplication G_self @ G_other."""
@@ -302,6 +298,4 @@ class TransferFunctionMatrix(LTIModel):
 
     def __repr__(self) -> str:
         domain = f"dt={self._dt}" if self.is_discrete else "continuous"
-        return (
-            f"TransferFunctionMatrix({self._p}×{self._m}, {domain})"
-        )
+        return f"TransferFunctionMatrix({self._p}×{self._m}, {domain})"

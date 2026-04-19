@@ -4,6 +4,7 @@ MATLAB-compatible API layer.
 Functions mirror their MATLAB counterparts so users can transition with
 minimal friction.  All functions delegate to the core classes.
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -30,8 +31,7 @@ def tf(
     """
     if num is None or den is None:
         raise TypeError(
-            "tf() requires non-None num and den; "
-            f"got num={num!r}, den={den!r}."
+            f"tf() requires non-None num and den; got num={num!r}, den={den!r}."
         )
     try:
         is_mimo = hasattr(num[0], "__iter__")  # type: ignore[index]
@@ -181,19 +181,20 @@ def _ss_feedback(G: StateSpace, H: StateSpace | None) -> StateSpace:
     # General sensor H — validate dt compatibility
     if H.dt != G.dt:
         raise ValueError(
-            f"G and H must share the same sample time "
-            f"(G.dt={G.dt}, H.dt={H.dt})."
+            f"G and H must share the same sample time (G.dt={G.dt}, H.dt={H.dt})."
         )
 
     # H maps plant output (p) to error signal (m): H.n_inputs=p, H.n_outputs=m
     Ah, Bh, Ch, Dh = H.A, H.B, H.C, H.D
-    M = np.eye(m) + Dh @ Dg   # m×m
+    M = np.eye(m) + Dh @ Dg  # m×m
     Minv = np.linalg.inv(M)
     # Augmented state z = [x_g; x_h]  (x_h may be empty for static H)
-    A_cl = np.block([
-        [Ag - Bg @ Minv @ Dh @ Cg,  -Bg @ Minv @ Ch],
-        [Bh @ (Cg - Dg @ Minv @ Dh @ Cg),  Ah - Bh @ Dg @ Minv @ Ch],
-    ])
+    A_cl = np.block(
+        [
+            [Ag - Bg @ Minv @ Dh @ Cg, -Bg @ Minv @ Ch],
+            [Bh @ (Cg - Dg @ Minv @ Dh @ Cg), Ah - Bh @ Dg @ Minv @ Ch],
+        ]
+    )
     B_cl = np.vstack([Bg @ Minv, Bh @ Dg @ Minv])
     C_cl = np.hstack([Cg - Dg @ Minv @ Dh @ Cg, -Dg @ Minv @ Ch])
     D_cl = Dg @ Minv

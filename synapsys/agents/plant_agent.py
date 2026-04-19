@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from ..core.state_space import StateSpace
 from ..transport.base import TransportStrategy
 from .lifecycle import BaseAgent
 from .sync_engine import SyncEngine
+
+if TYPE_CHECKING:
+    from ..broker.broker import MessageBroker
 
 
 class PlantAgent(BaseAgent):
@@ -39,18 +44,20 @@ class PlantAgent(BaseAgent):
         self,
         name: str,
         plant: StateSpace,
-        transport: TransportStrategy,
+        transport: TransportStrategy | None,
         sync: SyncEngine,
         channel_y: str = "y",
         channel_u: str = "u",
         x0: np.ndarray | None = None,
+        *,
+        broker: "MessageBroker | None" = None,
     ):
         if not plant.is_discrete:
             raise ValueError(
                 "PlantAgent requires a discrete plant (dt > 0). "
                 "Discretise it with c2d() first."
             )
-        super().__init__(name, transport, sync)
+        super().__init__(name, transport, sync, broker=broker)
         self._plant = plant
         self._ch_y = channel_y
         self._ch_u = channel_u
@@ -69,12 +76,12 @@ class PlantAgent(BaseAgent):
     def setup(self) -> None:
         u0 = np.zeros(self._plant.n_inputs)
         _, y0 = self._plant.evolve(self._x, u0)
-        self.transport.write(self._ch_y, y0)
+        self._write(self._ch_y, y0)
 
     def step(self) -> None:
-        u = self.transport.read(self._ch_u)
+        u = self._read(self._ch_u)
         self._x, y = self._plant.evolve(self._x, u)
-        self.transport.write(self._ch_y, y)
+        self._write(self._ch_y, y)
 
     def teardown(self) -> None:
         pass

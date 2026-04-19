@@ -21,17 +21,20 @@ def make_2dof() -> StateEquations:
     )
 
 
-EXPECTED_A = np.array([
-    [0,           0,          1,          0         ],
-    [0,           0,          0,          1         ],
-    [-2 * K / M,  K / M,     -C_DAMP / M, 0         ],
-    [K / M,      -2 * K / M,  0,         -C_DAMP / M],
-])
+EXPECTED_A = np.array(
+    [
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+        [-2 * K / M, K / M, -C_DAMP / M, 0],
+        [K / M, -2 * K / M, 0, -C_DAMP / M],
+    ]
+)
 
 EXPECTED_B = np.array([[0.0], [0.0], [0.0], [K / M]])
 
 
 # ── A matrix ─────────────────────────────────────────────────────────────────
+
 
 class TestAMatrix:
     def test_shape(self):
@@ -49,11 +52,12 @@ class TestAMatrix:
 
     def test_zeros_for_unset_entries(self):
         eqs = StateEquations(states=["x", "v"], inputs=["u"]).eq("v", x=-1.0)
-        assert eqs.A[0, 0] == pytest.approx(0.0)   # ẋ row never set
+        assert eqs.A[0, 0] == pytest.approx(0.0)  # ẋ row never set
         assert eqs.A[1, 0] == pytest.approx(-1.0)
 
 
 # ── B matrix ─────────────────────────────────────────────────────────────────
+
 
 class TestBMatrix:
     def test_shape(self):
@@ -74,15 +78,13 @@ class TestBMatrix:
         assert eqs.B.shape == (2, 0)
 
     def test_multiple_inputs(self):
-        eqs = (
-            StateEquations(states=["x"], inputs=["u1", "u2"])
-            .eq("x", u1=2.0, u2=-1.0)
-        )
+        eqs = StateEquations(states=["x"], inputs=["u1", "u2"]).eq("x", u1=2.0, u2=-1.0)
         assert eqs.B.shape == (1, 2)
         np.testing.assert_allclose(eqs.B, [[2.0, -1.0]])
 
 
 # ── output (C matrix) ─────────────────────────────────────────────────────────
+
 
 class TestOutput:
     def test_shape(self):
@@ -120,6 +122,7 @@ class TestOutput:
 
 # ── eq() validation ───────────────────────────────────────────────────────────
 
+
 class TestEqValidation:
     def test_unknown_state_raises(self):
         with pytest.raises(ValueError, match="'z'"):
@@ -137,12 +140,13 @@ class TestEqValidation:
 
 # ── fluent chaining ───────────────────────────────────────────────────────────
 
+
 class TestFluentChaining:
     def test_chain_overwrites_coefficient(self):
         eqs = (
             StateEquations(states=["x", "v"], inputs=["u"])
             .eq("v", x=-1.0)
-            .eq("v", x=-5.0)   # override
+            .eq("v", x=-5.0)  # override
         )
         assert eqs.A[1, 0] == pytest.approx(-5.0)
 
@@ -154,6 +158,7 @@ class TestFluentChaining:
 
 
 # ── integration: build StateSpace ────────────────────────────────────────────
+
 
 class TestIntegrationWithSS:
     def test_builds_stable_system(self):
