@@ -8,6 +8,7 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import LibraryMap from '@site/src/components/LibraryMap';
+import NeuralNetBackground from '@site/src/components/NeuralNetBackground';
 import {
   BookOpen,
   Cpu,
@@ -95,6 +96,8 @@ export default function Home(): ReactElement {
         message: 'Python control systems library — LTI models, PID, LQR and distributed multi-agent simulation',
       })}
     >
+
+      <NeuralNetBackground />
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <header className="doc-header">
@@ -383,30 +386,32 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
           </p>
 
           <div className="ai-showcase">
-            <div className="ai-showcase__figure">
-              <img
-                src={useBaseUrl('/img/examples/06_quadcopter_3d.gif')}
-                alt="Real-time 3D animation of the quadcopter tracking a figure-8 trajectory"
-                className="ai-showcase__img"
-              />
-              <p className="ai-showcase__caption">
-                <Translate id="home.ai.quad3d.caption">
-                  PyVista 3D window (50 Hz) — drone mesh, trajectory trail, static reference curve and live HUD.
-                </Translate>
-              </p>
-            </div>
+            <div className="ai-showcase__gifs">
+              <div className="ai-showcase__figure">
+                <img
+                  src={useBaseUrl('/img/examples/06_quadcopter_3d.gif')}
+                  alt="Real-time 3D animation of the quadcopter tracking a figure-8 trajectory"
+                  className="ai-showcase__img"
+                />
+                <p className="ai-showcase__caption">
+                  <Translate id="home.ai.quad3d.caption">
+                    PyVista 3D window (50 Hz) — drone mesh, trajectory trail, reference curve and live HUD.
+                  </Translate>
+                </p>
+              </div>
 
-            <div className="ai-showcase__figure">
-              <img
-                src={useBaseUrl('/img/examples/06_quadcopter_telemetry.gif')}
-                alt="Live telemetry: top-down x-y trajectory, altitude, Euler angles and control inputs"
-                className="ai-showcase__img"
-              />
-              <p className="ai-showcase__caption">
-                <Translate id="home.ai.quadtelem.caption">
-                  matplotlib telemetry (10 Hz) — x-y position, altitude z(t), Euler angles φ θ ψ and control deviations δu.
-                </Translate>
-              </p>
+              <div className="ai-showcase__figure">
+                <img
+                  src={useBaseUrl('/img/examples/06_quadcopter_telemetry.gif')}
+                  alt="Live telemetry: top-down x-y trajectory, altitude, Euler angles and control inputs"
+                  className="ai-showcase__img"
+                />
+                <p className="ai-showcase__caption">
+                  <Translate id="home.ai.quadtelem.caption">
+                    matplotlib telemetry (10 Hz) — x-y position, altitude, Euler angles and control deviations δu.
+                  </Translate>
+                </p>
+              </div>
             </div>
 
             <div className="ai-showcase__cards">

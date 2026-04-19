@@ -63,9 +63,9 @@ const config: Config = {
   themeConfig: {
     image: 'img/logo.svg',
     colorMode: {
-      defaultMode: 'light',
+      defaultMode: 'dark',
       disableSwitch: false,
-      respectPrefersColorScheme: true,
+      respectPrefersColorScheme: false,
     },
     navbar: {
       title: 'Synapsys',
