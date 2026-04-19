@@ -22,7 +22,7 @@ const PACKAGES: Package[] = [
     classes: ['tf()', 'ss()', 'c2d()', 'feedback()', 'series()', 'parallel()', 'bode()', 'step()', 'lsim()'],
     status: 'Stable',
     href: '/docs/api/matlab-compat',
-    accent: '#2563eb',
+    accent: '#c8a870',
     delay: 0,
   },
   {
@@ -32,7 +32,7 @@ const PACKAGES: Package[] = [
     classes: ['TransferFunction', 'StateSpace', 'TransferFunctionMatrix', 'LTIModel'],
     status: 'Stable',
     href: '/docs/api/core',
-    accent: '#2563eb',
+    accent: '#c8a870',
     delay: 1,
   },
   {
@@ -42,7 +42,7 @@ const PACKAGES: Package[] = [
     classes: ['PID', 'lqr()'],
     status: 'Stable',
     href: '/docs/api/algorithms',
-    accent: '#2563eb',
+    accent: '#c8a870',
     delay: 2,
   },
   {
@@ -72,7 +72,7 @@ const PACKAGES: Package[] = [
     classes: ['StateEquations', 'mat()', 'col()', 'row()'],
     status: 'Stable',
     href: '/docs/api/utils',
-    accent: '#2563eb',
+    accent: '#c8a870',
     delay: 5,
   },
   {
