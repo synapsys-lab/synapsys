@@ -1,5 +1,5 @@
 ---
-slug: bem-vindo-ao-blog-synapsys
+slug: welcome-to-synapsys-blog
 title: "Bem-vindo ao Blog Synapsys"
 description: >
   Apresentando o Blog Synapsys — um espaço para tutoriais, insights de pesquisa
