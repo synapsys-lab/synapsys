@@ -44,24 +44,29 @@ Synapsys's agent separation solves this trivially: you just connect a **third in
 
 ```python
 import time
-from synapsys.transport import SharedMemoryTransport
-# You could launch real-time rendering libraries like PyQtGraph here!
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 
-# Attach a read-only handle to the ongoing simulation
-monitor = SharedMemoryTransport("ctrl_bus", {"y": 2, "u": 1}, create=False)
+# Connect to the running broker bus as a read-only observer
+topic_y = Topic("plant/y", shape=(2,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("ctrl_bus", [topic_y, topic_u], create=False))
 
 try:
     while True:
-        y = monitor.read("y")
-        u = monitor.read("u")
-        
+        y = broker.read("plant/y")
+        u = broker.read("plant/u")
+
         print(f"Time: {time.time():.4f} | Output: {y} | Input: {u}")
-        
-        # Run extremely fast async GUI scope updates here
-        time.sleep(0.01) 
-        
+        time.sleep(0.01)
+
 except KeyboardInterrupt:
     pass
+finally:
+    broker.close()
 ```
 
 The `ControllerAgent` and `PlantAgent` processes never know the monitor exists. Their strict microsecond mathematical timings continue performing flawlessly.
@@ -118,7 +123,10 @@ def ramp_control_law(y: np.ndarray) -> np.ndarray:
     u = 0.5 * sync.elapsed   # linear ramp: +0.5 u per real second
     return np.array([u])
 
-ctrl = ControllerAgent("ramp_ctrl", ramp_control_law, transport, sync)
+ctrl = ControllerAgent(
+    "ramp_ctrl", ramp_control_law, None, sync,
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
 ctrl.start()
 ```
 

@@ -49,22 +49,38 @@ The dashed line indicates the monitor **never writes** to the bus — it is comp
 ## Code
 
 ```python
-from synapsys.transport import SharedMemoryTransport
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 import time, sys
 
-monitor = SharedMemoryTransport("sil_bus", {"y": 1, "u": 1}, create=False)
+topic_state = Topic("sil/state", shape=(4,))
+topic_u     = Topic("sil/u",     shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_state)
+broker.declare_topic(topic_u)
+broker.add_backend(
+    SharedMemoryBackend("sil_2dof", [topic_state, topic_u], create=False)
+)
+
 start_time = time.time()
 
-while True:
-    y = monitor.read("y")[0]
-    u = monitor.read("u")[0]
-    elapsed = time.time() - start_time
+try:
+    while True:
+        state   = broker.read("sil/state")
+        u       = broker.read("sil/u")[0]
+        elapsed = time.time() - start_time
 
-    sys.stdout.write(
-        f"\r[t={elapsed:6.2f}s] y(t): {y:8.4f} | u(t): {u:8.4f}"
-    )
-    sys.stdout.flush()
-    time.sleep(0.05)   # 20 Hz display rate
+        sys.stdout.write(
+            f"\r[t={elapsed:6.2f}s]  "
+            f"x1={state[0]:7.4f}  x2={state[1]:7.4f}  "
+            f"v1={state[2]:7.4f}  v2={state[3]:7.4f}  u={u:8.4f}"
+        )
+        sys.stdout.flush()
+        time.sleep(0.05)   # 20 Hz display rate
+except KeyboardInterrupt:
+    pass
+finally:
+    broker.close()
 ```
 
 ### How the in-place update works

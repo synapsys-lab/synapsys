@@ -64,18 +64,30 @@ K, P = lqr(A, B, Q, R)
   <TabItem value="distributed" label="Distributed Simulation">
 
 ```python
+import numpy as np
 from synapsys.api import ss, c2d
 from synapsys.agents import PlantAgent, ControllerAgent, SyncEngine, SyncMode
-from synapsys.transport import SharedMemoryTransport
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 
 # Discretise the plant
 plant_d = c2d(ss([[-1]], [[1]], [[1]], [[0]]), dt=0.01)
 
-# Each process gets its own transport handle to the same bus
-bus = SharedMemoryTransport("ctrl_bus", {"y": 1, "u": 1}, create=True)
-t_plant = SharedMemoryTransport("ctrl_bus", {"y": 1, "u": 1})
+# Single broker — declare topics, add backend
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
 
-agent = PlantAgent("plant", plant_d, t_plant, SyncEngine())
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("ctrl_bus", [topic_y, topic_u], create=True))
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
+
+# Agents share the same broker — no multiple transport handles needed
+agent = PlantAgent(
+    "plant", plant_d, None, SyncEngine(),
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
 agent.start()   # non-blocking background thread
 ```
 
@@ -124,6 +136,7 @@ Synapsys is under active development. The API may change between versions.
 | `synapsys.core` — LTI, StateSpace, TransferFunction | Stable |
 | `synapsys.algorithms` — PID, LQR | Stable |
 | `synapsys.agents` — PlantAgent, ControllerAgent | Functional |
+| `synapsys.broker` — MessageBroker, Topic, backends | Functional |
 | `synapsys.transport` — SharedMemory, ZMQ | Functional |
 | `synapsys.api` — MATLAB-compat layer | Stable |
 | `synapsys.hw` — Hardware abstraction | Interface only |

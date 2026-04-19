@@ -1,52 +1,59 @@
 """
 Distributed simulation via ZeroMQ — Controller process.
 
-The controller subscribes to y from tcp://localhost:5555 (SUB)
-and publishes u on tcp://0.0.0.0:5556 (PUB).
+The controller subscribes to plant/y from tcp://localhost:5555 (SUB)
+and publishes plant/u on tcp://0.0.0.0:5556 (PUB).
 
 Can run on a different machine from plant_zmq.py.
 Change PLANT_HOST to the plant's IP address if remote.
 
 Usage:
-    python examples/distributed/controller_zmq.py
+    python examples/distributed/02_zmq/controller_zmq.py
 """
-import time
 import numpy as np
 
-from synapsys.algorithms.pid import PID
-from synapsys.transport.network import ZMQTransport
+from synapsys.agents import ControllerAgent, SyncEngine, SyncMode
+from synapsys.algorithms import PID
+from synapsys.broker import MessageBroker, Topic
+from synapsys.broker.backends.zmq import ZMQBrokerBackend
 
 PLANT_HOST = "localhost"
-DT = 0.025      # controller runs at 2× plant rate
-SETPOINT = 5.0
+DT         = 0.025      # 40 Hz — 2× plant rate
+SETPOINT   = 5.0
+Y_ADDR     = f"tcp://{PLANT_HOST}:5555"
+U_ADDR     = "tcp://0.0.0.0:5556"
 
+# ── Broker: subscribes y, publishes u ────────────────────────────────────────
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+
+broker.add_backend(ZMQBrokerBackend(Y_ADDR, subscribe_topics=[topic_y]))
+broker.add_backend(ZMQBrokerBackend(U_ADDR, publish_topics=[topic_u]))
+
+# ── Control law ───────────────────────────────────────────────────────────────
 pid = PID(Kp=3.0, Ki=0.5, dt=DT, u_min=-20.0, u_max=20.0)
+law = lambda y: np.array([pid.compute(setpoint=SETPOINT, measurement=y[0])])
 
-sub = ZMQTransport(f"tcp://{PLANT_HOST}:5555", mode="sub")
-pub = ZMQTransport("tcp://0.0.0.0:5556", mode="pub")
-sub._socket.setsockopt(0x8, 50)  # ZMQ_RCVTIMEO = 50 ms
+import time; time.sleep(0.5)  # let plant start first
 
-print(f"Controller: subscribing y from :{5555}, publishing u on :{5556}")
+print(f"Controller: subscribing plant/y from {Y_ADDR}")
+print(f"Controller: publishing plant/u on {U_ADDR}")
 print(f"Setpoint = {SETPOINT}")
-time.sleep(0.5)  # let plant start first
+
+sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+agent = ControllerAgent(
+    "ctrl", law, None, sync,
+    channel_y="plant/y", channel_u="plant/u",
+    broker=broker,
+)
 
 try:
-    while True:
-        t0 = time.monotonic()
-
-        try:
-            y = sub.read("y")
-            u = pid.compute(setpoint=SETPOINT, measurement=y[0])
-            pub.write("u", np.array([u]))
-        except Exception:
-            pass  # plant not ready yet; keep looping
-
-        elapsed = time.monotonic() - t0
-        if DT - elapsed > 0:
-            time.sleep(DT - elapsed)
-
+    agent.start(blocking=True)
 except KeyboardInterrupt:
     print("\nController: stopped.")
 finally:
-    sub.close()
-    pub.close()
+    broker.close()

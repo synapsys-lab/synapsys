@@ -21,6 +21,7 @@ from synapsys.core.state_space import StateSpace
 from synapsys.core.transfer_function import TransferFunction
 from synapsys.core.transfer_function_matrix import TransferFunctionMatrix
 from synapsys.utils import StateEquations, col, mat, row
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend
 
 __all__ = [
     "__version__",
@@ -46,4 +47,9 @@ __all__ = [
     "col",
     "row",
     "StateEquations",
+    # Broker
+    "MessageBroker",
+    "Topic",
+    "SharedMemoryBackend",
+    "ZMQBrokerBackend",
 ]

@@ -56,21 +56,26 @@ flowchart LR
 ## Plant (`plant.py`)
 
 ```python
-with SharedMemoryTransport(BUS_NAME, CHANNELS, create=True) as bus:
-    bus.write("y", np.array([0.0]))
-    bus.write("u", np.array([0.0]))
-    time.sleep(2.0)   # wait for controller to connect
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
 
-    for k in range(N_STEPS):
-        u = bus.read("u")[0]
-        y = bus.read("y")[0]
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend(BUS_NAME, [topic_y, topic_u], create=True))
 
-        y_next = 0.9 * y + 0.1 * u   # discrete first-order dynamics
-        bus.write("y", np.array([y_next]))
-        time.sleep(DT)
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
+
+sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+agent = PlantAgent(
+    "plant", plant_d, None, sync,
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
+agent.start(blocking=True)
 ```
 
-The plant **creates** the shared memory block (`create=True`). The `with` block ensures the OS resource is released even on crash.
+The plant **creates** the shared memory block (`create=True`). The `PlantAgent` automatically handles the discrete-time simulation loop — no manual `for k in range(...)` needed.
 
 Discrete dynamics: $y(k+1) = 0.9\,y(k) + 0.1\,u(k)$ — equivalent to $G(s)=\tfrac{1}{s+1}$ with ZOH at ~20 Hz.
 
@@ -79,15 +84,24 @@ Discrete dynamics: $y(k+1) = 0.9\,y(k) + 0.1\,u(k)$ — equivalent to $G(s)=\tfr
 ## Controller (`controller.py`)
 
 ```python
-with SharedMemoryTransport(BUS_NAME, CHANNELS, create=False) as bus:
-    while True:
-        y = bus.read("y")[0]
-        u = pid.compute(setpoint=5.0, measurement=y)
-        bus.write("u", np.array([u]))
-        time.sleep(DT)    # 40 Hz
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend(BUS_NAME, [topic_y, topic_u], create=False))
+
+law   = lambda y: np.array([pid.compute(setpoint=5.0, measurement=y[0])])
+sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+agent = ControllerAgent(
+    "ctrl", law, None, sync,
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
+agent.start(blocking=True)
 ```
 
-The controller **connects** to the existing block (`create=False`). It runs at **40 Hz** — twice the plant rate. Between plant updates, the controller reuses the last `y` value. This demonstrates **rate decoupling**: processes do not need to be synchronised.
+The controller **connects** to the existing block (`create=False`). It runs at **40 Hz** — twice the plant rate. This demonstrates **rate decoupling**: processes do not need to be synchronised.
 
 PID parameters: `Kp=3.0, Ki=0.5, dt=0.025` — tuned to drive `y` to `setpoint=5.0`.
 
