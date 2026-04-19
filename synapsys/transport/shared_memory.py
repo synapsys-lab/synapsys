@@ -82,9 +82,9 @@ class SharedMemoryTransport(TransportStrategy):
     def write(self, channel: str, data: np.ndarray) -> None:
         offset = self._offsets[channel]
         size = self._channels[channel]
-        self._buf[offset : offset + size] = (
-            np.asarray(data, dtype=np.float64).flatten()[:size]
-        )
+        self._buf[offset : offset + size] = np.asarray(
+            data, dtype=np.float64
+        ).flatten()[:size]
 
     def read(self, channel: str) -> np.ndarray:
         offset = self._offsets[channel]

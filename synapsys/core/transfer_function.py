@@ -208,9 +208,7 @@ class TransferFunction(LTIModel):
     def __neg__(self) -> TransferFunction:
         return TransferFunction(-self._num, self._den, dt=self._dt)
 
-    def feedback(
-        self, sensor: TransferFunction | None = None
-    ) -> TransferFunction:
+    def feedback(self, sensor: TransferFunction | None = None) -> TransferFunction:
         """Closed-loop T = G / (1 + G*H) with negative feedback."""
         H = sensor if sensor is not None else TransferFunction([1], [1], dt=self._dt)
         # T = G / (1 + G*H) = N_G * D_H / (D_G*D_H + N_G*N_H)

@@ -77,8 +77,7 @@ class StateEquations:
         """
         if state not in self.states:
             raise ValueError(
-                f"'{state}' is not a declared state.  "
-                f"Declared states: {self.states}"
+                f"'{state}' is not a declared state.  Declared states: {self.states}"
             )
         i = self.states.index(state)
         for name, val in coeffs.items():

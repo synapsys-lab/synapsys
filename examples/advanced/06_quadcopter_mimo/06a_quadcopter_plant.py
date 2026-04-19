@@ -13,6 +13,7 @@ Usage
 -----
   python 06a_quadcopter_plant.py
 """
+
 from __future__ import annotations
 
 import sys
@@ -29,9 +30,9 @@ from synapsys.agents import PlantAgent, SyncEngine, SyncMode
 from synapsys.api import c2d, ss
 from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
-DT       = 0.01      # 100 Hz
+DT = 0.01  # 100 Hz
 BUS_NAME = "quad"
-X0       = np.zeros(12)
+X0 = np.zeros(12)
 
 
 def main() -> None:
@@ -47,7 +48,7 @@ def main() -> None:
 
     # ── Broker + topics ───────────────────────────────────────────────────────
     topic_state = Topic("quad/state", shape=(plant_d.n_states,))
-    topic_u     = Topic("quad/u",     shape=(plant_d.n_inputs,))
+    topic_u = Topic("quad/u", shape=(plant_d.n_inputs,))
 
     broker = MessageBroker()
     broker.declare_topic(topic_state)
@@ -56,7 +57,7 @@ def main() -> None:
         SharedMemoryBackend(BUS_NAME, [topic_state, topic_u], create=True)
     )
     broker.publish("quad/state", X0.copy())
-    broker.publish("quad/u",     np.zeros(plant_d.n_inputs))
+    broker.publish("quad/u", np.zeros(plant_d.n_inputs))
 
     print(f"\nBroker bus '{BUS_NAME}' ready.")
 
@@ -64,20 +65,25 @@ def main() -> None:
     _inner = plant_d
 
     class _ClippedPlant:
-        n_states    = _inner.n_states
-        n_inputs    = _inner.n_inputs
-        n_outputs   = _inner.n_outputs
+        n_states = _inner.n_states
+        n_inputs = _inner.n_inputs
+        n_outputs = _inner.n_outputs
         is_discrete = _inner.is_discrete
-        dt          = _inner.dt
+        dt = _inner.dt
 
         def evolve(self, x: np.ndarray, u: np.ndarray):
             return _inner.evolve(x, np.clip(u, U_MIN, U_MAX))
 
-    sync  = SyncEngine(mode=SyncMode.WALL_CLOCK, dt=DT)
+    sync = SyncEngine(mode=SyncMode.WALL_CLOCK, dt=DT)
     agent = PlantAgent(
-        "quad_plant", _ClippedPlant(), None, sync,  # type: ignore[arg-type]
-        channel_y="quad/state", channel_u="quad/u",
-        x0=X0.copy(), broker=broker,
+        "quad_plant",
+        _ClippedPlant(),
+        None,
+        sync,  # type: ignore[arg-type]
+        channel_y="quad/state",
+        channel_u="quad/u",
+        x0=X0.copy(),
+        broker=broker,
     )
     agent.start(blocking=False)
 

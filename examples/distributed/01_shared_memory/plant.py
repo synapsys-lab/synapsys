@@ -11,14 +11,15 @@ Two topics are declared:
 Usage:
     python examples/distributed/01_shared_memory/plant.py
 """
+
 import numpy as np
 
-from synapsys.api import ss, c2d
 from synapsys.agents import PlantAgent, SyncEngine, SyncMode
-from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+from synapsys.api import c2d, ss
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
 BUS_NAME = "synapsys_demo"
-DT       = 0.05   # 20 Hz
+DT = 0.05  # 20 Hz
 
 # G(s) = 1/(s+1) discretised with ZOH
 plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=DT)
@@ -36,13 +37,19 @@ broker.publish("plant/y", np.zeros(1))
 broker.publish("plant/u", np.zeros(1))
 
 print(f"Plant: bus '{BUS_NAME}' ready.  Starting in 2 s — launch controller.py now.")
-import time; time.sleep(2.0)
+import time
+
+time.sleep(2.0)
 
 # ── Agent ─────────────────────────────────────────────────────────────────────
-sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+sync = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
 agent = PlantAgent(
-    "plant", plant_d, None, sync,
-    channel_y="plant/y", channel_u="plant/u",
+    "plant",
+    plant_d,
+    None,
+    sync,
+    channel_y="plant/y",
+    channel_u="plant/u",
     broker=broker,
 )
 
