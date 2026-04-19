@@ -6,6 +6,14 @@ oseias:
   page: true
   socials:
     github: Oseiasdfarias
+    linkedin: oseiasfarias
+  links:
+    - label: Portfolio
+      href: https://oseiasdfarias.github.io
+    - label: ORCID
+      href: https://orcid.org/0009-0005-4960-0271
+    - label: Lattes
+      href: http://lattes.cnpq.br/2199717385351494
 
 synapsys:
   name: Synapsys Team

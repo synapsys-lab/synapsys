@@ -1,4 +1,5 @@
 ---
+format: md
 id: matrix-builders
 title: Matrix Builders
 sidebar_position: 1

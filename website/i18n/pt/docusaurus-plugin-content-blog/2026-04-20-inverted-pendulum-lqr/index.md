@@ -1,4 +1,5 @@
 ---
+format: md
 slug: inverted-pendulum-lqr
 title: "Estabilizando um Pêndulo Invertido com LQR"
 description: >
@@ -10,15 +11,13 @@ tags: [tutorial, lqr, control-theory, simulation, python]
 hide_table_of_contents: false
 ---
 
-import Tabs from '@theme/Tabs';
-import TabItem from '@theme/TabItem';
 
 O pêndulo invertido é o benchmark canônico do controle não-linear — instável, simples
 o suficiente para modelar analiticamente, mas rico o suficiente para revelar todo o
 fluxo de projeto LQR. Este post deriva o modelo linearizado a partir da física e mostra
 como estabilizá-lo com Synapsys em poucas dezenas de linhas de Python.
 
-{/* truncate */}
+<!-- truncate -->
 
 ## Física e linearização
 

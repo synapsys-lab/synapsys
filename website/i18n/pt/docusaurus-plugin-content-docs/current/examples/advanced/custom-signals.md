@@ -1,4 +1,5 @@
 ---
+format: md
 id: custom-signals
 title: Custom Signal Injection
 sidebar_position: 1
