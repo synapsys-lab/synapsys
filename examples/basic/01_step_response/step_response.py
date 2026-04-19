@@ -7,7 +7,7 @@ Usage:
 
 import matplotlib.pyplot as plt
 
-from synapsys.api.matlab_compat import tf, step
+from synapsys.api.matlab_compat import step, tf
 
 # Second-order underdamped system: G(s) = wn^2 / (s^2 + 2*zeta*wn*s + wn^2)
 wn, zeta = 10.0, 0.5

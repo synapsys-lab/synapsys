@@ -24,23 +24,23 @@ from __future__ import annotations
 import time
 from collections import deque
 
-import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 import numpy as np
 
-from synapsys.api import ss, c2d
-from synapsys.agents import PlantAgent, ControllerAgent, SyncEngine, SyncMode
+from synapsys.agents import ControllerAgent, PlantAgent, SyncEngine, SyncMode
 from synapsys.algorithms import PID
-from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+from synapsys.api import c2d, ss
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
 # ── Simulation parameters ─────────────────────────────────────────────────────
-BUS      = "scope_demo"
-DT       = 0.02       # 50 Hz
-WINDOW   = 200        # samples shown in the rolling window
-SCOPE_HZ = 30         # oscilloscope refresh rate (frames per second)
+BUS = "scope_demo"
+DT = 0.02  # 50 Hz
+WINDOW = 200  # samples shown in the rolling window
+SCOPE_HZ = 30  # oscilloscope refresh rate (frames per second)
 
-SP_AMP    = 2.0
-SP_FREQ   = 0.2
+SP_AMP = 2.0
+SP_FREQ = 0.2
 SP_OFFSET = 3.0
 
 # ── 1. Build plant ────────────────────────────────────────────────────────────
@@ -61,23 +61,37 @@ broker.publish("scope/u", np.zeros(1))
 # ── 3. Reference + control law ────────────────────────────────────────────────
 t_start = time.monotonic()
 
+
 def _setpoint(t: float) -> float:
     return SP_OFFSET + SP_AMP * np.sin(2.0 * np.pi * SP_FREQ * t)
 
+
 pid = PID(Kp=6.0, Ki=2.0, dt=DT, u_min=-15.0, u_max=15.0)
+
 
 def law(y: np.ndarray) -> np.ndarray:
     r = _setpoint(time.monotonic() - t_start)
     return np.array([pid.compute(setpoint=r, measurement=y[0])])
 
+
 # ── 4. Launch agents in background threads ────────────────────────────────────
 plant_agent = PlantAgent(
-    "plant", plant_d, None, SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
-    channel_y="scope/y", channel_u="scope/u", broker=broker,
+    "plant",
+    plant_d,
+    None,
+    SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
+    channel_y="scope/y",
+    channel_u="scope/u",
+    broker=broker,
 )
 ctrl_agent = ControllerAgent(
-    "ctrl", law, None, SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
-    channel_y="scope/y", channel_u="scope/u", broker=broker,
+    "ctrl",
+    law,
+    None,
+    SyncEngine(SyncMode.WALL_CLOCK, dt=DT),
+    channel_y="scope/y",
+    channel_u="scope/u",
+    broker=broker,
 )
 plant_agent.start(blocking=False)
 ctrl_agent.start(blocking=False)
@@ -92,14 +106,20 @@ buf_u = deque([0.0] * WINDOW, maxlen=WINDOW)
 fig, (ax_y, ax_u) = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
 fig.suptitle("Synapsys — Real-Time Oscilloscope (sinusoidal reference)", fontsize=13)
 
-line_y,  = ax_y.plot([], [], lw=1.6, color="steelblue",  label="y(t) — output")
-line_sp, = ax_y.plot([], [], lw=1.4, color="black", linestyle="--",
-                     label=f"r(t) = {SP_OFFSET}+{SP_AMP}·sin(2π·{SP_FREQ}t)")
+(line_y,) = ax_y.plot([], [], lw=1.6, color="steelblue", label="y(t) — output")
+(line_sp,) = ax_y.plot(
+    [],
+    [],
+    lw=1.4,
+    color="black",
+    linestyle="--",
+    label=f"r(t) = {SP_OFFSET}+{SP_AMP}·sin(2π·{SP_FREQ}t)",
+)
 ax_y.set_ylabel("y(t)")
 ax_y.set_ylim(SP_OFFSET - SP_AMP * 2.0, SP_OFFSET + SP_AMP * 2.0)
 ax_y.legend(loc="upper left", fontsize=8)
 
-line_u, = ax_u.plot([], [], lw=1.6, color="darkorange", label="u(t) — control")
+(line_u,) = ax_u.plot([], [], lw=1.6, color="darkorange", label="u(t) — control")
 ax_u.set_ylabel("u(t)")
 ax_u.set_xlabel("Time (s)")
 ax_u.set_ylim(-16, 16)
@@ -112,8 +132,8 @@ fig.tight_layout()
 
 
 def _update(_frame: int) -> tuple:
-    now   = time.monotonic() - t_start
-    y_val = broker.read("scope/y")[0]   # observer reads directly from broker
+    now = time.monotonic() - t_start
+    y_val = broker.read("scope/y")[0]  # observer reads directly from broker
     u_val = broker.read("scope/u")[0]
     r_val = _setpoint(now)
 
@@ -123,9 +143,9 @@ def _update(_frame: int) -> tuple:
     buf_u.append(u_val)
 
     t_arr = list(buf_t)
-    line_y.set_data(t_arr,  list(buf_y))
+    line_y.set_data(t_arr, list(buf_y))
     line_sp.set_data(t_arr, list(buf_r))
-    line_u.set_data(t_arr,  list(buf_u))
+    line_u.set_data(t_arr, list(buf_u))
 
     x_min = max(0.0, now - WINDOW * DT)
     x_max = x_min + WINDOW * DT

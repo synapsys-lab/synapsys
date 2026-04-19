@@ -1,18 +1,16 @@
 import numpy as np
 import pytest
 
-from synapsys.broker.topic import Topic
-from synapsys.broker.broker import MessageBroker
 from synapsys.broker.backends.base import BrokerBackend
+from synapsys.broker.broker import MessageBroker
+from synapsys.broker.topic import Topic
 
 
 class InMemoryBackend(BrokerBackend):
     """Simple in-memory backend for testing."""
 
     def __init__(self, topics: list[Topic]) -> None:
-        self._store: dict[str, np.ndarray] = {
-            t.name: np.zeros(t.shape) for t in topics
-        }
+        self._store: dict[str, np.ndarray] = {t.name: np.zeros(t.shape) for t in topics}
         self._topic_map = {t.name: t for t in topics}
 
     def supports(self, topic: Topic) -> bool:
@@ -116,6 +114,7 @@ class TestMessageBroker:
 
         def publish_later():
             import time
+
             time.sleep(0.05)
             broker.publish("plant/y", np.array([42.0]))
 

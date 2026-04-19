@@ -3,8 +3,8 @@ import time
 import numpy as np
 import pytest
 
-from synapsys.broker.topic import Topic
 from synapsys.broker.backends.zmq import ZMQBrokerBackend
+from synapsys.broker.topic import Topic
 
 ADDR = "tcp://127.0.0.1:15779"
 
@@ -56,3 +56,12 @@ class TestZMQBrokerBackend:
         if b._recv_thread is not None:
             b._recv_thread.join(timeout=1.0)
             assert not b._recv_thread.is_alive()
+
+    def test_write_without_pub_socket_raises(self, topics):
+        """write() on subscribe-only backend raises RuntimeError — covers zmq.py:80."""
+        sub_only = ZMQBrokerBackend(ADDR, subscribe_topics=topics)
+        try:
+            with pytest.raises(RuntimeError, match="No PUB socket"):
+                sub_only.write(topics[0], np.zeros((2,)))
+        finally:
+            sub_only.close()

@@ -17,11 +17,11 @@ from synapsys.api.matlab_compat import (
     step,
     tf,
 )
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic, ZMQBrokerBackend
 from synapsys.core.state_space import StateSpace
 from synapsys.core.transfer_function import TransferFunction
 from synapsys.core.transfer_function_matrix import TransferFunctionMatrix
 from synapsys.utils import StateEquations, col, mat, row
-from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend
 
 __all__ = [
     "__version__",

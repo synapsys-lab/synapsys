@@ -11,8 +11,8 @@ import pytest
 from synapsys.transport.network import ZMQReqRepTransport, ZMQTransport
 
 # Use random high ports to avoid conflicts across parallel test runs
-PUB_ADDR     = "tcp://127.0.0.1:15555"
-REQREP_ADDR  = "tcp://127.0.0.1:15556"
+PUB_ADDR = "tcp://127.0.0.1:15555"
+REQREP_ADDR = "tcp://127.0.0.1:15556"
 
 
 class TestZMQTransport:

@@ -10,17 +10,18 @@ Change CONTROLLER_HOST to the controller's IP address if remote.
 Usage:
     python examples/distributed/02_zmq/plant_zmq.py
 """
+
 import numpy as np
 
-from synapsys.api import ss, c2d
 from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+from synapsys.api import c2d, ss
 from synapsys.broker import MessageBroker, Topic
 from synapsys.broker.backends.zmq import ZMQBrokerBackend
 
 CONTROLLER_HOST = "localhost"
-DT              = 0.05     # 20 Hz
-Y_ADDR          = "tcp://0.0.0.0:5555"
-U_ADDR          = f"tcp://{CONTROLLER_HOST}:5556"
+DT = 0.05  # 20 Hz
+Y_ADDR = "tcp://0.0.0.0:5555"
+U_ADDR = f"tcp://{CONTROLLER_HOST}:5556"
 
 # G(s) = 1/(s+1) discretised with ZOH
 plant_d = c2d(ss([[-1.0]], [[1.0]], [[1.0]], [[0.0]]), dt=DT)
@@ -39,15 +40,21 @@ broker.add_backend(ZMQBrokerBackend(U_ADDR, subscribe_topics=[topic_u]))
 
 broker.publish("plant/y", np.zeros(1))
 
-import time; time.sleep(1.0)  # allow ZMQ sockets to bind
+import time
+
+time.sleep(1.0)  # allow ZMQ sockets to bind
 
 print(f"Plant: publishing plant/y on {Y_ADDR}")
 print(f"Plant: subscribing plant/u from {U_ADDR}")
 
-sync  = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
+sync = SyncEngine(SyncMode.WALL_CLOCK, dt=DT)
 agent = PlantAgent(
-    "plant", plant_d, None, sync,
-    channel_y="plant/y", channel_u="plant/u",
+    "plant",
+    plant_d,
+    None,
+    sync,
+    channel_y="plant/y",
+    channel_u="plant/u",
     broker=broker,
 )
 

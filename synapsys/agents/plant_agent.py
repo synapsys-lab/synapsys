@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import numpy as np
 
 from ..core.state_space import StateSpace
 from ..transport.base import TransportStrategy
 from .lifecycle import BaseAgent
 from .sync_engine import SyncEngine
+
+if TYPE_CHECKING:
+    from ..broker.broker import MessageBroker
 
 
 class PlantAgent(BaseAgent):
@@ -45,7 +50,7 @@ class PlantAgent(BaseAgent):
         channel_u: str = "u",
         x0: np.ndarray | None = None,
         *,
-        broker: object | None = None,
+        broker: "MessageBroker | None" = None,
     ):
         if not plant.is_discrete:
             raise ValueError(

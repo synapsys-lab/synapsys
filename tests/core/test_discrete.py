@@ -6,7 +6,7 @@ from synapsys.api.matlab_compat import c2d, ss, tf
 
 class TestDiscreteTransferFunction:
     def test_c2d_zoh_poles_inside_unit_circle(self):
-        G = tf([1], [1, 1])        # G(s) = 1/(s+1), pole at -1
+        G = tf([1], [1, 1])  # G(s) = 1/(s+1), pole at -1
         Gd = c2d(G, dt=0.1)
         assert Gd.is_discrete
         assert Gd.dt == pytest.approx(0.1)
@@ -46,8 +46,8 @@ class TestDiscreteTransferFunction:
             _ = G1 * G2
 
     def test_continuous_mixing_with_discrete_raises(self):
-        Gc = tf([1], [1, 1])         # continuous
-        Gd = tf([1], [1, 1], dt=0.1) # discrete
+        Gc = tf([1], [1, 1])  # continuous
+        Gd = tf([1], [1, 1], dt=0.1)  # discrete
         with pytest.raises(ValueError):
             _ = Gc + Gd
 

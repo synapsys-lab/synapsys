@@ -1,7 +1,7 @@
-import time
 import sys
+import time
 
-from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+from synapsys.broker import MessageBroker, SharedMemoryBackend, Topic
 
 
 def main():
@@ -10,7 +10,7 @@ def main():
 
     try:
         topic_state = Topic("sil/state", shape=(4,))
-        topic_u     = Topic("sil/u",     shape=(1,))
+        topic_u = Topic("sil/u", shape=(1,))
         broker = MessageBroker()
         broker.declare_topic(topic_state)
         broker.declare_topic(topic_u)
@@ -26,7 +26,7 @@ def main():
     try:
         while True:
             state = broker.read("sil/state")
-            u     = broker.read("sil/u")[0]
+            u = broker.read("sil/u")[0]
             elapsed = time.time() - start_time
 
             sys.stdout.write(

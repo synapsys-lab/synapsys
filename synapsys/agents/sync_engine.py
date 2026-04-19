@@ -6,7 +6,8 @@ from enum import Enum
 
 class SyncMode(str, Enum):
     """Simulation time-advancement strategy."""
-    LOCK_STEP  = "lock_step"   # wait for all peers before k -> k+1
+
+    LOCK_STEP = "lock_step"  # wait for all peers before k -> k+1
     WALL_CLOCK = "wall_clock"  # advance in real-time; missed samples use ZOH
 
 

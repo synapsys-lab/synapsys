@@ -3,11 +3,15 @@ from __future__ import annotations
 import logging
 import threading
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from ..transport.base import TransportStrategy
 from .sync_engine import SyncEngine
+
+if TYPE_CHECKING:
+    from ..broker.broker import MessageBroker
 
 logger = logging.getLogger(__name__)
 
@@ -35,12 +39,12 @@ class BaseAgent(ABC):
         transport: TransportStrategy | None,
         sync: SyncEngine,
         *,
-        broker: object | None = None,
+        broker: "MessageBroker | None" = None,
     ):
         self.name = name
         self.transport = transport
         self.sync = sync
-        self.broker = broker
+        self.broker: MessageBroker | None = broker
         self._running = False
         self._thread: threading.Thread | None = None
 
@@ -52,13 +56,13 @@ class BaseAgent(ABC):
 
     def _read(self, channel: str) -> np.ndarray:
         if self.broker is not None:
-            return self.broker.read(channel)  # type: ignore[union-attr]
+            return self.broker.read(channel)
         assert self.transport is not None, "Agent has neither transport nor broker."
         return self.transport.read(channel)
 
     def _write(self, channel: str, data: np.ndarray) -> None:
         if self.broker is not None:
-            self.broker.publish(channel, data)  # type: ignore[union-attr]
+            self.broker.publish(channel, data)
         else:
             assert self.transport is not None, "Agent has neither transport nor broker."
             self.transport.write(channel, data)

@@ -44,7 +44,9 @@ class TopicRegistry:
         try:
             return self._topics[name]
         except KeyError:
-            raise KeyError(f"Topic '{name}' not registered. Call broker.declare_topic() first.")
+            raise KeyError(
+                f"Topic '{name}' not registered. Call broker.declare_topic() first."
+            )
 
     @property
     def all(self) -> dict[str, Topic]:

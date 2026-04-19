@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -8,6 +9,9 @@ from ..hw.base import HardwareInterface
 from ..transport.base import TransportStrategy
 from .lifecycle import BaseAgent
 from .sync_engine import SyncEngine
+
+if TYPE_CHECKING:
+    from ..broker.broker import MessageBroker
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +76,7 @@ class HardwareAgent(BaseAgent):
         channel_u: str = "u",
         timeout_ms: float = 100.0,
         *,
-        broker: object | None = None,
+        broker: "MessageBroker | None" = None,
     ):
         super().__init__(name, transport, sync, broker=broker)
         self._hw = hardware
