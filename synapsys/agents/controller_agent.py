@@ -41,12 +41,14 @@ class ControllerAgent(BaseAgent):
         self,
         name: str,
         control_law: Callable[[np.ndarray], np.ndarray],
-        transport: TransportStrategy,
+        transport: TransportStrategy | None,
         sync: SyncEngine,
         channel_y: str = "y",
         channel_u: str = "u",
+        *,
+        broker: object | None = None,
     ):
-        super().__init__(name, transport, sync)
+        super().__init__(name, transport, sync, broker=broker)
         self._law = control_law
         self._ch_y = channel_y
         self._ch_u = channel_u
@@ -55,9 +57,9 @@ class ControllerAgent(BaseAgent):
         pass
 
     def step(self) -> None:
-        y = self.transport.read(self._ch_y)
+        y = self._read(self._ch_y)
         u = np.asarray(self._law(y), dtype=np.float64).flatten()
-        self.transport.write(self._ch_u, u)
+        self._write(self._ch_u, u)
 
     def teardown(self) -> None:
         pass

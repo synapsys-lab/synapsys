@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from synapsys.agents import ControllerAgent, SyncEngine, SyncMode
-from synapsys.transport import SharedMemoryTransport
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 
 # ── Optional PyTorch import ───────────────────────────────────────────────────
 try:
@@ -234,14 +234,25 @@ def _build_figure():
 def main() -> None:
     print("\nConnecting to 'sil_2dof' bus…")
     try:
-        transport = SharedMemoryTransport("sil_2dof", {"state": 4, "u": 1}, create=False)
+        topic_state = Topic("sil/state", shape=(4,))
+        topic_u     = Topic("sil/u",     shape=(1,))
+        broker = MessageBroker()
+        broker.declare_topic(topic_state)
+        broker.declare_topic(topic_u)
+        broker.add_backend(
+            SharedMemoryBackend("sil_2dof", [topic_state, topic_u], create=False)
+        )
     except Exception as exc:
         print(f"  Error: {exc}")
         print("  Is 02a_sil_plant.py running?")
         return
 
     sync = SyncEngine(mode=SyncMode.WALL_CLOCK, dt=DT)
-    agent = ControllerAgent("neural_lqr", control_law, transport, sync)
+    agent = ControllerAgent(
+        "neural_lqr", control_law, None, sync,
+        channel_y="sil/state", channel_u="sil/u",
+        broker=broker,
+    )
     agent.start(blocking=False)
     print("Neural-LQR controller running.")
     print(f"  Setpoint: x₂ → {X2_REF} m\n")
@@ -284,6 +295,7 @@ def main() -> None:
     finally:
         print("\nStopping Neural-LQR controller.")
         agent.stop()
+        broker.close()
 
 
 if __name__ == "__main__":

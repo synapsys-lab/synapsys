@@ -4,6 +4,8 @@ import logging
 import threading
 from abc import ABC, abstractmethod
 
+import numpy as np
+
 from ..transport.base import TransportStrategy
 from .sync_engine import SyncEngine
 
@@ -18,6 +20,10 @@ class BaseAgent(ABC):
     Call ``start()`` to launch the agent in a background thread, or
     ``start(blocking=True)`` to run it in the current thread.
 
+    Accepts either a legacy ``TransportStrategy`` or a ``MessageBroker``
+    (pass ``transport=None, broker=<broker>``). Use ``self._read()`` /
+    ``self._write()`` in subclasses to stay transport-agnostic.
+
     Lifecycle::
 
         setup()  ->  [step() + sync.tick()] * N  ->  teardown()
@@ -26,17 +32,36 @@ class BaseAgent(ABC):
     def __init__(
         self,
         name: str,
-        transport: TransportStrategy,
+        transport: TransportStrategy | None,
         sync: SyncEngine,
+        *,
+        broker: object | None = None,
     ):
         self.name = name
         self.transport = transport
         self.sync = sync
+        self.broker = broker
         self._running = False
         self._thread: threading.Thread | None = None
 
-        # Transport lifetime is owned by the caller, not the agent.
-        # The agent does NOT close the transport on exit.
+        # Transport/broker lifetime is owned by the caller, not the agent.
+
+    # ------------------------------------------------------------------
+    # Unified I/O helpers (transport-agnostic)
+    # ------------------------------------------------------------------
+
+    def _read(self, channel: str) -> np.ndarray:
+        if self.broker is not None:
+            return self.broker.read(channel)  # type: ignore[union-attr]
+        assert self.transport is not None, "Agent has neither transport nor broker."
+        return self.transport.read(channel)
+
+    def _write(self, channel: str, data: np.ndarray) -> None:
+        if self.broker is not None:
+            self.broker.publish(channel, data)  # type: ignore[union-attr]
+        else:
+            assert self.transport is not None, "Agent has neither transport nor broker."
+            self.transport.write(channel, data)
 
     # ------------------------------------------------------------------
     # Interface to implement

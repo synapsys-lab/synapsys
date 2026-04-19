@@ -66,13 +66,15 @@ class HardwareAgent(BaseAgent):
         self,
         name: str,
         hardware: HardwareInterface,
-        transport: TransportStrategy,
+        transport: TransportStrategy | None,
         sync: SyncEngine,
         channel_y: str = "y",
         channel_u: str = "u",
         timeout_ms: float = 100.0,
+        *,
+        broker: object | None = None,
     ):
-        super().__init__(name, transport, sync)
+        super().__init__(name, transport, sync, broker=broker)
         self._hw = hardware
         self._ch_y = channel_y
         self._ch_u = channel_u
@@ -83,8 +85,7 @@ class HardwareAgent(BaseAgent):
         self._last_u: np.ndarray = np.zeros(hardware.n_inputs)
 
     def setup(self) -> None:
-        # Initialise bus with zeros so the controller has a valid starting value
-        self.transport.write(self._ch_y, self._last_y.copy())
+        self._write(self._ch_y, self._last_y.copy())
 
     def step(self) -> None:
         # ── Read sensors from hardware (ZOH on timeout) ────────────────────
@@ -97,11 +98,9 @@ class HardwareAgent(BaseAgent):
                 self.name,
             )
 
-        # ── Publish y to the transport bus ────────────────────────────────
-        self.transport.write(self._ch_y, self._last_y)
+        self._write(self._ch_y, self._last_y)
 
-        # ── Read control command from bus ─────────────────────────────────
-        u = self.transport.read(self._ch_u)
+        u = self._read(self._ch_u)
         self._last_u = np.asarray(u, dtype=np.float64).flatten()
 
         # ── Send actuator command to hardware (ZOH on timeout) ────────────

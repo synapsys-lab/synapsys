@@ -58,7 +58,7 @@ for k in range(100):
 
 In **Software-in-the-Loop (SIL)**, the control algorithm runs exactly as it would in deployment, but it executes on a desktop/server (often in a separate process or Docker container) rather than embedded hardware. The plant remains simulated.
 
-To transition from MIL to SIL in Synapsys, you wrap your components into **Agents** and connect them using a real transport mechanism (e.g., `SharedMemoryTransport` or `ZMQTransport`).
+To transition from MIL to SIL in Synapsys, you wrap your components into **Agents** and connect them via a `MessageBroker` backed by shared memory or ZeroMQ.
 
 ```mermaid
 %%{init: {'theme': 'dark'}}%%
@@ -85,17 +85,43 @@ flowchart LR
 
 **Terminal 1 (Plant)**
 ```python
-transport_plant = SharedMemoryTransport("bus", {"y": 1, "u": 1}, create=True)
-plant_agent = PlantAgent("plant", plant_d, transport_plant, SyncEngine())
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("bus", [topic_y, topic_u], create=True))
+broker.publish("plant/y", np.zeros(1))
+broker.publish("plant/u", np.zeros(1))
+
+plant_agent = PlantAgent(
+    "plant", plant_d, None, SyncEngine(),
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
 plant_agent.start(blocking=True)
 ```
 
 **Terminal 2 (Controller)**
 ```python
-transport_ctrl = SharedMemoryTransport("bus", {"y": 1, "u": 1}, create=False)
-law = lambda y: pid.compute(setpoint=1.0, measurement=y[0])
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 
-ctrl_agent = ControllerAgent("ctrl", law, transport_ctrl, SyncEngine())
+topic_y = Topic("plant/y", shape=(1,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("bus", [topic_y, topic_u], create=False))
+
+law = lambda y: np.array([pid.compute(setpoint=1.0, measurement=y[0])])
+
+ctrl_agent = ControllerAgent(
+    "ctrl", law, None, SyncEngine(),
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
 ctrl_agent.start(blocking=True)
 ```
 
@@ -136,21 +162,42 @@ flowchart LR
 
 ### HIL Bridge Concept
 
-Instead of instantiating a `ControllerAgent`, you bind the plant's transport to a hardware bridge layer (`synapsys.hw`). *Note: Concrete hardware interfaces are planned for v0.5.*
+Instead of instantiating a `ControllerAgent`, you bind the plant's broker to a `HardwareAgent` that bridges the broker bus to a physical device via `synapsys.hw`.
+
+:::warning[Planned feature — v0.5]
+Concrete hardware interfaces (`SerialHardwareInterface`, `OPCUAHardwareInterface`, `FPGAHardwareInterface`) are **not yet implemented**. The code below illustrates the intended pattern using the available `MockHardwareInterface`. Replace `MockHardwareInterface` with the appropriate concrete class once v0.5 is released.
+:::
 
 ```python
-from synapsys.hw import SerialHardwareInterface
+from synapsys.hw import MockHardwareInterface   # replace with SerialHardwareInterface in v0.5
+from synapsys.agents import HardwareAgent, SyncEngine, SyncMode
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
+import numpy as np
 
-# Connect to the physical controller via USB/UART
-hw_bridge = SerialHardwareInterface(port="/dev/ttyACM0", baudrate=115200)
+topic_y = Topic("hw/y", shape=(1,))
+topic_u = Topic("hw/u", shape=(1,))
 
-while True:
-    y = transport_plant.read("y")
-    hw_bridge.write(y)           # Send sensor data over Serial
-    
-    u = hw_bridge.read()         # Wait for MCU control action
-    transport_plant.write("u", u)
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("hil_bus", [topic_y, topic_u], create=True))
+broker.publish("hw/y", np.zeros(1))
+broker.publish("hw/u", np.zeros(1))
+
+# MockHardwareInterface simulates a real device — swap for SerialHardwareInterface later
+hw = MockHardwareInterface(n_inputs=1, n_outputs=1)
+sync = SyncEngine(SyncMode.WALL_CLOCK, dt=0.01)
+
+agent = HardwareAgent(
+    "hw_plant", hw, None, sync,
+    channel_y="hw/y", channel_u="hw/u", broker=broker,
+)
+
+with hw:
+    agent.start(blocking=True)
 ```
+
+Each tick: reads `y` from hardware → publishes `y` to broker → reads `u` from broker → writes `u` to hardware. On `TimeoutError`, the last known `y`/`u` are held (Zero-Order Hold).
 
 :::note
 **Advantage:** You can rigorously test boundary conditions, system failures, and corner cases on the final compiled C/C++ firmware without risking physical damage to an expensive, actual plant (e.g., drones, industrial motors).
@@ -208,26 +255,32 @@ flowchart TD
 import torch
 import numpy as np
 from synapsys.agents import ControllerAgent, SyncEngine, SyncMode
-from synapsys.transport import SharedMemoryTransport
+from synapsys.broker import MessageBroker, Topic, SharedMemoryBackend
 
 # Load your pre-trained PyTorch model
 model = torch.load("rl_controller.pth")
 model.eval()
 
 def ai_control_law(y: np.ndarray) -> np.ndarray:
-    # Convert latest sensor data to tensor
     state_tensor = torch.tensor(y, dtype=torch.float32)
-    
-    # Run inference to predict control action
     with torch.no_grad():
         action = model(state_tensor).numpy()
-        
     return action
 
-# Create transport and run the AI controller as an agent
-ai_transport = SharedMemoryTransport("ctrl_bus", {"y": 2, "u": 1}, create=False)
+# Connect to the running broker bus
+topic_y = Topic("plant/y", shape=(2,))
+topic_u = Topic("plant/u", shape=(1,))
+
+broker = MessageBroker()
+broker.declare_topic(topic_y)
+broker.declare_topic(topic_u)
+broker.add_backend(SharedMemoryBackend("ctrl_bus", [topic_y, topic_u], create=False))
+
 sync = SyncEngine(mode=SyncMode.WALL_CLOCK, dt=0.01)
 
-ai_agent = ControllerAgent("ai_ctrl", ai_control_law, ai_transport, sync)
+ai_agent = ControllerAgent(
+    "ai_ctrl", ai_control_law, None, sync,
+    channel_y="plant/y", channel_u="plant/u", broker=broker,
+)
 ai_agent.start(blocking=True)
 ```

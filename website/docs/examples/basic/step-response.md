@@ -106,3 +106,11 @@ uv run python examples/basic/01_step_response/step_response.py
 ```
 
 Output: a plot window + `step_response.png` saved to the working directory.
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/basic/01_step_response/step_response.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/basic/01_step_response/step_response.py) | Complete example — LTI analysis, PID closed-loop, step response plot |

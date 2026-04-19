@@ -113,3 +113,11 @@ uv run python examples/advanced/04_realtime_oscilloscope/04_realtime_matplotlib.
 ```
 
 The oscilloscope window opens immediately. Close it to stop the simulation.
+
+---
+
+## Source
+
+| File | Description |
+|------|-------------|
+| [`examples/advanced/04_realtime_oscilloscope/04_realtime_matplotlib.py`](https://github.com/synapsys-lab/synapsys/blob/main/examples/advanced/04_realtime_oscilloscope/04_realtime_matplotlib.py) | Complete example — sinusoidal reference, rolling-window deque, live matplotlib oscilloscope |
