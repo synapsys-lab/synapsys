@@ -1,19 +1,16 @@
 oseias:
-  name: Oseias D. Farias
-  title: Control Systems Engineer & Researcher
-  url: https://github.com/Oseiasdfarias
+  name: Oséias D. Farias
+  title: ML Engineer · MSc Researcher @ UFABC & UFPA
+  url: https://oseiasdfarias.github.io
   image_url: https://github.com/Oseiasdfarias.png
   page: true
+  description: |
+    Backend developer (Python · Java · Quarkus · AWS) and control systems researcher. MSc in Electrical Engineering @ UFABC (Artificial Antifragility / FPGA) and MSc in Applied Computing @ UFPA (Deep Learning). Currently building Lunella — an AI-powered customer automation platform at Verzel.
+
+    Author of Synapsys · ORCID: 0009-0005-4960-0271 · Lattes: lattes.cnpq.br/2199717385351494
   socials:
     github: Oseiasdfarias
     linkedin: oseiasfarias
-  links:
-    - label: Portfolio
-      href: https://oseiasdfarias.github.io
-    - label: ORCID
-      href: https://orcid.org/0009-0005-4960-0271
-    - label: Lattes
-      href: http://lattes.cnpq.br/2199717385351494
 
 synapsys:
   name: Synapsys Team
