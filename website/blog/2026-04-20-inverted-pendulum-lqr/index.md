@@ -6,7 +6,8 @@ description: >
   pendulum, design an LQR controller, simulate the closed-loop response, and
   discretise for embedded deployment — all in Python with Synapsys.
 authors: [oseias]
-tags: [tutorial, lqr, control-theory, simulation, python]
+tags: [artigo, tutorial, lqr, control-theory, simulation, python]
+content_type: artigo
 hide_table_of_contents: false
 ---
 

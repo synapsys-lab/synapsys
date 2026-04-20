@@ -7,7 +7,8 @@ description: >
   invertido, projete um controlador LQR, simule a resposta em malha fechada e
   discretize para deployment embarcado — tudo em Python com Synapsys.
 authors: [oseias]
-tags: [tutorial, lqr, control-theory, simulation, python]
+tags: [artigo, tutorial, lqr, control-theory, simulation, python]
+content_type: artigo
 hide_table_of_contents: false
 ---
 

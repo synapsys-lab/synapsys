@@ -6,7 +6,9 @@ description: >
   anti-windup — from the integral windup problem to experimental step-response
   validation, with Synapsys code throughout.
 authors: [oseias]
-tags: [research, pid, control-theory, simulation, python, tutorial]
+tags: [artigo, research, pid, control-theory, simulation, python, tutorial]
+content_type: artigo
+image: /img/quickstart/qs_04_pid.png
 hide_table_of_contents: false
 ---
 

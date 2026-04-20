@@ -6,7 +6,9 @@ description: >
   swap from simulation to real hardware by changing one line, keeping your
   control algorithm untouched.
 authors: [oseias]
-tags: [tutorial, sil, hil, simulation, python, control-theory]
+tags: [post, tutorial, sil, hil, simulation, python, control-theory]
+content_type: post
+image: /img/examples/03_sil_ai_controller.png
 hide_table_of_contents: false
 ---
 

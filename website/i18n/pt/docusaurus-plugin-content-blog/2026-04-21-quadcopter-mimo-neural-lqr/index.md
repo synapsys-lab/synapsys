@@ -7,7 +7,8 @@ description: >
   aumentá-lo com um MLP residual e simular a malha fechada em 3D — um estudo
   de caso de nível de pesquisa usando Synapsys.
 authors: [oseias]
-tags: [research, mimo, lqr, neural-lqr, simulation, python]
+tags: [artigo, research, mimo, lqr, neural-lqr, simulation, python]
+content_type: artigo
 hide_table_of_contents: false
 ---
 

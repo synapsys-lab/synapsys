@@ -6,7 +6,8 @@ description: >
   with a residual MLP, and simulate the closed-loop in 3D — a research-grade
   case study using Synapsys.
 authors: [oseias]
-tags: [research, mimo, lqr, neural-lqr, simulation, python]
+tags: [artigo, research, mimo, lqr, neural-lqr, simulation, python]
+content_type: artigo
 hide_table_of_contents: false
 ---
 
