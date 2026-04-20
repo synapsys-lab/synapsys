@@ -13,6 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.3] — 2026-04-20
+
+### Added
+
+#### Quadcopter MIMO example
+- **Heading-aligned yaw control** — drone now rotates to face the direction of travel via `ψ_ref = atan2(ẏ, ẋ)`; yaw error wrapped to `[-π, π]`; holds current heading below 0.08 m/s to suppress hover noise.
+- **IMPROVEMENTS.md** — roadmap of 6 planned enhancements (velocity feedforward, Kalman filter, non-linear RK4 dynamics, PPO RL fine-tuning, multi-drone ZMQ formation, wind disturbance model).
+- Refreshed `quadcopter_3d.gif` and `quadcopter_telemetry.gif` with updated simulation.
+
+---
+
 ## [0.2.2] — 2026-04-19
 
 ### Added
