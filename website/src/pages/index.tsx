@@ -3,6 +3,8 @@ import Link from '@docusaurus/Link';
 import Translate, { translate } from '@docusaurus/Translate';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import { useColorMode } from '@docusaurus/theme-common';
+
 import Layout from '@theme/Layout';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -83,10 +85,16 @@ function NavCard({ Icon, title, desc, href }: { Icon: LucideIcon; title: string;
   );
 }
 
+// ── Theme-aware logo ──────────────────────────────────────────────────────────
+function ThemedLogo(): ReactElement {
+  const { colorMode } = useColorMode();
+  const logoUrl = useBaseUrl(colorMode === 'dark' ? '/img/logo_dark.svg' : '/img/logo_light.svg');
+  return <img src={logoUrl} alt="Synapsys logo" className="doc-header__logo" />;
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home(): ReactElement {
   const { siteConfig } = useDocusaurusContext();
-  const logoUrl = useBaseUrl('/img/logo.svg');
 
   return (
     <Layout
@@ -106,7 +114,7 @@ export default function Home(): ReactElement {
 
             {/* ── Logo column ── */}
             <div className="doc-header__logo-col">
-              <img src={logoUrl} alt="Synapsys logo" className="doc-header__logo" />
+              <ThemedLogo />
             </div>
 
             {/* ── Content column ── */}

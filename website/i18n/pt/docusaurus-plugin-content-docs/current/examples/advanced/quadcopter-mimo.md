@@ -20,6 +20,7 @@ Uma simulação em tempo real completa de um **quadricóptero com 12 estados** c
 | **Modelagem LTI MIMO** | Modelo hover linearizado com 12 estados, construído com `synapsys.api.ss()` |
 | **LQR MIMO** | `synapsys.algorithms.lqr()` em uma planta 12 estados / 4 entradas |
 | **Neural-LQR residual** | `δu = −K·e + MLP(e)` — resíduo zerado na inicialização → começa no LQR ótimo |
+| **Yaw alinhado à direção** | O drone rotaciona para apontar na direção do movimento — $\psi_\text{ref} = \text{atan2}(\dot{y}, \dot{x})$ |
 | **GUI de configuração** | Dialog tkinter: tempo de simulação, altitude, trajetória de referência e seus parâmetros |
 | **PyVista 3D** | Animação da pose do drone + rastro de trajetória a 50 Hz |
 | **Telemetria matplotlib** | Rastreamento de posição, ângulos de Euler, entradas de controle — ao vivo a 10 Hz |
@@ -217,6 +218,39 @@ As três trajetórias compartilham a fase de decolagem: o drone sobe do chão at
 
 ---
 
+## Controle de yaw alinhado à direção
+
+Durante o rastreamento de trajetória, o drone **rotaciona automaticamente para encarar a direção em que está se movendo**. A cada passo de simulação, o yaw desejado é calculado a partir do vetor de velocidade atual:
+
+$$
+\psi_\text{ref}(t) = \text{atan2}\!\left(\dot{y}(t),\, \dot{x}(t)\right)
+$$
+
+Essa referência é injetada diretamente em `x_ref[5]` antes do cálculo do erro LQR, de modo que a matriz de ganho $K$ existente trata a correção de yaw sem nenhuma mudança estrutural.
+
+Dois casos extremos são tratados explicitamente:
+
+| Condição | Comportamento |
+|---|---|
+| Velocidade $\|\dot{x}, \dot{y}\| < 0.08$ m/s (próximo ao hover) | Mantém o yaw atual — evita comandos ruidosos quando a velocidade é pouco confiável |
+| Erro de yaw cruza $\pm 180°$ | Erro normalizado para $[-\pi, \pi]$ — impede wind-up através da descontinuidade |
+
+```python
+def _yaw_ref_from_velocity(vx, vy, psi_current, min_speed=0.08):
+    if np.hypot(vx, vy) < min_speed:
+        return psi_current      # mantém heading próximo ao hover
+    return np.arctan2(vy, vx)
+
+# Dentro do loop de simulação:
+x_ref[5] = _yaw_ref_from_velocity(x[6], x[7], x[5])
+e = x - x_ref
+e[5] = _wrap_angle(e[5])        # normaliza para [-π, π]
+```
+
+O resultado é claramente visível na animação 3D: o **nariz do drone sempre aponta na tangente da trajetória** ao percorrer o figura-8 ou o círculo.
+
+---
+
 ## Arquitetura
 
 ```mermaid
@@ -229,9 +263,12 @@ flowchart TD
         PLANT["sys_d.evolve(x, δu)\nmodelo discretizado ZOH"]
         CTRL["NeuralLQR\n−K·e + MLP(e)"]
         REF["get_ref(t, cfg)\nfig8 / círculo / hover"]
+        YAW["_yaw_ref_from_velocity\nψ_ref = atan2(ẏ, ẋ)"]
         CTRL -->|δu| PLANT
         PLANT -->|x| CTRL
-        REF -->|x_ref| CTRL
+        PLANT -->|ẋ, ẏ, ψ| YAW
+        REF -->|x_ref| YAW
+        YAW -->|x_ref com ψ_ref| CTRL
     end
 
     subgraph BUFS["Deques thread-safe"]

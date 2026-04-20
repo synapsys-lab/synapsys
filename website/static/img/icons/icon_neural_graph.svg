@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
+  <!-- B: Neural Graph — nodes + directed edges suggesting a control network -->
+  <rect width="48" height="48" rx="10" fill="#0f172a"/>
+
+  <!-- Edges (teal) -->
+  <line x1="10" y1="14" x2="22" y2="24" stroke="#0d9488" stroke-width="1.5" opacity="0.7"/>
+  <line x1="10" y1="34" x2="22" y2="24" stroke="#0d9488" stroke-width="1.5" opacity="0.7"/>
+  <line x1="22" y1="24" x2="38" y2="24" stroke="#c8a870" stroke-width="1.8" opacity="0.9"/>
+  <!-- Feedback arc (gold, dashed) -->
+  <path d="M 38,24 Q 30,44 10,34" stroke="#c8a870" stroke-width="1.4" stroke-dasharray="2.5,2" fill="none" opacity="0.55"/>
+
+  <!-- Arrowhead on output edge -->
+  <polyline points="35,22.5 38,24 35,25.5" stroke="#c8a870" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+
+  <!-- Input nodes (left) -->
+  <circle cx="10" cy="14" r="3.2" fill="#1e293b" stroke="#c8a870" stroke-width="1.6"/>
+  <circle cx="10" cy="34" r="3.2" fill="#1e293b" stroke="#c8a870" stroke-width="1.6"/>
+
+  <!-- Hidden node (center) -->
+  <circle cx="22" cy="24" r="4" fill="#0d9488" stroke="#c8a870" stroke-width="1.6"/>
+
+  <!-- Output node (right) -->
+  <circle cx="38" cy="24" r="3.2" fill="#1e293b" stroke="#c8a870" stroke-width="1.6"/>
+</svg>
