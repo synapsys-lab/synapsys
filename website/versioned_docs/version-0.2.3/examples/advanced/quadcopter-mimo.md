@@ -19,6 +19,7 @@ A complete real-time simulation of a **12-state quadcopter** controlled by a **p
 | **MIMO LTI modelling** | 12-state linearised hover model built with `synapsys.api.ss()` |
 | **MIMO LQR** | `synapsys.algorithms.lqr()` on a 12-state / 4-input plant |
 | **Residual Neural-LQR** | `δu = −K·e + MLP(e)` — residual zeroed at init → starts at optimal LQR |
+| **Heading-aligned yaw** | Drone rotates to face direction of travel — $\psi_\text{ref} = \text{atan2}(\dot{y}, \dot{x})$ |
 | **Config GUI** | tkinter dialog: simulation time, altitude, reference trajectory & its parameters |
 | **PyVista 3D** | Real-time drone pose animation + trajectory trail at 50 Hz |
 | **matplotlib telemetry** | Position tracking, Euler angles, control inputs — live at 10 Hz |
@@ -216,6 +217,39 @@ All three trajectories share the takeoff phase: the drone climbs from the ground
 
 ---
 
+## Heading-aligned yaw control
+
+During trajectory tracking the drone automatically **rotates to face the direction it is moving**. At each simulation step the desired yaw is computed from the current velocity vector:
+
+$$
+\psi_\text{ref}(t) = \text{atan2}\!\left(\dot{y}(t),\, \dot{x}(t)\right)
+$$
+
+This reference is injected directly into `x_ref[5]` before the LQR error is computed, so the existing gain matrix $K$ handles yaw correction with no structural changes.
+
+Two edge cases are handled explicitly:
+
+| Condition | Behaviour |
+|---|---|
+| Speed $\|\dot{x}, \dot{y}\| < 0.08$ m/s (near hover) | Hold current yaw — avoids noisy commands when velocity is unreliable |
+| Yaw error crosses $\pm 180°$ | Error wrapped to $[-\pi, \pi]$ — prevents wind-up through the discontinuity |
+
+```python
+def _yaw_ref_from_velocity(vx, vy, psi_current, min_speed=0.08):
+    if np.hypot(vx, vy) < min_speed:
+        return psi_current      # hold heading during near-hover
+    return np.arctan2(vy, vx)
+
+# Inside the simulation loop:
+x_ref[5] = _yaw_ref_from_velocity(x[6], x[7], x[5])
+e = x - x_ref
+e[5] = _wrap_angle(e[5])        # wrap to [-π, π]
+```
+
+The result is clearly visible in the 3D animation: the drone's **nose always points along the trajectory tangent** as it sweeps through the figure-8 or circle.
+
+---
+
 ## Architecture
 
 ```mermaid
@@ -228,9 +262,12 @@ flowchart TD
         PLANT["sys_d.evolve(x, δu)\nZOH discretised model"]
         CTRL["NeuralLQR\n−K·e + MLP(e)"]
         REF["get_ref(t, cfg)\nfig8 / circle / hover"]
+        YAW["_yaw_ref_from_velocity\nψ_ref = atan2(ẏ, ẋ)"]
         CTRL -->|δu| PLANT
         PLANT -->|x| CTRL
-        REF -->|x_ref| CTRL
+        PLANT -->|ẋ, ẏ, ψ| YAW
+        REF -->|x_ref| YAW
+        YAW -->|x_ref with ψ_ref| CTRL
     end
 
     subgraph BUFS["Thread-safe deques"]
