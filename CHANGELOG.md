@@ -13,6 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.4] — 2026-04-20
+
+### Changed
+
+#### Website & assets
+- **New Synapse-S logo** — replaced logo with gold/navy Synapse-S design; added `logo_dark.svg`, `logo_light.svg` and `logo_dark.png` (1000×1000) variants.
+- **Theme-adaptive logo** — navbar and homepage now swap between dark/light logo automatically via `srcDark` and `ThemedLogo` component.
+- **Favicon** — regenerated `favicon.ico` (16/32/48 px) from new logo via cairosvg for crisp rendering.
+- **LinkedIn icon** — neutralised colour to match GitHub icon (uses `currentColor`).
+- **Author title** — updated to avoid redundant MSc label.
+
+#### Docs
+- **Quadcopter PT translation** — added "Controle de yaw alinhado à direção" section with math, edge-cases table, code snippet and updated Mermaid diagram.
+- **v0.2.3 versioned snapshot** — backported yaw control docs to versioned EN + PT snapshot.
+
+---
+
 ## [0.2.3] — 2026-04-20
 
 ### Added
