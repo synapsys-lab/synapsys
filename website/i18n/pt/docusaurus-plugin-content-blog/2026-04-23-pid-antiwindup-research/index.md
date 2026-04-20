@@ -6,7 +6,8 @@ description: >
   back-calculation — do problema de windup integral à validação experimental
   de resposta ao degrau, com código Synapsys ao longo do post.
 authors: [oseias]
-tags: [research, pid, control-theory, simulation, python, tutorial]
+tags: [artigo, research, pid, control-theory, simulation, python, tutorial]
+content_type: artigo
 hide_table_of_contents: false
 ---
 

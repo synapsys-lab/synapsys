@@ -6,7 +6,8 @@ description: >
   troque da simulação para o hardware real mudando uma linha, mantendo seu
   algoritmo de controle intacto.
 authors: [oseias]
-tags: [tutorial, sil, hil, simulation, python, control-theory]
+tags: [post, tutorial, sil, hil, simulation, python, control-theory]
+content_type: post
 hide_table_of_contents: false
 ---
 

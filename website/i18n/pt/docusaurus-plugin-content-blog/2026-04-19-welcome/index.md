@@ -5,7 +5,8 @@ description: >
   Apresentando o Blog Synapsys — um espaço para tutoriais, insights de pesquisa
   e guias práticos para engenheiros e pesquisadores de sistemas de controle.
 authors: [oseias]
-tags: [release, python, control-theory]
+tags: [post, release, python, control-theory]
+content_type: post
 hide_table_of_contents: false
 ---
 

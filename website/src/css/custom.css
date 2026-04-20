@@ -128,16 +128,6 @@ h1, h2, h3, h4 { letter-spacing: -0.02em; }
   margin-bottom: 1rem;
 }
 
-/* Blinking cursor on footer title */
-.footer__title::after {
-  content: '▌';
-  font-family: 'VT323', monospace;
-  color: var(--brand-gold);
-  margin-left: 4px;
-  animation: pixel-blink 1.2s step-end infinite;
-  font-size: 1em;
-  opacity: 0.6;
-}
 
 /* ── Navbar ─────────────────────────────────────────────────────────────────── */
 .navbar {

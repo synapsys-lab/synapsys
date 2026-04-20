@@ -49,15 +49,5 @@ jobs:
                   i18n/pt/docusaurus-plugin-content-docs/version-${{ steps.ver.outputs.version }}/
           git commit -m "docs: snapshot v${{ steps.ver.outputs.version }}"
 
-      - name: Push to branch and open PR
-        run: |
-          BRANCH="docs/version-${{ steps.ver.outputs.version }}"
-          git checkout -b "$BRANCH"
-          git push origin "$BRANCH"
-          gh pr create \
-            --base develop \
-            --head "$BRANCH" \
-            --title "docs: snapshot v${{ steps.ver.outputs.version }}" \
-            --body "Automated docs version snapshot triggered by release ${{ github.event.release.tag_name }}."
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push snapshot directly to develop
+        run: git push origin HEAD:develop
