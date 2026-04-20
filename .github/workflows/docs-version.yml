@@ -1,0 +1,63 @@
+name: Docs — Snapshot version on release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  snapshot:
+    name: docusaurus docs:version ${{ github.event.release.tag_name }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout develop
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract version (strip leading v)
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install website dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Snapshot docs version
+        working-directory: website
+        run: npx docusaurus docs:version ${{ steps.ver.outputs.version }}
+
+      - name: Commit versioned docs
+        working-directory: website
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add versioned_docs/ versioned_sidebars/ versions.json \
+                  i18n/pt/docusaurus-plugin-content-docs/version-${{ steps.ver.outputs.version }}/
+          git commit -m "docs: snapshot v${{ steps.ver.outputs.version }}"
+
+      - name: Push to branch and open PR
+        run: |
+          BRANCH="docs/version-${{ steps.ver.outputs.version }}"
+          git checkout -b "$BRANCH"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base develop \
+            --head "$BRANCH" \
+            --title "docs: snapshot v${{ steps.ver.outputs.version }}" \
+            --body "Automated docs version snapshot triggered by release ${{ github.event.release.tag_name }}."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
