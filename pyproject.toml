@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synapsys"
-version = "0.2.3"
+version = "0.2.4"
 description = "Modern Python control systems framework with distributed multi-agent simulation"
 readme = "README.md"
 license = { text = "MIT" }

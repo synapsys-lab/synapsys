@@ -100,7 +100,7 @@ const config: Config = {
     },
     navbar: {
       title: 'Synapsys',
-      logo: { alt: 'Synapsys Logo', src: 'img/logo.svg' },
+      logo: { alt: 'Synapsys Logo', src: 'img/logo_light.svg', srcDark: 'img/logo_dark.svg' },
       items: [
         {
           type: 'docSidebar',
