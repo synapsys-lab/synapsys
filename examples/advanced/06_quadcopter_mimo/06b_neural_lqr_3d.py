@@ -111,6 +111,20 @@ def circle_ref(t: float, radius: float, omega: float, z_hover: float) -> np.ndar
     return ref
 
 
+def _wrap_angle(a: float) -> float:
+    """Wrap angle to [-π, π]."""
+    return (a + np.pi) % (2.0 * np.pi) - np.pi
+
+
+def _yaw_ref_from_velocity(
+    vx: float, vy: float, psi_current: float, min_speed: float = 0.08
+) -> float:
+    """Heading-aligned yaw reference. Holds current yaw when drone is nearly still."""
+    if np.hypot(vx, vy) < min_speed:
+        return psi_current  # no yaw error — preserve current heading
+    return np.arctan2(vy, vx)
+
+
 def get_ref(t: float, cfg: SimConfig) -> np.ndarray:
     if t < cfg.t_hover:
         ref = np.zeros(12)
@@ -404,7 +418,10 @@ def _sim_thread(
         t0 = time.perf_counter()
 
         x_ref = get_ref(t, cfg)
+        if t >= cfg.t_hover:
+            x_ref[5] = _yaw_ref_from_velocity(x[6], x[7], x[5])
         e = x - x_ref
+        e[5] = _wrap_angle(e[5])
 
         if net is not None and HAS_TORCH:
             with torch.no_grad():
@@ -447,7 +464,10 @@ def _run_fast_sim(
     for step in range(n_steps):
         t = step * DT
         x_ref = get_ref(t, cfg)
+        if t >= cfg.t_hover:
+            x_ref[5] = _yaw_ref_from_velocity(x[6], x[7], x[5])
         e = x - x_ref
+        e[5] = _wrap_angle(e[5])
         if net is not None and HAS_TORCH:
             with torch.no_grad():
                 t_in = torch.tensor(e, dtype=torch.float32).unsqueeze(0)
