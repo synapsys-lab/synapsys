@@ -52,6 +52,10 @@ website/.docusaurus/
 !website/static/img/examples/
 !website/static/img/examples/*.png
 !website/static/img/examples/*.gif
+!website/static/img/simview/
+!website/static/img/simview/*.gif
+!website/static/img/simview/docs/
+!website/static/img/simview/docs/*.gif
 !website/static/img/quickstart/
 !website/static/img/quickstart/*.png
 
