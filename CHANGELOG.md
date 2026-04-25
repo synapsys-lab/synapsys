@@ -13,6 +13,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.5] — 2026-04-25
+
+### Added
+
+#### Physical Simulators (`synapsys/simulators/`)
+- `SimulatorBase` — abstract base for nonlinear continuous-time simulators: Euler/RK4/RK45 integrators, thread-safe `step(u, dt)`, sensor noise, input disturbance, numerical `linearize()` via central finite differences returning a `StateSpace`.
+- `MassSpringDamperSim` — 1-DOF linear MSD; linearise validates against known analytical A/B/C/D.
+- `InvertedPendulumSim` — nonlinear inverted pendulum on fixed pivot with `unstable_pole()` utility.
+- `CartPoleSim` — 4-state Lagrangian cart-pole with partial observation (position + angle).
+- All simulators: thread-safe `set_params()`, `params` property, Euler/RK4/RK45 selectable.
+
+#### SimView real-time 3D UI (`synapsys/viz/simview/`)
+- `SimViewBase` — Qt+PyVista base class: render loop, live matplotlib telemetry panels, parameter sliders, play/pause/reset controls.
+- `MSDView`, `PendulumView`, `CartPoleView` — per-simulator 3D scenes with live telemetry.
+- `synapsys/viz/palette.py` — centralised color palette for consistent UI theming.
+
+#### Examples
+- `examples/simulators/01_mass_spring_damper.py` — step response, LQR design, linearisation validation.
+- `examples/simulators/02_inverted_pendulum.py` — LQR stabilisation with noise and disturbance injection.
+- `examples/simulators/03_cartpole.py` — Lagrangian dynamics, partial observation, LQR control.
+
+#### Website
+- Homepage `SimulatorsShowcase` section with GIF cards (MSD, pendulum, cart-pole) and solid backgrounds.
+- `HomeBlogSection` carousel component.
+- SimView documentation pages: overview, guide, API reference (EN + PT).
+- Roadmap updated with simulator milestone.
+
+### Changed
+
+- `pyproject.toml`: added ruff per-file-ignores for `synapsys/simulators/**`, `synapsys/viz/**`, `tests/simulators/**`; mypy `exclude = ["synapsys/viz/"]`; coverage `omit = ["synapsys/viz/*"]`.
+- README: new SimView demo section with GIFs, updated features table, architecture tree, test count 287 → 501.
+- Test suite: 287 → 501 tests; 100% coverage maintained.
+
+---
+
 ## [0.2.4] — 2026-04-20
 
 ### Changed

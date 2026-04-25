@@ -346,7 +346,7 @@ uv run ruff check synapsys tests   # linting
 | v0.2.2 | Released | `MessageBroker` pub/sub bus, 100% test coverage, mypy strict, pre-commit hooks |
 | v0.2.3 | Released | Quadcopter heading-aligned yaw control, updated demos, PT docs snapshot |
 | v0.2.4 | Released | New Synapse-S logo, theme-adaptive navbar, updated website assets |
-| v0.2.5 | In development | Nonlinear physical simulators (MSD, inverted pendulum, cart-pole) + SimView real-time 3D UI, 501 tests |
+| v0.2.5 | Released | Nonlinear physical simulators (MSD, inverted pendulum, cart-pole) + SimView real-time 3D UI, 501 tests |
 | v0.3 | Planned | `margin()`, `rlocus()`, `pole_placement()`, Kalman filter, Luenberger observer |
 | v0.5 | Planned | Real hardware drivers (serial, CAN, FPGA via PYNQ) |
 
