@@ -103,6 +103,13 @@ module = ["scipy.*", "zmq.*", "vtk.*", "pyvista.*", "pyvistaqt.*",
           "matplotlib.*", "PySide6.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+# numpy return/assignment types vary between stub versions — suppress the two
+# error codes that differ between numpy 1.x and 2.x stubs without disabling
+# type-safety for the rest of the codebase.
+module = ["synapsys.simulators.*"]
+disable_error_code = ["no-any-return", "assignment"]
+
 [dependency-groups]
 dev = [
     "pre-commit>=4.5.1",
