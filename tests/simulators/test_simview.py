@@ -12,6 +12,11 @@ import collections
 import numpy as np
 import pytest
 
+pytest.importorskip(
+    "matplotlib.backends.backend_qtagg",
+    reason="Qt backend not available — skip SimView tests",
+)
+
 from synapsys.algorithms.lqr import lqr
 from synapsys.simulators import CartPoleSim, InvertedPendulumSim, MassSpringDamperSim
 from synapsys.viz.simview.cartpole import _TRACK_HW, CartPoleView
