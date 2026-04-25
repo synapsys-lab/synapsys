@@ -11,6 +11,12 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+
+pytest.importorskip(
+    "PySide6.QtWidgets",
+    reason="PySide6 / Qt not installed — skip visual SimView tests",
+)
+
 from PySide6.QtWidgets import QMainWindow
 
 from synapsys.viz.simview.cartpole import (
