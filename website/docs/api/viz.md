@@ -6,20 +6,87 @@ sidebar_label: synapsys.viz
 
 # `synapsys.viz`
 
-Visualization module: canonical color palette and plug-and-play 3D simulation windows.
+Visualization module: canonical color palettes, matplotlib theming, a lightweight 2D
+cart-pole animation, and plug-and-play 3D simulation windows.
 
 ```python
 from synapsys.viz import (
-    Dark, mpl_theme,
+    Dark, Light, mpl_theme,
+    CartPole2DView,
     CartPoleView, PendulumView, MassSpringDamperView,
 )
 ```
 
 ---
 
+## `CartPole2DView`
+
+Lightweight 2D cart-pole animation built on pure **matplotlib** — no Qt or PyVista
+required.
+
+```python
+CartPole2DView(
+    sim:        CartPoleSim | None = None,   # default instance created if None
+    controller: Callable | None = None,      # (x: ndarray) → ndarray; auto-LQR if None
+    dt:         float = 0.02,                # integration / animation step (s)
+    duration:   float = 10.0,               # total simulation time (s)
+    x0:         ndarray | None = None,       # initial state [p, ṗ, θ, θ̇]; default [0, 0, 0.15, 0]
+)
+```
+
+### Methods
+
+#### `simulate() → dict`
+
+Run the simulation and return a history dictionary.
+
+| Key | Shape | Contents |
+|---|---|---|
+| `"t"` | `(steps,)` | time array |
+| `"pos"` | `(steps,)` | cart position (m) |
+| `"angle"` | `(steps,)` | pole angle (rad) |
+| `"force"` | `(steps,)` | control force (N) |
+| `"states"` | `(steps, 4)` | full state `[p, ṗ, θ, θ̇]` |
+
+#### `animate(save=None) → FuncAnimation`
+
+Build and return a `matplotlib.animation.FuncAnimation`.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `save` | `str \| None` | save to file if given (e.g. `"out.gif"`); requires *Pillow* for GIF or *ffmpeg* for MP4 |
+
+#### `run() → None`
+
+`simulate()` → `animate()` → `plt.show()`. All-in-one entry point.
+
+### Examples
+
+```python
+from synapsys.viz import CartPole2DView
+import numpy as np
+
+# Auto-LQR, default parameters
+CartPole2DView().run()
+
+# Custom controller
+K = ...  # your gain matrix
+CartPole2DView(controller=lambda x: np.clip(-K @ x, -50, 50)).run()
+
+# Headless simulation (no display)
+hist = CartPole2DView(dt=0.02, duration=5.0).simulate()
+print(hist["angle"][-1])   # final pole angle (rad)
+
+# Save animation to GIF
+view = CartPole2DView()
+anim = view.animate(save="cartpole.gif")
+```
+
+---
+
 ## `SimViewBase`
 
-Base class for all views. Inherits from `QMainWindow`.
+Base class for all 3D views. Inherits from `QMainWindow`.
 **Do not instantiate directly** — use the concrete subclasses.
 
 ### Class attributes (configurable in subclasses)
@@ -38,9 +105,18 @@ Base class for all views. Inherits from `QMainWindow`.
 | `_u_clip` | `float` | `50.0` | controller output saturation |
 | `_u_clip_total` | `float` | `80.0` | total saturation after adding perturbation |
 
-### Public method
+### Constructor
 
-#### `run() -> None`
+```python
+SimViewBase(
+    controller: Callable | None = None,  # (x: ndarray) → ndarray; auto-LQR if None
+    save:       str | None = None,       # path to save the animation on close (e.g. "out.gif")
+)
+```
+
+### Public methods
+
+#### `run() → None`
 
 Creates `QApplication` (if not already present), initializes `QMainWindow`, builds the full UI
 and enters the Qt event loop. **Does not return** (calls `sys.exit`).
@@ -48,6 +124,34 @@ and enters the Qt event loop. **Does not return** (calls `sys.exit`).
 ```python
 CartPoleView().run()
 CartPoleView(controller=fn).run()
+```
+
+#### `set_camera_preset(name) → None`
+
+Apply a named camera position before the window opens.
+
+| Preset | Description |
+|---|---|
+| `"iso"` | Isometric view (default for most views) |
+| `"top"` | Top-down orthographic |
+| `"side"` | Side view |
+| `"follow"` | Low follow-cam (close behind) |
+
+```python
+view = CartPoleView()
+view.set_camera_preset("top")
+view.run()
+```
+
+#### `toggle_trail() → None`
+
+Enable or disable the 3D trajectory trail. Each tick appends the point returned by
+`_trail_point(x)` (overridable per view). The trail keeps the last 200 points.
+
+```python
+view = CartPoleView()
+view.toggle_trail()   # enable trail
+view.run()
 ```
 
 ### Hooks (optional override in subclasses)
@@ -58,7 +162,8 @@ CartPoleView(controller=fn).run()
 | `_pert_vector()` | `() → ndarray` | Converts scalar `_pert` to input vector. |
 | `_build_extra_controls(hb)` | `(QHBoxLayout) → None` | Injects extra widgets into the control bar. |
 | `_on_reset()` | `() → None` | Called after `sim.reset()` — useful for resetting extra state. |
-| `_post_tick(x, u)` | `(ndarray, ndarray) → None` | Called at the end of each tick. Used for auto-reset logic (e.g. track limit in CartPole). |
+| `_post_tick(x, u)` | `(ndarray, ndarray) → None` | Called at the end of each tick. |
+| `_trail_point(x)` | `(ndarray) → ndarray` | Returns a 3D world position `(3,)` to append to the trail. Default: `[x[0], 0, 0]`. |
 
 ---
 
@@ -72,6 +177,7 @@ CartPoleView(
     l:   float = 0.5,              # pole length [m]
     g:   float = 9.81,             # gravity [m/s²]
     x0:  np.ndarray | None = None, # initial state (4,) — default [0, 0, 0.18, 0]
+    save: str | None = None,       # path to save animation on close
 )
 ```
 
@@ -87,6 +193,8 @@ CartPoleView(
 
 **Auto-reset:** the cart resets automatically when it reaches 92% of the track length (`_LIMIT_FRAC = 0.92`). Between 72% and 92% the cart changes color to amber as a warning.
 
+**Trail point:** pole tip — `[p + l·sin(θ), 0, PIVOT_Z + l·cos(θ)]`
+
 ---
 
 ## `PendulumView`
@@ -99,6 +207,7 @@ PendulumView(
     g:  float = 9.81,             # gravity [m/s²]
     b:  float = 0.1,              # viscous damping
     x0: np.ndarray | None = None, # initial state (2,) — default [0.18, 0]
+    save: str | None = None,      # path to save animation on close
 )
 ```
 
@@ -115,6 +224,8 @@ PendulumView(
 **Perturbation:** ↺/↻ buttons and A/D keys — torque (1–40 N·m, default 20 N·m).
 Red arrows appear at the pole tip indicating direction and magnitude.
 
+**Trail point:** pole tip — `[l·sin(θ), 0, PIVOT_Z + l·cos(θ)]`
+
 ---
 
 ## `MassSpringDamperView`
@@ -127,6 +238,7 @@ MassSpringDamperView(
     k:         float = 2.0,             # spring constant [N/m]
     x0:        np.ndarray | None = None, # initial state (2,) — default [0, 0]
     setpoints: list | None = None,       # list of (label, value_m) — default 3 points
+    save:      str | None = None,        # path to save animation on close
 )
 ```
 
@@ -147,11 +259,13 @@ MassSpringDamperView(setpoints=[("0", 0.0), ("+2m", 2.0), ("-2m", -2.0)]).run()
 
 **Perturbation:** ◀/▶ buttons and A/D keys — force (1–30 N, default 15 N).
 
+**Trail point:** mass position — `[q, 0, MASS_H/2]`
+
 ---
 
 ## `Dark`
 
-Synapsys design system color tokens (mirrors the website dark mode).
+Synapsys design system color tokens — dark theme (mirrors the website dark mode).
 
 ```python
 from synapsys.viz.palette import Dark
@@ -229,15 +343,83 @@ from synapsys.viz.palette import Dark
 
 ---
 
+## `Light`
+
+Synapsys design system color tokens — light theme (for presentations, reports, and
+environments with white backgrounds).
+
+```python
+from synapsys.viz.palette import Light
+```
+
+### Backgrounds
+
+| Token | Hex | Use |
+|---|---|---|
+| `Light.BG` | `#ffffff` | Window background / matplotlib figure |
+| `Light.SURFACE` | `#f8fafc` | Cards, panels, matplotlib axes |
+| `Light.PANEL` | `#f1f5f9` | Qt GroupBox |
+| `Light.BORDER` | `#e2e8f0` | Default borders |
+
+### Text
+
+| Token | Hex | Use |
+|---|---|---|
+| `Light.FG` | `#0f172a` | Primary text |
+| `Light.MUTED` | `#475569` | Axis labels, secondary text |
+| `Light.SUBTLE` | `#94a3b8` | Tertiary text / hints |
+| `Light.GRID` | `#e2e8f0` | matplotlib grid lines |
+
+### Brand
+
+| Token | Hex | Use |
+|---|---|---|
+| `Light.GOLD` | `#92671e` | Primary brand color / highlight |
+| `Light.GOLD_LT` | `#c8a870` | Light variant |
+| `Light.TEAL` | `#0d9488` | Secondary brand color |
+
+### Signals
+
+| Token | Hex | Physical quantity |
+|---|---|---|
+| `Light.SIG_POS` | `#1d4ed8` | Position / displacement |
+| `Light.SIG_VEL` | `#c2410c` | Velocity / rate |
+| `Light.SIG_ANG` | `#c2410c` | Angle |
+| `Light.SIG_REF` | `#15803d` | Setpoint / reference |
+| `Light.SIG_CTRL` | `#b91c1c` | Control force / torque |
+| `Light.SIG_PHASE` | `#7c3aed` | Phase portrait |
+| `Light.SIG_TRAIL` | `#6d28d9` | 3D trail |
+| `Light.SIG_CYAN` | `#0284c7` | Current point (dot marker) |
+
+---
+
 ## `mpl_theme()`
 
 ```python
 from synapsys.viz.palette import mpl_theme
-mpl_theme()
+
+mpl_theme()            # dark (default)
+mpl_theme("light")     # light
+mpl_theme("dark")      # dark (explicit)
 ```
 
 Applies Synapsys theme global rcParams to matplotlib.
 Must be called **before** creating any `Figure`.
 
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `theme` | `str` | `"dark"` | `"dark"` or `"light"` |
+
 Automatically configures: `figure.facecolor`, `axes.facecolor`, grid, ticks,
 legend, and font (`JetBrains Mono`).
+
+```python
+from synapsys.viz.palette import mpl_theme, Light
+import matplotlib.pyplot as plt
+
+mpl_theme("light")
+
+fig, ax = plt.subplots()
+ax.plot([0, 1, 2], [0, 1, 0], color=Light.SIG_POS)
+plt.show()
+```
