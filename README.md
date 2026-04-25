@@ -1,10 +1,6 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="website/static/img/logo_dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="website/static/img/logo_light.svg">
-  <img src="website/static/img/logo.svg" width="96" height="96" alt="Synapsys logo" />
-</picture>
+<img src="https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/logo_dark.png" width="96" height="96" alt="Synapsys logo" />
 
 # Synapsys
 
