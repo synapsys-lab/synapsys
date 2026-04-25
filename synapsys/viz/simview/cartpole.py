@@ -90,8 +90,9 @@ class CartPoleView(SimViewBase):
         l: float = _L,
         g: float = _G,
         x0: np.ndarray | None = None,
+        save: str | None = None,
     ) -> None:
-        super().__init__(controller)
+        super().__init__(controller, save=save)
         self._m_c, self._m_p, self._l, self._g = m_c, m_p, l, g
         self._x0_init = x0
 
@@ -314,6 +315,13 @@ class CartPoleView(SimViewBase):
             ax.autoscale_view()
 
     # ── HUD / status ──────────────────────────────────────────────────────────
+
+    def _trail_point(self, x):
+        # pole tip in world XZ plane (Y=0 for 2D cart-pole)
+        p, _, theta, _ = x
+        tip_x = p + self._l * np.sin(theta)
+        tip_z = _PIVOT_Z + self._l * np.cos(theta)
+        return np.array([tip_x, 0.0, tip_z])
 
     def _post_tick(self, x, u):
         if abs(x[0]) >= _TRACK_HW * _LIMIT_FRAC:

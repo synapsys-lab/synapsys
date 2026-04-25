@@ -117,8 +117,9 @@ class MassSpringDamperView(SimViewBase):
         k: float = _K,
         x0: np.ndarray | None = None,
         setpoints: list | None = None,
+        save: str | None = None,
     ) -> None:
-        super().__init__(controller)
+        super().__init__(controller, save=save)
         self._m, self._c, self._k = m, c, k
         self._x0_init = x0
         self._setpoints = setpoints if setpoints is not None else _DEFAULT_SETPOINTS
@@ -365,6 +366,10 @@ class MassSpringDamperView(SimViewBase):
             ax.autoscale_view()
 
     # ── HUD / status ──────────────────────────────────────────────────────────
+
+    def _trail_point(self, x):
+        # mass position along the horizontal axis
+        return np.array([x[0], 0.0, _MASS_H / 2])
 
     def _hud_text(self, x, u):
         q = x[0]
