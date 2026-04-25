@@ -10,6 +10,8 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import CodeBlock from '@theme/CodeBlock';
 import LibraryMap from '@site/src/components/LibraryMap';
+import HomeBlogSection from '@site/src/components/HomeBlogSection';
+import SimulatorsShowcase from '@site/src/components/SimulatorsShowcase';
 import NeuralNetBackground from '@site/src/components/NeuralNetBackground';
 import {
   BookOpen,
@@ -61,6 +63,7 @@ const MODULES = [
   { pkg: 'synapsys.algorithms', desc: 'Discrete PID with anti-windup, LQR (ARE solver)',   status: 'Stable' },
   { pkg: 'synapsys.agents',    desc: 'PlantAgent, ControllerAgent, SyncEngine',             status: 'Functional' },
   { pkg: 'synapsys.transport', desc: 'SharedMemory (zero-copy), ZMQ PUB/SUB & REQ/REP',    status: 'Functional' },
+  { pkg: 'synapsys.viz',        desc: '3D sim views plug-and-play: CartPoleView, PendulumView, MassSpringDamperView', status: 'Functional' },
   { pkg: 'synapsys.hw',        desc: 'HardwareInterface, MockHardwareInterface (HIL)',      status: 'Interface' },
   { pkg: 'synapsys.mpc',       desc: 'Model Predictive Control',                            status: 'Planned' },
 ];
@@ -310,35 +313,8 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
         </div>
       </section>
 
-      {/* ── Module overview ────────────────────────────────���──────────────── */}
+      {/* ── MIL → HIL pipeline ─────────────────────────────────────────────── */}
       <section className="content-section content-section--alt">
-        <div className="content-section__inner">
-          <h2 className="content-section__title">
-            <Translate id="home.modules.title">Package Overview</Translate>
-          </h2>
-          <table className="module-table">
-            <thead>
-              <tr>
-                <th><Translate id="home.modules.col1">Package</Translate></th>
-                <th><Translate id="home.modules.col2">Contents</Translate></th>
-                <th><Translate id="home.modules.col3">Status</Translate></th>
-              </tr>
-            </thead>
-            <tbody>
-              {MODULES.map((m) => (
-                <tr key={m.pkg}>
-                  <td><code>{m.pkg}</code></td>
-                  <td className="module-table__desc">{translate({ id: `home.modules.${m.pkg}.desc`, message: m.desc })}</td>
-                  <td><span className={`status-badge ${STATUS_CLASS[m.status]}`}>{translate({ id: `home.modules.status.${m.status}`, message: m.status })}</span></td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      {/* ── MIL → HIL pipeline ────────────────────��───────────────────────── */}
-      <section className="content-section">
         <div className="content-section__inner content-section__inner--narrow">
           <h2 className="content-section__title">
             <Translate id="home.hil.title">Simulation Fidelity Ladder</Translate>
@@ -378,7 +354,7 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
       </section>
 
       {/* ── AI Integration showcase — Quadcopter MIMO ────────────────────── */}
-      <section className="content-section content-section--alt">
+      <section className="content-section">
         <div className="content-section__inner">
           <h2 className="content-section__title" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <BrainCircuit size={22} strokeWidth={1.75} />
@@ -462,6 +438,25 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
         </div>
       </section>
 
+      {/* ── 3D Simulators Showcase ────────────────────────────────────────── */}
+      <section className="content-section content-section--alt">
+        <div className="content-section__inner">
+          <h2 className="content-section__title">
+            <Translate id="home.sims.title">3D Simulation Views</Translate>
+          </h2>
+          <p className="content-section__lead">
+            <Translate id="home.sims.lead">
+              Janelas de simulação 3D prontas para usar — conecte qualquer controlador
+              (LQR, PID, rede neural, agente RL) com uma única linha de código.
+            </Translate>
+          </p>
+          <SimulatorsShowcase />
+        </div>
+      </section>
+
+      {/* ── Blog Carousel ─────────────────────────────────────────────────── */}
+      <HomeBlogSection />
+
       {/* ── Library map ───────────────────────────────────────────────────── */}
       <section className="content-section">
         <div className="content-section__inner">
@@ -470,11 +465,38 @@ agent.start(blocking=True)   # or blocking=False for real-time plot`}
           </h2>
           <p className="content-section__lead">
             <Translate id="home.libmap.desc">
-              Seven focused packages — from LTI mathematics to real-time hardware.
+              Nine focused packages — from LTI mathematics to real-time hardware.
               Click any card to jump to the API reference.
             </Translate>
           </p>
           <LibraryMap />
+        </div>
+      </section>
+
+      {/* ── Package Overview ──────────────────────────────────────────────── */}
+      <section className="content-section content-section--alt">
+        <div className="content-section__inner">
+          <h2 className="content-section__title">
+            <Translate id="home.modules.title">Package Overview</Translate>
+          </h2>
+          <table className="module-table">
+            <thead>
+              <tr>
+                <th><Translate id="home.modules.col1">Package</Translate></th>
+                <th><Translate id="home.modules.col2">Contents</Translate></th>
+                <th><Translate id="home.modules.col3">Status</Translate></th>
+              </tr>
+            </thead>
+            <tbody>
+              {MODULES.map((m) => (
+                <tr key={m.pkg}>
+                  <td><code>{m.pkg}</code></td>
+                  <td className="module-table__desc">{translate({ id: `home.modules.${m.pkg}.desc`, message: m.desc })}</td>
+                  <td><span className={`status-badge ${STATUS_CLASS[m.status]}`}>{translate({ id: `home.modules.status.${m.status}`, message: m.status })}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
 
