@@ -500,3 +500,100 @@ class TestTrailState:
         for i in range(v._trail_max_pts + 10):
             v._append_trail_position(np.array([float(i), 0.0, 0.0]))
         assert len(v._trail_positions) <= v._trail_max_pts
+
+
+# ── light palette ──────────────────────────────────────────────────────────────
+
+
+class TestLightPalette:
+    def test_light_class_exists(self):
+        from synapsys.viz.palette import Light
+
+        assert Light is not None
+
+    def test_light_has_required_attributes(self):
+        from synapsys.viz.palette import Light
+
+        for attr in ("BG", "SURFACE", "FG", "BORDER", "MUTED", "GRID"):
+            assert hasattr(Light, attr), f"Light missing {attr}"
+
+    def test_light_bg_is_light_color(self):
+        from synapsys.viz.palette import Light
+
+        # BG should be a near-white hex
+        hex_val = Light.BG.lstrip("#")
+        r, g, b = int(hex_val[0:2], 16), int(hex_val[2:4], 16), int(hex_val[4:6], 16)
+        assert r > 200 and g > 200 and b > 200
+
+    def test_light_fg_is_dark_color(self):
+        from synapsys.viz.palette import Light
+
+        hex_val = Light.FG.lstrip("#")
+        r, g, b = int(hex_val[0:2], 16), int(hex_val[2:4], 16), int(hex_val[4:6], 16)
+        assert r < 100 and g < 100 and b < 100
+
+    def test_light_and_dark_bg_differ(self):
+        from synapsys.viz.palette import Dark, Light
+
+        assert Light.BG != Dark.BG
+
+    def test_mpl_theme_accepts_light(self):
+        from synapsys.viz.palette import mpl_theme
+
+        mpl_theme(theme="light")  # must not raise
+
+    def test_mpl_theme_accepts_dark(self):
+        from synapsys.viz.palette import mpl_theme
+
+        mpl_theme(theme="dark")  # must not raise
+
+    def test_mpl_theme_default_is_dark(self):
+        from synapsys.viz.palette import mpl_theme
+
+        mpl_theme()  # no theme arg — must not raise
+
+
+# ── trail_point hook ───────────────────────────────────────────────────────────
+
+
+class TestTrailPointHook:
+    def test_cartpole_trail_point_returns_3d_array(self):
+        v = CartPoleView()
+        x = np.array([1.0, 0.0, 0.2, 0.0])
+        pt = v._trail_point(x)
+        assert pt.shape == (3,)
+
+    def test_cartpole_trail_point_x_matches_cart_position(self):
+        v = CartPoleView()
+        x = np.array([1.5, 0.0, 0.0, 0.0])
+        pt = v._trail_point(x)
+        assert pt[0] == pytest.approx(1.5)
+
+    def test_pendulum_trail_point_returns_3d_array(self):
+        v = PendulumView()
+        x = np.array([0.3, 0.0])
+        pt = v._trail_point(x)
+        assert pt.shape == (3,)
+
+    def test_msd_trail_point_returns_3d_array(self):
+        v = MassSpringDamperView()
+        x = np.array([0.5, 0.0])
+        pt = v._trail_point(x)
+        assert pt.shape == (3,)
+
+
+# ── save path attribute ────────────────────────────────────────────────────────
+
+
+class TestSavePath:
+    def test_save_path_none_by_default(self):
+        v = CartPoleView()
+        assert v._save_path is None
+
+    def test_save_path_set_by_constructor(self):
+        v = CartPoleView(save="out.gif")
+        assert v._save_path == "out.gif"
+
+    def test_save_path_mp4(self):
+        v = CartPoleView(save="/tmp/sim.mp4")
+        assert v._save_path == "/tmp/sim.mp4"

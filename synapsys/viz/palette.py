@@ -109,56 +109,122 @@ class Dark:
     MESH_REF = "#4ade80"  # esfera de referência
 
 
-def mpl_theme() -> None:
+class Light:
+    """Tema claro — para ambientes com fundo branco (apresentações, relatórios).
+
+    Hierarquia de camadas
+    ─────────────────────
+    BG  →  SURFACE  →  PANEL  →  BORDER  (do mais claro ao mais escuro)
+    """
+
+    # ── Fundos ────────────────────────────────────────────────────────────────
+    BG = "#ffffff"
+    SURFACE = "#f8fafc"
+    PANEL = "#f1f5f9"
+    BORDER = "#e2e8f0"
+    BORDER_LT = "#f1f5f9"
+
+    # ── Texto ─────────────────────────────────────────────────────────────────
+    FG = "#0f172a"
+    MUTED = "#475569"
+    SUBTLE = "#94a3b8"
+    GRID = "#e2e8f0"
+
+    # ── Brand ─────────────────────────────────────────────────────────────────
+    GOLD = "#92671e"
+    GOLD_DIM = "#6b4a15"
+    GOLD_LT = "#c8a870"
+    TEAL = "#0d9488"
+
+    # ── Sinais ────────────────────────────────────────────────────────────────
+    SIG_POS = "#1d4ed8"
+    SIG_POS_LT = "#3b82f6"
+    SIG_VEL = "#c2410c"
+    SIG_VEL_LT = "#ea580c"
+    SIG_REF = "#15803d"
+    SIG_REF_DK = "#166534"
+    SIG_REF_LT = "#22c55e"
+    SIG_ANG = "#c2410c"
+    SIG_CTRL = "#b91c1c"
+    SIG_PHASE = "#7c3aed"
+    SIG_TRAIL = "#6d28d9"
+    SIG_ALT = "#b45309"
+    SIG_CH1 = "#7c3aed"
+    SIG_CH2 = "#c2410c"
+    SIG_CH3 = "#0f766e"
+    SIG_CH4 = "#b45309"
+    SIG_CYAN = "#0284c7"
+
+    # ── Status ────────────────────────────────────────────────────────────────
+    STATUS_STABLE = "#0d9488"
+    STATUS_FUNCTIONAL = "#92671e"
+    STATUS_INTERFACE = "#d97706"
+    STATUS_PLANNED = "#6b7280"
+
+    # ── Danger / feedback ─────────────────────────────────────────────────────
+    DANGER = "#dc2626"
+    WARN = "#d97706"
+    OK = "#16a34a"
+
+    # ── Objetos 3D ────────────────────────────────────────────────────────────
+    MESH_BODY = "#1d4ed8"
+    MESH_STRUCT = "#64748b"
+    MESH_WALL = "#94a3b8"
+    MESH_FLOOR = "#e2e8f0"
+    MESH_SPRING = "#92671e"
+    MESH_DAMP = "#64748b"
+    MESH_POLE = "#92671e"
+    MESH_BOB = "#c2410c"
+    MESH_RAIL = "#94a3b8"
+    MESH_STOP = "#dc2626"
+    MESH_REF = "#15803d"
+
+
+def mpl_theme(theme: str = "dark") -> None:
     """Aplica rcParams globais do tema Synapsys ao matplotlib.
 
-    Deve ser chamado **antes** de criar qualquer Figure.
+    Parameters
+    ----------
+    theme:
+        ``"dark"`` (padrão) ou ``"light"``.
 
     Exemplo
     -------
     >>> from synapsys.viz.palette import mpl_theme
-    >>> mpl_theme()
-    >>> import matplotlib.pyplot as plt
-    >>> fig, ax = plt.subplots()   # já com o tema aplicado
+    >>> mpl_theme()           # dark
+    >>> mpl_theme("light")    # light
     """
     import matplotlib as mpl
 
+    p = Light if theme == "light" else Dark
     mpl.rcParams.update(
         {
-            # Figura
-            "figure.facecolor": Dark.BG,
-            "figure.edgecolor": Dark.BG,
-            # Eixos
-            "axes.facecolor": Dark.SURFACE,
-            "axes.edgecolor": Dark.BORDER,
-            "axes.labelcolor": Dark.MUTED,
-            "axes.titlecolor": Dark.FG,
+            "figure.facecolor": p.BG,
+            "figure.edgecolor": p.BG,
+            "axes.facecolor": p.SURFACE,
+            "axes.edgecolor": p.BORDER,
+            "axes.labelcolor": p.MUTED,
+            "axes.titlecolor": p.FG,
             "axes.grid": True,
             "axes.spines.top": False,
             "axes.spines.right": False,
-            # Grade
-            "grid.color": Dark.GRID,
+            "grid.color": p.GRID,
             "grid.linewidth": 0.5,
             "grid.alpha": 0.7,
-            # Ticks
-            "xtick.color": Dark.MUTED,
-            "ytick.color": Dark.MUTED,
+            "xtick.color": p.MUTED,
+            "ytick.color": p.MUTED,
             "xtick.labelsize": 8,
             "ytick.labelsize": 8,
-            # Texto
-            "text.color": Dark.FG,
+            "text.color": p.FG,
             "font.family": ["JetBrains Mono", "Fira Code", "monospace"],
             "font.size": 9,
-            # Legenda
-            "legend.facecolor": Dark.SURFACE,
-            "legend.edgecolor": Dark.BORDER,
-            "legend.labelcolor": Dark.FG,
+            "legend.facecolor": p.SURFACE,
+            "legend.edgecolor": p.BORDER,
+            "legend.labelcolor": p.FG,
             "legend.fontsize": 7,
-            # Linhas e marcadores
             "lines.linewidth": 1.5,
             "lines.markersize": 5,
-            # Salvar
-            "savefig.facecolor": Dark.BG,
-            "savefig.edgecolor": Dark.BG,
+            "savefig.facecolor": p.BG,
+            "savefig.edgecolor": p.BG,
         }
     )
