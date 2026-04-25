@@ -71,6 +71,16 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Simulators',
+          items: [
+            'guide/simulators/simulators-overview',
+            'guide/simulators/simulators-msd',
+            'guide/simulators/simulators-inverted-pendulum',
+            'guide/simulators/simulators-cartpole',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Visualization',
           items: [
             'guide/viz/viz-overview',

@@ -81,10 +81,13 @@ class SimViewBase(QMainWindow):
     # (bg, active_bg, hover_bg, border, active_border)
     _push_colors: tuple = ("#1e3a5f", "#2563eb", "#1d4ed8", "#2563eb", "#60a5fa")
 
-    def __init__(self, controller: Callable | None = None) -> None:
+    def __init__(
+        self, controller: Callable | None = None, save: str | None = None
+    ) -> None:
         # QMainWindow.__init__ is deferred to run() so that
         # CartPoleView().run() works without a pre-existing QApplication.
         self._controller_fn = controller
+        self._save_path: str | None = save
         self._paused = False
         self._pert = 0.0
         self._pert_max = self._pert_max_default
@@ -197,6 +200,14 @@ class SimViewBase(QMainWindow):
 
     def _on_reset(self) -> None:
         """Called after sim.reset().  Override for extra reset logic."""
+
+    def _trail_point(self, x: ndarray) -> ndarray:
+        """Return the 3-D world point to record for the trajectory trail.
+
+        Default: returns ``[x[0], 0, 0]`` (first state as X, Y=0, Z=0).
+        Override in subclasses for system-specific geometry.
+        """
+        return np.array([x[0], 0.0, 0.0])
 
     def _post_tick(self, x: ndarray, u: ndarray) -> None:
         """Called at the end of each tick. Override for limit checking etc."""

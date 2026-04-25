@@ -75,8 +75,9 @@ class PendulumView(SimViewBase):
         g: float = _G,
         b: float = _B,
         x0: np.ndarray | None = None,
+        save: str | None = None,
     ) -> None:
-        super().__init__(controller)
+        super().__init__(controller, save=save)
         self._m, self._l, self._g, self._b = m, l, g, b
         self._x0_init = x0
 
@@ -276,6 +277,12 @@ class PendulumView(SimViewBase):
             ax.autoscale_view()
 
     # ── HUD / status ──────────────────────────────────────────────────────────
+
+    def _trail_point(self, x):
+        theta = x[0]
+        tip_x = self._l * np.sin(theta)
+        tip_z = _PIVOT_Z + self._l * np.cos(theta)
+        return np.array([tip_x, 0.0, tip_z])
 
     def _hud_text(self, x, u):
         pert_s = f"{self._pert:+6.1f} N·m" if abs(self._pert) > 0.5 else "   --"

@@ -254,13 +254,83 @@ The **magnitude slider** sets the maximum perturbation value. Ranges by simulato
 
 ---
 
+## Camera presets
+
+Four named camera angles are available via `set_camera_preset()`.
+Call it **before** `run()`:
+
+| Preset | Description |
+|---|---|
+| `"iso"` | Isometric — good for seeing the full scene |
+| `"top"` | Top-down orthographic |
+| `"side"` | Side view (X–Z plane) |
+| `"follow"` | Low follow-cam, close behind the system |
+
+```python
+from synapsys.viz import CartPoleView
+
+view = CartPoleView()
+view.set_camera_preset("top")
+view.run()
+```
+
+---
+
+## 3D trajectory trail
+
+Enable a trajectory trail that traces the pole tip (or mass position) over time.
+Call `toggle_trail()` before `run()`:
+
+```python
+from synapsys.viz import CartPoleView
+
+view = CartPoleView()
+view.toggle_trail()   # enable — shown in violet (#7c3aed)
+view.run()
+```
+
+The trail keeps the **last 200 points**. Call `toggle_trail()` again to disable and
+clear it. Each view tracks its own physically meaningful position:
+
+| View | Trail point |
+|---|---|
+| `CartPoleView` | Pole tip `[p + l·sin(θ), 0, pivot_z + l·cos(θ)]` |
+| `PendulumView` | Pole tip `[l·sin(θ), 0, pivot_z + l·cos(θ)]` |
+| `MassSpringDamperView` | Mass centre `[q, 0, mass_h/2]` |
+
+---
+
+## Saving animations
+
+Pass `save=` to any SimView constructor to record the session to a file when the window
+closes. Requires *Pillow* for GIF or *ffmpeg* for MP4.
+
+```python
+from synapsys.viz import CartPoleView, PendulumView, MassSpringDamperView
+
+CartPoleView(save="cartpole.gif").run()
+PendulumView(save="pendulum.mp4").run()
+MassSpringDamperView(save="msd.gif").run()
+```
+
+For the lightweight 2D view, pass `save=` to `animate()`:
+
+```python
+from synapsys.viz import CartPole2DView
+
+CartPole2DView().animate(save="cartpole2d.gif")
+```
+
+---
+
 ## Color palette
 
 All visual elements use the canonical palette tokens.
-See [Dark color tokens →](../../api/viz#dark)
+See [Dark color tokens →](../../api/viz#dark) and [Light color tokens →](../../api/viz#light)
 
 ```python
-from synapsys.viz.palette import Dark, mpl_theme
+from synapsys.viz.palette import Dark, Light, mpl_theme
 
-mpl_theme()  # apply dark theme globally to matplotlib
+mpl_theme()           # apply dark theme globally to matplotlib
+mpl_theme("light")    # light theme (white background)
 ```

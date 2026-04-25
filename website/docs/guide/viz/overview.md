@@ -1,21 +1,56 @@
 ---
 id: viz-overview
-title: 3D Simulators — Overview
+title: Visualization — Overview
 sidebar_label: Overview
 sidebar_position: 1
 ---
 
-# 3D Simulators — Overview
+# Visualization — Overview
 
-![Cart-Pole — real-time 3D simulation](/img/simview/cartpole.gif)
+`synapsys.viz` provides two visualization tiers for control experiments:
 
-`synapsys.viz.simview` provides **plug-and-play 3D simulation windows** that combine
-real-time PyVista rendering and matplotlib telemetry in a single PySide6 interface —
-ready to accept any controller you design.
+| | `CartPole2DView` | `CartPoleView` / `PendulumView` / `MassSpringDamperView` |
+|---|---|---|
+| **Rendering** | 2D matplotlib | 3D PyVista + matplotlib telemetry |
+| **Dependencies** | `matplotlib` only | `pyside6`, `pyvistaqt`, `matplotlib` |
+| **Works headless** | Yes (Agg backend) | No — requires a display |
+| **Entry point** | `run()` / `simulate()` / `animate()` | `run()` |
+| **System** | Cart-Pole only | Cart-Pole, Pendulum, MSD |
 
 ---
 
-## What you get in one line
+## 2D View — `CartPole2DView`
+
+Lightweight option: no Qt, no PyVista — runs anywhere matplotlib runs.
+
+![CartPole 2D animation](/img/simview/cartpole.gif)
+
+```python
+from synapsys.viz import CartPole2DView
+
+# Auto-LQR, interactive window
+CartPole2DView().run()
+
+# Headless: returns history dict (no window)
+hist = CartPole2DView(duration=5.0).simulate()
+print(hist["angle"][-1])   # final pole angle (rad)
+
+# Save to GIF
+CartPole2DView().animate(save="cartpole.gif")
+```
+
+Use `CartPole2DView` when:
+- You're on a server / CI / notebook without a Qt display
+- You only need the cart-pole system
+- You want to export an animation or run batch simulations
+
+---
+
+## 3D Views — SimView
+
+Full real-time window combining PyVista 3D animation and matplotlib telemetry panels.
+
+![Cart-Pole — real-time 3D simulation](/img/simview/cartpole.gif)
 
 ```python
 from synapsys.viz import CartPoleView
@@ -30,6 +65,14 @@ A complete window with:
 - **Automatic LQR** — if no controller is provided, the lib linearizes the simulator and designs an LQR internally
 - **Global keyboard capture** — A/D (perturbation), R (reset), Space (pause), Q (close)
 
+### Available 3D simulators
+
+| Class | Physical system | State | Input | Perturbation |
+|---|---|---|---|---|
+| `CartPoleView` | Cart + inverted pendulum | `[x, ẋ, θ, θ̇]` | Horizontal force on cart (N) | ◀/▶ horizontal force |
+| `PendulumView` | Single-link inverted pendulum | `[θ, θ̇]` | Joint torque (N·m) | ↺/↻ angular torque |
+| `MassSpringDamperView` | Mass-spring-damper | `[q, q̇]` | External force (N) | ◀/▶ force + setpoints 1/2/3 |
+
 ---
 
 ## Architecture
@@ -37,6 +80,8 @@ A complete window with:
 ```
 SimulatorBase          ← synapsys.simulators
 │  dynamics(), step(), linearize()
+│
+├── CartPoleSim  ──→  CartPole2DView     (matplotlib 2D, no Qt)
 │
 SimViewBase            ← synapsys.viz.simview._base  (QMainWindow)
 │  • creates Qt window (3D + matplotlib splitter)
@@ -49,19 +94,6 @@ SimViewBase            ← synapsys.viz.simview._base  (QMainWindow)
 ├── PendulumView        ← state: [θ, θ̇]
 └── MassSpringDamperView ← state: [q, q̇]  + setpoint tracking
 ```
-
-Each subclass implements only what is specific to its physical system
-(3D scene, charts, HUD, LQR parameters). All Qt boilerplate is inherited from the base.
-
----
-
-## Available simulators
-
-| Class | Physical system | State | Input | Perturbation |
-|---|---|---|---|---|
-| `CartPoleView` | Cart + inverted pendulum | `[x, ẋ, θ, θ̇]` | Horizontal force on cart (N) | ◀/▶ horizontal force |
-| `PendulumView` | Single-link inverted pendulum | `[θ, θ̇]` | Joint torque (N·m) | ↺/↻ angular torque |
-| `MassSpringDamperView` | Mass-spring-damper | `[q, q̇]` | External force (N) | ◀/▶ force + setpoints 1/2/3 |
 
 ---
 
@@ -85,30 +117,35 @@ Each subclass implements only what is specific to its physical system
 <td>1 line + your function</td>
 <td>No</td>
 </tr>
+<tr>
+<td><code>CartPole2DView().simulate()</code></td>
+<td>1 line</td>
+<td>No — pure matplotlib</td>
+</tr>
 </tbody>
 </table>
-
-The standalone files in `examples/simulators/` remain available as a reference for
-anyone who wants to understand the internal implementation or build highly customized
-UIs beyond what the library provides.
 
 ---
 
 ## Dependencies
 
 ```bash
+# Minimal — CartPole2DView only
+pip install synapsys
+
+# Full 3D support
 pip install synapsys[viz]
 # or individually:
 pip install pyside6 pyvistaqt matplotlib numpy
 ```
 
 > **Note:** `pyvistaqt` requires a VTK installation compatible with Qt.
-> In headless environments (servers without a display), use `pyvista` with the offscreen backend.
+> In headless environments (servers without a display), use `CartPole2DView` instead.
 
 ---
 
 ## Next steps
 
-- [Usage guide →](./simview)
+- [3D simulator usage guide →](./simview)
 - [Connecting your own controller →](./custom-controller)
 - [API Reference →](../../api/viz)

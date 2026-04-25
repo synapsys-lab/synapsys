@@ -13,6 +13,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.7] — 2026-04-25
+
+### Added
+
+#### Visualisation
+- `Light` palette class — mirror of `Dark` for white-background environments (presentations, reports)
+- `mpl_theme(theme="dark"|"light")` — `mpl_theme()` now accepts a `theme` argument; default unchanged (`"dark"`)
+- `save=` parameter on `CartPoleView`, `PendulumView`, `MassSpringDamperView` — records the session to a file on close
+- `_trail_point(x)` hook on `SimViewBase` — concrete views override to return the 3D position appended to the trail; `CartPoleView` traces pole tip, `PendulumView` traces pole tip, `MassSpringDamperView` traces mass centre
+
+#### Examples
+- `examples/simulators/05_cartpole2d_features.py` — demonstrates `Light` palette, `mpl_theme("light")`, headless `simulate()`, `animate(save=)`, and custom LQR
+- `examples/simulators/06_simview_advanced.py` — demonstrates camera presets, trajectory trail, and `save=` for Qt SimViews
+
+#### Documentation
+- `website/docs/api/viz.md` — added `CartPole2DView`, `Light`, updated `mpl_theme()` signature, `save=` on all SimView constructors, `set_camera_preset()` and `toggle_trail()` on `SimViewBase`
+- `website/docs/guide/viz/overview.md` — restructured around 2D vs 3D tiers with comparison table
+- `website/docs/guide/viz/simview.md` — new sections: camera presets, trajectory trail, saving animations, light theme
+- `website/docs/guide/simulators/` — four new pages: Overview, Mass-Spring-Damper, Inverted Pendulum, Cart-Pole
+- `examples/simulators/04_integrator_benchmark.py` — Euler / RK4 / RK45 wall-clock time and RMS error comparison
+
+---
+
 ## [0.2.6] — 2026-04-25
 
 ### Added
