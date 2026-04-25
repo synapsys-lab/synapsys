@@ -123,7 +123,7 @@ export default function Home(): ReactElement {
             {/* ── Content column ── */}
             <div className="doc-header__content-col">
               <div className="doc-header__meta">
-                <a href={PYPI} className="doc-badge doc-badge--pypi" target="_blank" rel="noreferrer">v0.2.5 · PyPI</a>
+                <a href={PYPI} className="doc-badge doc-badge--pypi" target="_blank" rel="noreferrer">v0.2.6 · PyPI</a>
                 <span className="doc-badge doc-badge--neutral">Python 3.10+</span>
                 <span className="doc-badge doc-badge--neutral">MIT</span>
                 <a href={`${GITHUB}/actions`} className="doc-badge doc-badge--neutral" target="_blank" rel="noreferrer">CI passing</a>

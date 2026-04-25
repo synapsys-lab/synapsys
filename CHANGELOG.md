@@ -13,6 +13,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.6] — 2026-04-25
+
+### Added
+
+#### Simulator enhancements
+- `SimulatorBase.step()` now returns `info["failed"]` via overridable `failed(x)` hook (default `False`)
+- `CartPoleSim.failed()` — triggers when `|p| > 4.8 m` or `|θ| > π/3 rad`
+- `InvertedPendulumSim.failed()` — triggers when `|θ| > π/2 rad`
+- `CartPoleSim(linearised=True)` — switches dynamics to linearised model around upright equilibrium
+
+#### PlantAgent
+- `PlantAgent` now accepts `Union[StateSpace, SimulatorBase]`; pass `dt=` when using a nonlinear simulator
+
+#### Visualisation
+- `CartPole2DView` — lightweight matplotlib-only 2D animation: auto-LQR, pluggable controller, `simulate()` / `animate(save=...)` / `run()` API
+- `SimViewBase.set_camera_preset(name)` — switch 3D camera to `"iso"`, `"top"`, `"side"`, or `"follow"`
+- `SimViewBase.toggle_trail()` and `_append_trail_position()` — trajectory trail state management
+- `synapsys.viz` now imports `simview` lazily so `CartPole2DView` remains available on headless environments
+
+#### Tests
+- 541 tests (up from 501), 100% coverage maintained
+
+---
+
 ## [0.2.5] — 2026-04-25
 
 ### Added

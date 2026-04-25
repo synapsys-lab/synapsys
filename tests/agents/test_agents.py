@@ -309,3 +309,65 @@ class TestPlantAgentX0Valid:
         sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
         agent = PlantAgent("p", plant_d, None, sync, x0=np.array([0.5]))
         np.testing.assert_allclose(agent._x, [0.5])
+
+
+# ── PlantAgent + SimulatorBase ────────────────────────────────────────────────
+
+
+class TestPlantAgentSimulator:
+    def _make_bus(self):
+        from synapsys.transport import SharedMemoryTransport
+
+        return SharedMemoryTransport("test_sim_agent", {"y": 1, "u": 1}, create=True)
+
+    def test_plant_agent_accepts_simulator_base(self):
+        from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+        from synapsys.simulators import MassSpringDamperSim
+
+        sim = MassSpringDamperSim()
+        sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
+        agent = PlantAgent("plant", sim, None, sync, dt=0.01)
+        assert agent is not None
+
+    def test_plant_agent_simulator_setup_writes_initial_y(self):
+        from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+        from synapsys.simulators import MassSpringDamperSim
+
+        sim = MassSpringDamperSim()
+        sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
+        bus = self._make_bus()
+        try:
+            bus.write("u", np.zeros(1))
+            agent = PlantAgent("plant", sim, bus, sync, dt=0.01)
+            agent.setup()
+            y = bus.read("y")
+            assert y.shape == (1,)
+        finally:
+            bus.close()
+
+    def test_plant_agent_simulator_step_advances_state(self):
+        from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+        from synapsys.simulators import MassSpringDamperSim
+
+        sim = MassSpringDamperSim()
+        sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
+        bus = self._make_bus()
+        try:
+            bus.write("u", np.array([1.0]))
+            agent = PlantAgent("plant", sim, bus, sync, dt=0.01)
+            agent.setup()
+            agent.step()
+            y = bus.read("y")
+            assert y.shape == (1,)
+        finally:
+            bus.close()
+
+    def test_plant_agent_simulator_requires_dt(self):
+        """dt=None raises ValueError when plant is a SimulatorBase."""
+        from synapsys.agents import PlantAgent, SyncEngine, SyncMode
+        from synapsys.simulators import MassSpringDamperSim
+
+        sim = MassSpringDamperSim()
+        sync = SyncEngine(SyncMode.LOCK_STEP, dt=0.01)
+        with pytest.raises(ValueError, match="dt is required"):
+            PlantAgent("plant", sim, None, sync)

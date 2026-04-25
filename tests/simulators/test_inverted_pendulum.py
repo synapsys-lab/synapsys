@@ -291,3 +291,22 @@ class TestSetParams:
         for t in threads:
             t.join()
         assert errors == []
+
+
+# ── failure detection ─────────────────────────────────────────────────────────
+
+
+class TestFailureDetection:
+    def test_info_contains_failed_key(self, sim):
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert "failed" in info
+
+    def test_not_failed_near_upright(self, sim):
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert info["failed"] is False
+
+    def test_failed_when_angle_exceeds_threshold(self):
+        sim = InvertedPendulumSim()
+        sim.reset(x0=np.array([2.0, 0.0]))  # θ = 2.0 rad > π/2
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert info["failed"] is True

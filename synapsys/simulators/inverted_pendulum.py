@@ -106,6 +106,9 @@ class InvertedPendulumSim(SimulatorBase):
     def output(self, x: ndarray) -> ndarray:
         return np.array([x[0]])
 
+    def failed(self, x: ndarray) -> bool:
+        return bool(abs(x[0]) > np.pi / 2)
+
     def reset(self, x0: ndarray | None = None, **kwargs: Any) -> ndarray:
         if x0 is not None:
             self._x = np.asarray(x0, dtype=float).ravel()

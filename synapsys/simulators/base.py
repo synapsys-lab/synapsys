@@ -110,7 +110,15 @@ class SimulatorBase(ABC):
             if self._noise_std > 0.0:
                 y = y + np.random.normal(0.0, self._noise_std, y.shape)
 
-        return y, {"x": self._x.copy(), "t_step": dt}
+        return y, {"x": self._x.copy(), "t_step": dt, "failed": self.failed(self._x)}
+
+    def failed(self, x: ndarray) -> bool:
+        """Return True when the simulator has reached a terminal failure state.
+
+        Override in subclasses that have well-defined failure conditions
+        (e.g. pole fallen, cart out of bounds). Default: always False.
+        """
+        return False
 
     def linearize(self, x0: ndarray, u0: ndarray) -> StateSpace:
         """Numerical linearization around equilibrium (x0, u0).

@@ -15,6 +15,7 @@ import pytest
 pytest.importorskip(
     "matplotlib.backends.backend_qtagg",
     reason="Qt backend not available — skip SimView tests",
+    exc_type=ImportError,
 )
 
 from synapsys.algorithms.lqr import lqr
@@ -419,3 +420,83 @@ class TestCartPoleTrackLimits:
         v = CartPoleView()
         v._pert = 0.0
         assert np.allclose(v._pert_vector(), 0.0)
+
+
+# ── camera presets ─────────────────────────────────────────────────────────────
+
+
+class TestCameraPresets:
+    def test_camera_presets_dict_exists(self):
+        from synapsys.viz.simview._base import CAMERA_PRESETS
+
+        assert isinstance(CAMERA_PRESETS, dict)
+
+    def test_camera_presets_has_expected_keys(self):
+        from synapsys.viz.simview._base import CAMERA_PRESETS
+
+        for key in ("iso", "top", "side", "follow"):
+            assert key in CAMERA_PRESETS
+
+    def test_each_preset_is_three_tuple(self):
+        from synapsys.viz.simview._base import CAMERA_PRESETS
+
+        for name, preset in CAMERA_PRESETS.items():
+            assert len(preset) == 3, f"preset {name!r} must be a 3-tuple"
+
+    def test_set_camera_preset_updates_cam_pos(self):
+        v = CartPoleView()
+        v.set_camera_preset("top")
+        from synapsys.viz.simview._base import CAMERA_PRESETS
+
+        assert v._cam_pos == CAMERA_PRESETS["top"]
+
+    def test_set_camera_preset_iso(self):
+        v = CartPoleView()
+        v.set_camera_preset("iso")
+        from synapsys.viz.simview._base import CAMERA_PRESETS
+
+        assert v._cam_pos == CAMERA_PRESETS["iso"]
+
+    def test_set_camera_preset_unknown_raises(self):
+        v = CartPoleView()
+        with pytest.raises(KeyError):
+            v.set_camera_preset("nonexistent")
+
+
+# ── trajectory trail state ─────────────────────────────────────────────────────
+
+
+class TestTrailState:
+    def test_trail_disabled_by_default(self):
+        v = CartPoleView()
+        assert v._trail_enabled is False
+
+    def test_trail_max_pts_positive(self):
+        v = CartPoleView()
+        assert v._trail_max_pts > 0
+
+    def test_toggle_trail_enables(self):
+        v = CartPoleView()
+        v.toggle_trail()
+        assert v._trail_enabled is True
+
+    def test_toggle_trail_disables(self):
+        v = CartPoleView()
+        v._trail_enabled = True
+        v.toggle_trail()
+        assert v._trail_enabled is False
+
+    def test_trail_positions_empty_on_init(self):
+        v = CartPoleView()
+        assert len(v._trail_positions) == 0
+
+    def test_append_trail_position_stores_point(self):
+        v = CartPoleView()
+        v._append_trail_position(np.array([1.0, 0.0, 0.5]))
+        assert len(v._trail_positions) == 1
+
+    def test_trail_positions_respect_max_pts(self):
+        v = CartPoleView()
+        for i in range(v._trail_max_pts + 10):
+            v._append_trail_position(np.array([float(i), 0.0, 0.0]))
+        assert len(v._trail_positions) <= v._trail_max_pts

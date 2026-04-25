@@ -15,6 +15,7 @@ import pytest
 pytest.importorskip(
     "PySide6.QtWidgets",
     reason="PySide6 / Qt not installed — skip visual SimView tests",
+    exc_type=ImportError,
 )
 
 from PySide6.QtWidgets import QMainWindow

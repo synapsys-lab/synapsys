@@ -41,6 +41,14 @@ from synapsys.algorithms.lqr import lqr
 from synapsys.simulators import SimulatorBase
 from synapsys.viz.palette import Dark
 
+# ── camera presets ─────────────────────────────────────────────────────────────
+CAMERA_PRESETS: dict[str, tuple] = {
+    "iso": ((5, -5, 3), (0, 0, 0.4), (0, 0, 1)),
+    "top": ((0, 0, 8), (0, 0, 0), (0, 1, 0)),
+    "side": ((0, -7, 1.5), (0, 0, 0.5), (0, 0, 1)),
+    "follow": ((0, -5.5, 1.2), (0, 0, 0.4), (0, 0, 1)),
+}
+
 
 class SimViewBase(QMainWindow):
     """Unified 3D PyVista + matplotlib sim window with pluggable controller.
@@ -94,6 +102,10 @@ class SimViewBase(QMainWindow):
         self._status_lbl: QLabel | None = None
         self._hud = None
         self._ctrl_label: str = "LQR (auto)"
+        # ── trail state ──────────────────────────────────────────────────────
+        self._trail_enabled: bool = False
+        self._trail_max_pts: int = 200
+        self._trail_positions: list = []
 
     # ── public entry point ────────────────────────────────────────────────────
 
@@ -455,6 +467,39 @@ class SimViewBase(QMainWindow):
     def handle_key_release(self, key: int) -> None:
         if key in (Qt.Key_A, Qt.Key_D):
             self._set_pert(0.0)
+
+    # ── camera presets ────────────────────────────────────────────────────────
+
+    def set_camera_preset(self, name: str) -> None:
+        """Switch the camera to a named preset.
+
+        Parameters
+        ----------
+        name:
+            One of ``'iso'``, ``'top'``, ``'side'``, ``'follow'``.
+
+        Raises
+        ------
+        KeyError
+            If *name* is not in :data:`CAMERA_PRESETS`.
+        """
+        self._cam_pos = CAMERA_PRESETS[name]
+        if hasattr(self, "_pl") and self._pl is not None:
+            self._pl.camera_position = self._cam_pos
+
+    # ── trajectory trail ──────────────────────────────────────────────────────
+
+    def toggle_trail(self) -> None:
+        """Toggle trajectory trail rendering on/off."""
+        self._trail_enabled = not self._trail_enabled
+        if not self._trail_enabled:
+            self._trail_positions.clear()
+
+    def _append_trail_position(self, point: np.ndarray) -> None:
+        """Append *point* (3-D) to the trail buffer, respecting max length."""
+        self._trail_positions.append(point.copy())
+        if len(self._trail_positions) > self._trail_max_pts:
+            self._trail_positions.pop(0)
 
     def closeEvent(self, event) -> None:
         self._timer.stop()
