@@ -80,7 +80,7 @@ class SimulatorBase(ABC):
 
     @property
     def state(self) -> ndarray:
-        return self._x.copy()  # type: ignore[no-any-return]
+        return self._x.copy()
 
     def step(self, u: ndarray, dt: float) -> tuple[ndarray, dict]:
         """Advance simulation by dt seconds.
