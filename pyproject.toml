@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "synapsys"
-version = "0.2.4"
+version = "0.2.5"
 description = "Modern Python control systems framework with distributed multi-agent simulation"
 readme = "README.md"
 license = { text = "MIT" }
@@ -37,6 +37,8 @@ dependencies = [
     "numpy>=1.24",
     "scipy>=1.10",
     "pyzmq>=25.0",
+    "pyside6>=6.11.0",
+    "pyvistaqt>=0.11.4",
 ]
 
 [project.urls]
@@ -74,21 +76,31 @@ target-version = "py310"
 select = ["E", "F", "I"]
 
 [tool.ruff.lint.per-file-ignores]
-"examples/**" = ["E402", "E501", "E731"]
-"scripts/**" = ["E402", "E501"]
-"website/**" = ["E501"]
+"examples/**"          = ["E402", "E501", "E731", "E741", "E702"]
+"scripts/**"           = ["E402", "E501"]
+"synapsys/simulators/**" = ["E741", "E501"]
+"synapsys/viz/**"      = ["E741"]
+"tests/simulators/**"  = ["E741", "E501", "E731"]
+"website/**"           = ["E501"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-v --tb=short"
+addopts   = "-v --tb=short --cov=synapsys --cov-report=term-missing --cov-fail-under=100"
+
+[tool.coverage.run]
+omit = [
+    "synapsys/viz/*",          # Qt + PyVista UI code — requires display
+]
 
 [tool.mypy]
 python_version = "3.10"
 strict = true
 disable_error_code = ["type-arg"]   # np.ndarray generic args vary across numpy versions
+exclude = ["synapsys/viz/"]         # Qt/vtk/pyvistaqt lack complete stubs
 
 [[tool.mypy.overrides]]
-module = ["scipy.*", "zmq.*"]
+module = ["scipy.*", "zmq.*", "vtk.*", "pyvista.*", "pyvistaqt.*",
+          "matplotlib.*", "PySide6.*"]
 ignore_missing_imports = true
 
 [dependency-groups]

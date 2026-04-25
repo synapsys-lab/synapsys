@@ -69,6 +69,15 @@ const sidebars: SidebarsConfig = {
             'guide/utils/matrix-builders',
           ],
         },
+        {
+          type: 'category',
+          label: 'Visualization',
+          items: [
+            'guide/viz/viz-overview',
+            'guide/viz/simview',
+            'guide/viz/custom-controller',
+          ],
+        },
       ],
     },
     {
@@ -114,6 +123,7 @@ const sidebars: SidebarsConfig = {
         'api/transport',
         'api/hw',
         'api/utils',
+        'api/viz',
       ],
     },
     {

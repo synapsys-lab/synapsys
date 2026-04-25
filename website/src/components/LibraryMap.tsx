@@ -56,6 +56,16 @@ const PACKAGES: Package[] = [
     delay: 3,
   },
   {
+    pkg: 'synapsys.broker',
+    label: 'Message Broker',
+    desc: 'High-level pub/sub bus decoupled from the transport layer — shared memory or ZMQ backend.',
+    classes: ['MessageBroker', 'Topic', 'SharedMemoryBackend', 'ZMQBrokerBackend'],
+    status: 'Functional',
+    href: '/docs/guide/transport/broker',
+    accent: '#0d9488',
+    delay: 4,
+  },
+  {
     pkg: 'synapsys.transport',
     label: 'Transport Layer',
     desc: 'Zero-copy IPC and networked PUB/SUB for distributed MIL → SIL → HIL workflows.',
@@ -63,7 +73,7 @@ const PACKAGES: Package[] = [
     status: 'Functional',
     href: '/docs/api/transport',
     accent: '#0d9488',
-    delay: 4,
+    delay: 5,
   },
   {
     pkg: 'synapsys.utils',
@@ -73,7 +83,7 @@ const PACKAGES: Package[] = [
     status: 'Stable',
     href: '/docs/api/utils',
     accent: '#c8a870',
-    delay: 5,
+    delay: 6,
   },
   {
     pkg: 'synapsys.hw',
@@ -83,7 +93,17 @@ const PACKAGES: Package[] = [
     status: 'Interface',
     href: '/docs/api/hw',
     accent: '#d97706',
-    delay: 6,
+    delay: 7,
+  },
+  {
+    pkg: 'synapsys.observers',
+    label: 'State Observers',
+    desc: 'Kalman filter and Luenberger observer for state estimation — planned for v0.3.',
+    classes: ['KalmanFilter', 'LuenbergerObserver'],
+    status: 'Planned',
+    href: '/docs/roadmap',
+    accent: '#6b7280',
+    delay: 8,
   },
 ];
 

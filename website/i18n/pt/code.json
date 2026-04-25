@@ -55,40 +55,193 @@
   "home.ai.title": {
     "message": "Integração Inteligente IA + Controle"
   },
-  "home.modules.col1": { "message": "Pacote" },
-  "home.modules.col2": { "message": "Conteúdo" },
-  "home.modules.col3": { "message": "Status" },
-  "home.modules.synapsys.core.desc": { "message": "Função de Transferência, Espaço de Estados, discretização ZOH" },
-  "home.modules.synapsys.api.desc": { "message": "Camada compatível com MATLAB: tf(), ss(), step(), bode()" },
-  "home.modules.synapsys.algorithms.desc": { "message": "PID discreto com anti-windup, LQR (resolve ARE)" },
-  "home.modules.synapsys.agents.desc": { "message": "PlantAgent, ControllerAgent, SyncEngine" },
-  "home.modules.synapsys.transport.desc": { "message": "Memória Compartilhada (zero-copy), ZMQ PUB/SUB & REQ/REP" },
-  "home.modules.synapsys.hw.desc": { "message": "HardwareInterface, MockHardwareInterface (HIL)" },
-  "home.modules.synapsys.mpc.desc": { "message": "Controle Preditivo Baseado em Modelo (MPC)" },
-  "home.modules.status.Stable": { "message": "Estável" },
-  "home.modules.status.Functional": { "message": "Funcional" },
-  "home.modules.status.Interface": { "message": "Interface" },
-  "home.modules.status.Planned": { "message": "Planejado" },
-  "home.hil.mil.name": { "message": "Model-in-the-Loop" },
-  "home.hil.mil.detail": { "message": "SharedMemoryTransport · PlantAgent" },
-  "home.hil.sil.name": { "message": "Software-in-the-Loop" },
-  "home.hil.sil.detail": { "message": "ZMQTransport · processo separado" },
-  "home.hil.hil.name": { "message": "Hardware-in-the-Loop" },
-  "home.hil.hil.detail": { "message": "HardwareAgent · dispositivo real" },
-  "home.hil.note.prefix": { "message": "Veja o " },
-  "home.hil.note.link": { "message": "guia HIL / SIL" },
-  "home.hil.note.suffix": { "message": " para um exemplo detalhado de migração passo a passo." },
-  "home.ai.desc": { "message": "O Synapsys é construído para fluxos de pesquisa modernos. Qualquer modelo PyTorch, JAX ou scikit-learn pode ser pareado diretamente a um ControllerAgent por meio de um callback de tipo np.ndarray → np.ndarray — permitindo rodar redes baseadas em física e R.L. em tempo real nos loops HIL/SIL." },
-  "home.ai.caption": { "message": "Neural-LQR em um sistema massa-mola-amortecedor (2-DOF) — Rede Perceptron inicializada com ganhos ótimos LQR para seguir o setpoint x₂ = 1 m. O retrato de fase mostra a convergência ao equilíbrio. Rode ao vivo pelo exemplo fornecido (SIL)." },
-  "home.ai.card.init.title": { "message": "Inicialização por Base Física" },
-  "home.ai.card.init.desc": { "message": "A camada de saída do Pytorch inicializada com os ganhos de base da lei de controle LQR garante ao sistema a estabilidade logo no passo = 0, sem precisar de exploração cega." },
-  "home.ai.card.rl.title": { "message": "Suporte a RL / Fine-tuning" },
-  "home.ai.card.rl.desc": { "message": "Camadas escondidas que podem ser refinadas usando PPO/SAC. O auxílio do recorte base via algoritmo padrão molda o espaço de recompensa e complexidade." },
-  "home.ai.card.nn.title": { "message": "Traga Seu Próprio nn.Module" },
-  "home.ai.card.nn.desc": { "message": "Independentemente de ser Transformer, LSTM, Diffusions - O ControllerAgent engloba qualquer modelo matemático que possa interfaciar tensores." },
-  "home.ai.card.sil.title": { "message": "Malha SIL em Fast-Time" },
-  "home.ai.card.sil.desc": { "message": "O fluxo avançado da thread em frequência constante em 100Hz usa memória ram pura com barramento de Zero-copy (latência >1ms nas inferências e >1 μs IPC)." },
-  "home.ai.note.prefix": { "message": "Walkthrough completo: " },
-  "home.ai.note.link": { "message": "Exemplo SIL + Neural-LQR →" },
-  "home.ai.model.label": { "message": "Modelo físico — massa-mola-amortecedor (2-DOF)" }
+  "home.modules.col1": {
+    "message": "Pacote"
+  },
+  "home.modules.col2": {
+    "message": "Conteúdo"
+  },
+  "home.modules.col3": {
+    "message": "Status"
+  },
+  "home.modules.synapsys.core.desc": {
+    "message": "Função de Transferência, Espaço de Estados, discretização ZOH"
+  },
+  "home.modules.synapsys.api.desc": {
+    "message": "Camada compatível com MATLAB: tf(), ss(), step(), bode()"
+  },
+  "home.modules.synapsys.algorithms.desc": {
+    "message": "PID discreto com anti-windup, LQR (resolve ARE)"
+  },
+  "home.modules.synapsys.agents.desc": {
+    "message": "PlantAgent, ControllerAgent, SyncEngine"
+  },
+  "home.modules.synapsys.transport.desc": {
+    "message": "Memória Compartilhada (zero-copy), ZMQ PUB/SUB & REQ/REP"
+  },
+  "home.modules.synapsys.hw.desc": {
+    "message": "HardwareInterface, MockHardwareInterface (HIL)"
+  },
+  "home.modules.synapsys.mpc.desc": {
+    "message": "Controle Preditivo Baseado em Modelo (MPC)"
+  },
+  "home.modules.status.Stable": {
+    "message": "Estável"
+  },
+  "home.modules.status.Functional": {
+    "message": "Funcional"
+  },
+  "home.modules.status.Interface": {
+    "message": "Interface"
+  },
+  "home.modules.status.Planned": {
+    "message": "Planejado"
+  },
+  "home.hil.mil.name": {
+    "message": "Model-in-the-Loop"
+  },
+  "home.hil.mil.detail": {
+    "message": "SharedMemoryTransport · PlantAgent"
+  },
+  "home.hil.sil.name": {
+    "message": "Software-in-the-Loop"
+  },
+  "home.hil.sil.detail": {
+    "message": "ZMQTransport · processo separado"
+  },
+  "home.hil.hil.name": {
+    "message": "Hardware-in-the-Loop"
+  },
+  "home.hil.hil.detail": {
+    "message": "HardwareAgent · dispositivo real"
+  },
+  "home.hil.note.prefix": {
+    "message": "Veja o "
+  },
+  "home.hil.note.link": {
+    "message": "guia HIL / SIL"
+  },
+  "home.hil.note.suffix": {
+    "message": " para um exemplo detalhado de migração passo a passo."
+  },
+  "home.ai.desc": {
+    "message": "O Synapsys é construído para fluxos de pesquisa modernos. Qualquer modelo PyTorch, JAX ou scikit-learn pode ser pareado diretamente a um ControllerAgent por meio de um callback de tipo np.ndarray → np.ndarray — permitindo rodar redes baseadas em física e R.L. em tempo real nos loops HIL/SIL."
+  },
+  "home.ai.caption": {
+    "message": "Neural-LQR em um sistema massa-mola-amortecedor (2-DOF) — Rede Perceptron inicializada com ganhos ótimos LQR para seguir o setpoint x₂ = 1 m. O retrato de fase mostra a convergência ao equilíbrio. Rode ao vivo pelo exemplo fornecido (SIL)."
+  },
+  "home.ai.card.init.title": {
+    "message": "Inicialização por Base Física"
+  },
+  "home.ai.card.init.desc": {
+    "message": "A camada de saída do Pytorch inicializada com os ganhos de base da lei de controle LQR garante ao sistema a estabilidade logo no passo = 0, sem precisar de exploração cega."
+  },
+  "home.ai.card.rl.title": {
+    "message": "Suporte a RL / Fine-tuning"
+  },
+  "home.ai.card.rl.desc": {
+    "message": "Camadas escondidas que podem ser refinadas usando PPO/SAC. O auxílio do recorte base via algoritmo padrão molda o espaço de recompensa e complexidade."
+  },
+  "home.ai.card.nn.title": {
+    "message": "Traga Seu Próprio nn.Module"
+  },
+  "home.ai.card.nn.desc": {
+    "message": "Independentemente de ser Transformer, LSTM, Diffusions - O ControllerAgent engloba qualquer modelo matemático que possa interfaciar tensores."
+  },
+  "home.ai.card.sil.title": {
+    "message": "Malha SIL em Fast-Time"
+  },
+  "home.ai.card.sil.desc": {
+    "message": "O fluxo avançado da thread em frequência constante em 100Hz usa memória ram pura com barramento de Zero-copy (latência >1ms nas inferências e >1 μs IPC)."
+  },
+  "home.ai.note.prefix": {
+    "message": "Walkthrough completo: "
+  },
+  "home.ai.note.link": {
+    "message": "Exemplo SIL + Neural-LQR →"
+  },
+  "home.ai.model.label": {
+    "message": "Modelo físico — massa-mola-amortecedor (2-DOF)"
+  },
+  "home.blog.title": {
+    "message": "Do Blog"
+  },
+  "home.blog.lead": {
+    "message": "Artigos de pesquisa aprofundados e posts práticos sobre controle de sistemas, IA e Synapsys."
+  },
+  "home.blog.all": {
+    "message": "Ver todos os posts →"
+  },
+  "home.blog.badge.artigo": {
+    "message": "Artigo"
+  },
+  "home.blog.badge.post": {
+    "message": "Post"
+  },
+  "home.blog.read_time": {
+    "message": "min de leitura"
+  },
+  "home.blog.read_more": {
+    "message": "Ler artigo completo →"
+  },
+  "home.blog.prev": {
+    "message": "Anterior"
+  },
+  "home.blog.next": {
+    "message": "Próximo"
+  },
+  "home.libmap.title": {
+    "message": "Mapa Completo da Biblioteca"
+  },
+  "home.libmap.desc": {
+    "message": "Nove pacotes focados — da matemática LTI ao hardware em tempo real. Clique em qualquer card para ir à referência da API."
+  },
+  "home.sims.cartpole.alt": {
+    "message": "Simulação 3D Cart-Pole em tempo real",
+    "description": "Alt text do GIF CartPole"
+  },
+  "home.sims.cartpole.name": {
+    "message": "Cart-Pole",
+    "description": "Nome do simulador CartPole"
+  },
+  "home.sims.cartpole.desc": {
+    "message": "Pêndulo invertido sobre carrinho. 4 estados, instável — clássico para LQR e RL.",
+    "description": "Descrição do CartPole"
+  },
+  "home.sims.pendulum.alt": {
+    "message": "Simulação 3D Pêndulo Invertido em tempo real",
+    "description": "Alt text do GIF Pendulum"
+  },
+  "home.sims.pendulum.name": {
+    "message": "Pêndulo Invertido",
+    "description": "Nome do simulador Pendulum"
+  },
+  "home.sims.pendulum.desc": {
+    "message": "Pêndulo de 1 elo com base fixa. O sistema instável mais simples para testar qualquer controlador.",
+    "description": "Descrição do Pendulum"
+  },
+  "home.sims.msd.alt": {
+    "message": "Simulação 3D Massa-Mola-Amortecedor em tempo real",
+    "description": "Alt text do GIF MSD"
+  },
+  "home.sims.msd.name": {
+    "message": "Massa-Mola-Amortecedor",
+    "description": "Nome do simulador MSD"
+  },
+  "home.sims.msd.desc": {
+    "message": "Massa-mola-amortecedor com rastreamento de setpoint. LQR com feed-forward de posição.",
+    "description": "Descrição do MSD"
+  },
+  "home.sims.docs_link": {
+    "message": "Docs →",
+    "description": "Link para docs do simulador"
+  },
+  "home.sims.note.prefix": {
+    "message": "Passe qualquer callable como controlador — LQR, PID, rede neural ou agente RL:",
+    "description": "Nota sobre controlador customizado"
+  },
+  "home.sims.note.link": {
+    "message": "Ver exemplos →",
+    "description": "Link para exemplos de controlador customizado"
+  }
 }

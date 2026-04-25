@@ -27,7 +27,7 @@
 
 ## Overview
 
-Synapsys is an open-source Python library for **modelling, simulating, and deploying control systems**. It provides a **MATLAB-compatible API** built on SciPy, a modern **multi-agent simulation framework**, and a pluggable **transport layer** (shared memory / ZeroMQ) that scales from a single laptop to distributed lab setups.
+Synapsys is an open-source Python library for **modelling, simulating, and deploying control systems**. It provides a **MATLAB-compatible API** built on SciPy, a modern **multi-agent simulation framework**, a pluggable **transport layer** (shared memory / ZeroMQ) that scales from a single laptop to distributed lab setups, and **nonlinear physical simulators** with real-time 3D visualisation.
 
 Any PyTorch, Keras or JAX model plugs directly into a `ControllerAgent` via a plain `np.ndarray -> np.ndarray` callback, making it straightforward to combine classical control theory with deep learning or reinforcement learning.
 
@@ -47,6 +47,46 @@ G_mimo = tf([[[ 1], [0]],
              [[1],[1,2]]])
 T_mimo = feedback(G_mimo)     # returns StateSpace closed-loop
 ```
+
+---
+
+## Demo — Physical Simulators + SimView
+
+Real-time 3D physics simulators with interactive Qt+PyVista visualisation. Each simulator exposes a clean `step(u, dt)` / `reset()` / `linearize()` API and can feed any Synapsys agent or controller algorithm directly.
+
+<div align="center">
+<table>
+<tr>
+<td align="center">
+<img src="https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/simview/msd.gif" alt="Mass-Spring-Damper SimView — 3D real-time visualisation" width="310" />
+<br><sub>Mass-Spring-Damper — 3D view + live telemetry</sub>
+</td>
+<td align="center">
+<img src="https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/simview/pendulum.gif" alt="Inverted Pendulum SimView — 3D real-time visualisation" width="310" />
+<br><sub>Inverted Pendulum — nonlinear dynamics, numerical linearisation</sub>
+</td>
+<td align="center">
+<img src="https://raw.githubusercontent.com/synapsys-lab/synapsys/main/website/static/img/simview/cartpole.gif" alt="Cart-Pole SimView — 3D real-time visualisation" width="310" />
+<br><sub>Cart-Pole — 4-state Lagrangian system, partial observation</sub>
+</td>
+</tr>
+</table>
+</div>
+
+```python
+from synapsys.simulators import MassSpringDamperSim
+import numpy as np
+
+sim = MassSpringDamperSim(m=1.0, c=0.5, k=2.0)
+sim.reset()
+
+for _ in range(1000):
+    y, info = sim.step(np.array([1.0]), dt=0.01)   # y = [position]
+
+ss = sim.linearize(x0=np.zeros(2), u0=np.zeros(1))  # → Synapsys StateSpace
+```
+
+> Full guide: [SimView documentation](https://synapsys-lab.github.io/synapsys/docs/guide/viz/simview)
 
 ---
 
@@ -83,6 +123,8 @@ and the residual can be trained later via RL or imitation learning without desta
 | LTI Core | `TransferFunction`, `StateSpace`, and `TransferFunctionMatrix` with operator overloading, poles, zeros, stability |
 | MIMO Support | `TransferFunctionMatrix` for multi-input multi-output plants, MIMO `feedback()`, transmission zeros via Rosenbrock pencil |
 | Control Algorithms | Discrete PID with anti-windup, LQR via algebraic Riccati equation (Q/R validated) |
+| Physical Simulators | Nonlinear continuous-time simulators (MSD, inverted pendulum, cart-pole) with Euler/RK4/RK45 integrators, sensor noise and input disturbance, thread-safe `step()` and numerical `linearize()` |
+| SimView 3D UI | Real-time Qt+PyVista 3D visualisation layer for each simulator — live telemetry panels, interactive parameter controls |
 | AI Integration | Any PyTorch, Keras or JAX model as a controller — plain callable interface, no wrappers |
 | Multi-Agent Simulation | `PlantAgent` and `ControllerAgent` with lock-step and wall-clock sync |
 | Distributed Transport | Zero-copy shared memory (single-host) and ZeroMQ PUB/SUB and REQ/REP (multi-process / multi-machine) |
@@ -109,10 +151,10 @@ poetry add synapsys
 conda install -c conda-forge synapsys
 ```
 
-For 3D visualisation (quadcopter example):
+For 3D visualisation (simulators + quadcopter example):
 
 ```bash
-pip install synapsys[viz] torch matplotlib
+pip install synapsys[viz] matplotlib
 ```
 
 For development:
@@ -248,6 +290,9 @@ agent = HardwareAgent("hw", hw, bus, sync)
 | [`advanced/04_realtime_matplotlib.py`](examples/advanced/04_realtime_matplotlib.py) | Live matplotlib oscilloscope |
 | [`advanced/05_digital_twin/05_digital_twin.py`](examples/advanced/05_digital_twin/05_digital_twin.py) | Digital twin with mechanical wear detection |
 | [`advanced/06_quadcopter_mimo/`](examples/advanced/06_quadcopter_mimo/) | 12-state quadcopter MIMO Neural-LQR with PyVista 3D, config GUI, GIF export |
+| [`simulators/01_mass_spring_damper.py`](examples/simulators/01_mass_spring_damper.py) | Mass-spring-damper: step response, LQR design, linearisation validation |
+| [`simulators/02_inverted_pendulum.py`](examples/simulators/02_inverted_pendulum.py) | Inverted pendulum: LQR stabilisation, noise and disturbance injection |
+| [`simulators/03_cartpole.py`](examples/simulators/03_cartpole.py) | Cart-pole: Lagrangian dynamics, partial observation, LQR control |
 | [`quickstart_en.ipynb`](examples/quickstart_en.ipynb) | Interactive Jupyter notebook walkthrough |
 
 ---
@@ -263,10 +308,12 @@ synapsys/
 ├── broker/         # MessageBroker, Topic, SharedMemoryBackend, ZMQBrokerBackend
 ├── transport/      # SharedMemoryTransport, ZMQTransport, ZMQReqRepTransport
 ├── hw/             # HardwareInterface (abstract) + MockHardwareInterface
+├── simulators/     # SimulatorBase, MassSpringDamperSim, InvertedPendulumSim, CartPoleSim
+├── viz/            # SimView real-time 3D UI (Qt + PyVista) — MSDView, PendulumView, CartPoleView
 └── utils/          # StateEquations, mat(), col(), row()
 ```
 
-The transport layer is the key abstraction: agents communicate exclusively through a `TransportStrategy` interface. The `broker/` module adds a higher-level pub/sub bus (backed by shared memory or ZMQ) for multi-agent scenarios. Swapping the concrete transport or broker backend requires changing one line — algorithms and agents are untouched.
+The transport layer is the key abstraction: agents communicate exclusively through a `TransportStrategy` interface. The `broker/` module adds a higher-level pub/sub bus (backed by shared memory or ZMQ) for multi-agent scenarios. The `simulators/` module provides nonlinear physical models that integrate directly with any Synapsys controller via the `step()` API. Swapping transport, broker backend, or simulator requires changing one line — algorithms and agents are untouched.
 
 ---
 
@@ -281,7 +328,7 @@ uv run ruff check synapsys tests   # linting
 
 | Metric | Value |
 |--------|-------|
-| Test suite | 287 tests |
+| Test suite | 501 tests |
 | Coverage | 100% |
 | Type checking | mypy strict — 0 errors |
 | Pre-commit hooks | ruff lint + format, mypy, pytest |
@@ -297,6 +344,9 @@ uv run ruff check synapsys tests   # linting
 | v0.2.0 | Released | MIMO support — `TransferFunctionMatrix`, MIMO `feedback()`, transmission zeros (Rosenbrock pencil), LQR Q/R validation, covariant type annotations |
 | v0.2.1 | Released | Quadcopter MIMO Neural-LQR example with PyVista 3D, config GUI, GIF export, version sync fix |
 | v0.2.2 | Released | `MessageBroker` pub/sub bus, 100% test coverage, mypy strict, pre-commit hooks |
+| v0.2.3 | Released | Quadcopter heading-aligned yaw control, updated demos, PT docs snapshot |
+| v0.2.4 | Released | New Synapse-S logo, theme-adaptive navbar, updated website assets |
+| v0.2.5 | Released | Nonlinear physical simulators (MSD, inverted pendulum, cart-pole) + SimView real-time 3D UI, 501 tests |
 | v0.3 | Planned | `margin()`, `rlocus()`, `pole_placement()`, Kalman filter, Luenberger observer |
 | v0.5 | Planned | Real hardware drivers (serial, CAN, FPGA via PYNQ) |
 
