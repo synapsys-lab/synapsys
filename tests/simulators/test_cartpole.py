@@ -268,3 +268,63 @@ class TestSetParams:
             t.join()
 
         assert errors == []
+
+
+# ── linearised mode ───────────────────────────────────────────────────────────
+
+
+class TestLinearisedMode:
+    def test_linearised_false_is_default(self):
+        sim = CartPoleSim()
+        assert sim.linearised is False
+
+    def test_linearised_true_constructor(self):
+        sim = CartPoleSim(linearised=True)
+        assert sim.linearised is True
+
+    def test_linearised_dynamics_matches_nonlinear_near_upright(self):
+        x0 = np.array([0.0, 0.0, 0.01, 0.0])
+        u0 = np.zeros(1)
+        sim_nl = CartPoleSim(linearised=False)
+        sim_l = CartPoleSim(linearised=True)
+        sim_nl.reset(x0=x0)
+        sim_l.reset(x0=x0)
+        y_nl, _ = sim_nl.step(u0, dt=0.01)
+        y_l, _ = sim_l.step(u0, dt=0.01)
+        np.testing.assert_allclose(y_nl, y_l, atol=1e-4)
+
+    def test_linearised_dynamics_differs_from_nonlinear_at_large_angle(self):
+        x0 = np.array([0.0, 0.0, 0.5, 0.0])
+        u0 = np.zeros(1)
+        sim_nl = CartPoleSim(linearised=False)
+        sim_l = CartPoleSim(linearised=True)
+        sim_nl.reset(x0=x0)
+        sim_l.reset(x0=x0)
+        y_nl, _ = sim_nl.step(u0, dt=0.1)
+        y_l, _ = sim_l.step(u0, dt=0.1)
+        assert not np.allclose(y_nl, y_l, atol=1e-3)
+
+
+# ── failure detection ─────────────────────────────────────────────────────────
+
+
+class TestFailureDetection:
+    def test_info_contains_failed_key(self, sim):
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert "failed" in info
+
+    def test_not_failed_when_pole_upright(self, sim):
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert info["failed"] is False
+
+    def test_failed_when_pole_angle_exceeds_threshold(self):
+        sim = CartPoleSim()
+        sim.reset(x0=np.array([0.0, 0.0, 1.2, 0.0]))  # θ = 1.2 rad > π/3
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert info["failed"] is True
+
+    def test_failed_when_cart_out_of_bounds(self):
+        sim = CartPoleSim()
+        sim.reset(x0=np.array([5.0, 0.0, 0.0, 0.0]))  # p = 5 m
+        _, info = sim.step(np.zeros(1), dt=0.01)
+        assert info["failed"] is True

@@ -63,15 +63,21 @@ class CartPoleSim(SimulatorBase):
         integrator: Literal["euler", "rk4", "rk45"] = "rk4",
         noise_std: float = 0.0,
         disturbance_std: float = 0.0,
+        linearised: bool = False,
     ) -> None:
         self._m_c = float(m_c)
         self._m_p = float(m_p)
         self._l = float(l)
         self._g = float(g)
+        self._linearised = bool(linearised)
         self._params_lock = threading.Lock()
         super().__init__(
             integrator=integrator, noise_std=noise_std, disturbance_std=disturbance_std
         )
+
+    @property
+    def linearised(self) -> bool:
+        return self._linearised
 
     # ------------------------------------------------------------------
     # Abstract properties
@@ -100,6 +106,12 @@ class CartPoleSim(SimulatorBase):
         _, p_dot, theta, theta_dot = x
         F = u[0]
 
+        if self._linearised:
+            # Linearised around (θ=0, ṗ=0, θ̇=0, F=0)
+            p_ddot = F / m_c - m_p * g * theta / m_c
+            theta_ddot = (m_c + m_p) * g * theta / (m_c * l) - F / (m_c * l)
+            return np.array([p_dot, p_ddot, theta_dot, theta_ddot])
+
         sin_t = np.sin(theta)
         cos_t = np.cos(theta)
         delta = m_c + m_p * sin_t**2
@@ -111,6 +123,10 @@ class CartPoleSim(SimulatorBase):
 
     def output(self, x: ndarray) -> ndarray:
         return np.array([x[0], x[2]])
+
+    def failed(self, x: ndarray) -> bool:
+        p, _, theta, _ = x
+        return bool(abs(p) > 4.8 or abs(theta) > np.pi / 3)
 
     def reset(self, x0: ndarray | None = None, **kwargs: Any) -> ndarray:
         if x0 is not None:
