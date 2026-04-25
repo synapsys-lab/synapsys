@@ -15,6 +15,7 @@ import pytest
 pytest.importorskip(
     "matplotlib.backends.backend_qtagg",
     reason="Qt backend not available — skip SimView tests",
+    exc_type=ImportError,
 )
 
 from synapsys.algorithms.lqr import lqr
