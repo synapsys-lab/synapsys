@@ -19,6 +19,12 @@ Synapsys is designed as a MATLAB-compatible alternative for control engineers wh
 - **Distributed simulation** — plant and controller running as independent processes
 - **Ultra-low latency** communication via shared memory (zero-copy) or ZeroMQ
 - A **solid LTI core** that scales from simple PID loops to multi-agent CPS architectures
+- **3D simulation views** — plug-and-play windows for CartPole, Pendulum and MSD with any controller:
+
+```python
+from synapsys.viz import CartPoleView
+CartPoleView(controller=my_rl_agent).run()   # LQR, PID, PyTorch, SB3 — any callable
+```
 
 ---
 
@@ -180,6 +186,7 @@ Synapsys is under active development. The API may change between versions.
 | `synapsys.agents` — PlantAgent, ControllerAgent, HardwareAgent | Functional |
 | `synapsys.transport` — SharedMemory, ZMQ (low-level) | Functional |
 | `synapsys.api` — MATLAB-compat layer | Stable |
+| `synapsys.viz` — 3D simulation views (CartPoleView, PendulumView, MassSpringDamperView) | Functional |
 | `synapsys.hw` — Hardware abstraction | Interface only |
 | MPC, adaptive control | Planned |
 | Graphical block editor | Planned |
