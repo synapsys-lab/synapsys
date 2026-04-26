@@ -44,6 +44,19 @@ jobs:
           NODE_ENV: production
         run: npm run build
 
+      # Docusaurus generates PT locale at /pt/synapsys/ (locale + baseUrl),
+      # but GitHub Pages project repos serve everything under /synapsys/.
+      # This step rewrites all PT paths to /synapsys/pt/ so the locale
+      # switcher and internal navigation work correctly on GitHub Pages.
+      - name: Fix PT locale paths for GitHub Pages
+        working-directory: website
+        run: |
+          # Rewrite /pt/synapsys/ → /synapsys/pt/ in all PT build files
+          find build/pt -type f | xargs sed -i 's|/pt/synapsys/|/synapsys/pt/|g'
+          # Rewrite locale-switcher links in EN pages
+          find build -not -path "*/build/pt/*" -type f -name "*.html" | \
+            xargs sed -i 's|/pt/synapsys/|/synapsys/pt/|g'
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
