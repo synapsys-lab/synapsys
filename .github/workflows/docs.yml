@@ -6,7 +6,9 @@ on:
     paths:
       - 'website/**'
 
-  # Allow manual trigger (e.g. to force a redeploy without changing docs)
+  # Allow manual trigger from main or develop (useful to redeploy docs without
+  # a full release pipeline). The github-pages environment allows both branches.
+  # Usage: gh workflow run docs.yml --ref develop
   workflow_dispatch:
 
 # Only one Pages deployment runs at a time; in-flight deployments are not cancelled
