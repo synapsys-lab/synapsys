@@ -293,3 +293,12 @@ class TestSetParams:
             t.join()
 
         assert errors == []
+
+
+def test_repr():
+    sim = MassSpringDamperSim(m=2.0, c=0.3, k=4.0)
+    r = repr(sim)
+    assert "MassSpringDamperSim" in r
+    assert "m" in r
+    assert "rk4" in r
+    assert "ωₙ" in r

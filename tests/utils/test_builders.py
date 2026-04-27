@@ -180,3 +180,13 @@ class TestIntegrationWithSS:
         G = ss(eqs.A, eqs.B, eqs.output("x"), np.zeros((1, 1)))
         _, y = step(G)
         np.testing.assert_allclose(y[-1], 1.0, atol=1e-3)
+
+
+class TestRepr:
+    def test_repr_contains_header_and_matrices(self):
+        eqs = make_2dof()
+        r = repr(eqs)
+        assert "StateEquations" in r
+        assert "states" in r
+        assert "A = " in r
+        assert "B = " in r

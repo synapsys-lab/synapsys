@@ -297,5 +297,20 @@ class TransferFunctionMatrix(LTIModel):
     # ------------------------------------------------------------------
 
     def __repr__(self) -> str:
-        domain = f"dt={self._dt}" if self.is_discrete else "continuous"
-        return f"TransferFunctionMatrix({self._p}×{self._m}, {domain})"
+        from synapsys.utils._fmt import box
+
+        domain = f"discrete  dt={self._dt} s" if self.is_discrete else "continuous"
+        lines = [
+            f"domain : {domain}",
+            f"shape  : {self._p}×{self._m}",
+        ]
+        for i in range(self._p):
+            for j in range(self._m):
+                tf = self._tfs[i][j]
+                entry = (
+                    f"G[{i},{j}] : order {tf.n_states}"
+                    f"  num={tf.num.tolist()}  den={tf.den.tolist()}"
+                )
+                lines.append(entry)
+        lines.append(f"stable : {'yes' if self.is_stable() else 'no'}")
+        return box("TransferFunctionMatrix", lines)

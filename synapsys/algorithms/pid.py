@@ -48,4 +48,15 @@ class PID:
         return u_sat
 
     def __repr__(self) -> str:
-        return f"PID(Kp={self.Kp}, Ki={self.Ki}, Kd={self.Kd}, dt={self.dt})"
+        from synapsys.utils._fmt import _g, box
+
+        sat_lo = "-inf" if self.u_min == -np.inf else _g(self.u_min)
+        sat_hi = "+inf" if self.u_max == np.inf else _g(self.u_max)
+        lines = [
+            f"Kp  : {_g(self.Kp)}",
+            f"Ki  : {_g(self.Ki)}",
+            f"Kd  : {_g(self.Kd)}",
+            f"dt  : {_g(self.dt)} s",
+            f"sat : [{sat_lo}, {sat_hi}]",
+        ]
+        return box("PID", lines)

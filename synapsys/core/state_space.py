@@ -272,8 +272,28 @@ class StateSpace(LTIModel):
         return StateSpace(self._A, self._B, -self._C, -self._D, dt=self._dt)
 
     def __repr__(self) -> str:
-        domain = f"dt={self._dt}" if self.is_discrete else "continuous"
-        return (
-            f"StateSpace(n_states={self.n_states}, "
-            f"n_inputs={self.n_inputs}, n_outputs={self.n_outputs}, {domain})"
+        from synapsys.utils._fmt import box, fmt_matrix, fmt_poles
+
+        domain = f"discrete  dt={self._dt} s" if self.is_discrete else "continuous"
+        poles = self.poles()
+        pole_lines = fmt_poles(poles, is_discrete=self.is_discrete)
+
+        n_in = self.n_inputs
+        n_out = self.n_outputs
+        shape = (
+            f"{self.n_states} states · {n_in} input{'s' if n_in != 1 else ''}"
+            f" · {n_out} output{'s' if n_out != 1 else ''}"
         )
+        lines: list[str] = [
+            f"domain : {domain}",
+            f"shape  : {shape}",
+        ]
+        lines += fmt_matrix(self._A, "A")
+        lines += fmt_matrix(self._B, "B")
+        lines += fmt_matrix(self._C, "C")
+        lines += fmt_matrix(self._D, "D")
+        lines.append(f"poles  : {pole_lines[0]}")
+        for pl in pole_lines[1:]:
+            lines.append(f"         {pl}")
+        lines.append(f"stable : {'yes' if self.is_stable() else 'no'}")
+        return box("State Space", lines)

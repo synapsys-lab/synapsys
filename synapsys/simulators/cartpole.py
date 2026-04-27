@@ -164,3 +164,21 @@ class CartPoleSim(SimulatorBase):
     def params(self) -> dict[str, float]:
         with self._params_lock:
             return dict(m_c=self._m_c, m_p=self._m_p, l=self._l, g=self._g)
+
+    def __repr__(self) -> str:
+        from synapsys.utils._fmt import _g, box
+
+        with self._params_lock:
+            m_c, m_p, l, g = self._m_c, self._m_p, self._l, self._g
+        mode = "linearised" if self._linearised else "nonlinear"
+        lines = [
+            f"m_c        : {_g(m_c)} kg",
+            f"m_p        : {_g(m_p)} kg",
+            f"l          : {_g(l)} m",
+            f"g          : {_g(g)} m/s²",
+            f"integrator : {self._integrate.__name__}",
+            f"noise_std  : {_g(self._noise_std)}",
+            f"dist_std   : {_g(self._disturbance_std)}",
+            f"mode       : {mode}",
+        ]
+        return box("CartPoleSim", lines)

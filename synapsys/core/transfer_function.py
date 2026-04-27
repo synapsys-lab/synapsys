@@ -220,8 +220,27 @@ class TransferFunction(LTIModel):
         return TransferFunction(num, den, dt=self._dt)
 
     def __repr__(self) -> str:
-        domain = f"dt={self._dt}" if self.is_discrete else "continuous"
-        return (
-            f"TransferFunction(num={self._num.tolist()}, "
-            f"den={self._den.tolist()}, {domain})"
+        from synapsys.utils._fmt import box, fmt_arr, fmt_poles
+
+        domain = f"discrete  dt={self._dt} s" if self.is_discrete else "continuous"
+        poles = self.poles()
+        zeros = self.zeros()
+        pole_lines = fmt_poles(poles, is_discrete=self.is_discrete)
+        zero_lines = (
+            fmt_poles(zeros, is_discrete=self.is_discrete) if zeros.size else ["(none)"]
         )
+
+        lines = [
+            f"domain : {domain}",
+            f"order  : {self.n_states}",
+            f"num    : {fmt_arr(self._num)}",
+            f"den    : {fmt_arr(self._den)}",
+        ]
+        lines.append(f"poles  : {pole_lines[0]}")
+        for pl in pole_lines[1:]:
+            lines.append(f"         {pl}")
+        lines.append(f"zeros  : {zero_lines[0]}")
+        for zl in zero_lines[1:]:
+            lines.append(f"         {zl}")
+        lines.append(f"stable : {'yes' if self.is_stable() else 'no'}")
+        return box("TransferFunction", lines)

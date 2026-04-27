@@ -138,6 +138,24 @@ class MassSpringDamperSim(SimulatorBase):
         with self._params_lock:
             return dict(m=self._m, c=self._c, k=self._k)
 
+    def __repr__(self) -> str:
+        from synapsys.utils._fmt import _g, box
+
+        with self._params_lock:
+            m, c, k = self._m, self._c, self._k
+        wn = float(np.sqrt(k / m))
+        zeta = float(c / (2.0 * np.sqrt(m * k)))
+        lines = [
+            f"m          : {_g(m)} kg",
+            f"c          : {_g(c)} N·s/m",
+            f"k          : {_g(k)} N/m",
+            f"integrator : {self._integrate.__name__}",
+            f"noise_std  : {_g(self._noise_std)}",
+            f"dist_std   : {_g(self._disturbance_std)}",
+            f"ωₙ         : {_g(wn)} rad/s  (ζ={_g(zeta)})",
+        ]
+        return box("MassSpringDamperSim", lines)
+
     def natural_frequency(self) -> float:
         """Undamped natural frequency ωₙ = √(k/m) (rad/s)."""
         with self._params_lock:

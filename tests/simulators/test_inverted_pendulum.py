@@ -310,3 +310,11 @@ class TestFailureDetection:
         sim.reset(x0=np.array([2.0, 0.0]))  # θ = 2.0 rad > π/2
         _, info = sim.step(np.zeros(1), dt=0.01)
         assert info["failed"] is True
+
+
+def test_repr():
+    sim = InvertedPendulumSim(m=0.5, l=0.8, g=9.81, b=0.1)
+    r = repr(sim)
+    assert "InvertedPendulumSim" in r
+    assert "unstable" in r
+    assert "rk4" in r

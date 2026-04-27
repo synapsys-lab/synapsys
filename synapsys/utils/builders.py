@@ -130,10 +130,13 @@ class StateEquations:
 
     # ── convenience ──────────────────────────────────────────────────────────
 
-    def __repr__(self) -> str:  # pragma: no cover
+    def __repr__(self) -> str:
+        from synapsys.utils._fmt import box, fmt_matrix
+
         lines = [
-            f"StateEquations(states={self.states}, inputs={self.inputs})",
-            f"  A =\n{self._A}",
-            f"  B =\n{self._B}",
+            f"states : {self.states}",
+            f"inputs : {self.inputs}",
         ]
-        return "\n".join(lines)
+        lines += fmt_matrix(self._A, "A")
+        lines += fmt_matrix(self._B, "B")
+        return box("StateEquations", lines)

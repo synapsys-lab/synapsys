@@ -232,10 +232,10 @@ class TestStateSpaceAlgebra:
         np.testing.assert_allclose(y[-1], -1.0, atol=1e-2)
 
     def test_repr(self):
-        """__repr__ returns descriptive string — covers state_space.py:281-282."""
+        """__repr__ returns descriptive string in box format."""
         r = repr(self._g1())
-        assert "StateSpace" in r
-        assert "n_states=1" in r
+        assert "State Space" in r
+        assert "1 states" in r
         assert "continuous" in r
 
     def test_repr_discrete(self):
@@ -243,6 +243,18 @@ class TestStateSpaceAlgebra:
         sys_d = StateSpace([[0.9]], [[0.1]], [[1]], [[0]], dt=0.1)
         r = repr(sys_d)
         assert "dt=0.1" in r
+
+    def test_repr_multiple_poles(self):
+        """__repr__ with 2+ distinct pole groups exercises multi-line pole branch."""
+        # 3 distinct real poles → 3 separate pole lines
+        A = np.diag([-1.0, -2.0, -3.0])
+        B = np.ones((3, 1))
+        C = np.ones((1, 3))
+        D = np.zeros((1, 1))
+        sys = StateSpace(A, B, C, D)
+        r = repr(sys)
+        assert "State Space" in r
+        assert "-1." in r or "-2." in r
 
     def test_negative_dt_raises(self):
         """Negative dt raises ValueError — covers state_space.py:51."""

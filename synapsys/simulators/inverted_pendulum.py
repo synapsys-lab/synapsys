@@ -146,6 +146,24 @@ class InvertedPendulumSim(SimulatorBase):
         with self._params_lock:
             return dict(m=self._m, l=self._l, g=self._g, b=self._b)
 
+    def __repr__(self) -> str:
+        from synapsys.utils._fmt import _g, box
+
+        with self._params_lock:
+            m, l, g, b = self._m, self._l, self._g, self._b
+        unstable = float(np.sqrt(g / l))
+        lines = [
+            f"m          : {_g(m)} kg",
+            f"l          : {_g(l)} m",
+            f"g          : {_g(g)} m/s²",
+            f"b          : {_g(b)} N·m·s/rad",
+            f"integrator : {self._integrate.__name__}",
+            f"noise_std  : {_g(self._noise_std)}",
+            f"dist_std   : {_g(self._disturbance_std)}",
+            f"unstable λ : +{_g(unstable)} rad/s",
+        ]
+        return box("InvertedPendulumSim", lines)
+
     def unstable_pole(self) -> float:
         """Open-loop unstable eigenvalue: +√(g/l) (rad/s)."""
         with self._params_lock:

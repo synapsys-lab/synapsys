@@ -154,6 +154,16 @@ class TestTransferFunctionEdgeCases:
         r = repr(Gd)
         assert "dt=0.1" in r
 
+    def test_repr_multiple_poles_and_zeros(self):
+        """__repr__ with 2 real poles and 2 real zeros exercises multi-line branches."""
+        # num = (s+2)(s+4) = s^2+6s+8  |  den = (s+1)(s+3) = s^2+4s+3
+        G = TransferFunction([1, 6, 8], [1, 4, 3])
+        r = repr(G)
+        assert "TransferFunction" in r
+        # both pole lines and both zero lines should appear
+        assert "-1." in r or "-3." in r
+        assert "-2." in r or "-4." in r
+
     def test_truediv_with_non_tf_other(self):
         """__truediv__ with non-TF calls other.to_transfer_function()."""
         from synapsys.core.state_space import StateSpace

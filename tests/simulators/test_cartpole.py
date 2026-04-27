@@ -328,3 +328,11 @@ class TestFailureDetection:
         sim.reset(x0=np.array([5.0, 0.0, 0.0, 0.0]))  # p = 5 m
         _, info = sim.step(np.zeros(1), dt=0.01)
         assert info["failed"] is True
+
+
+def test_repr():
+    sim = CartPoleSim(m_c=1.5, m_p=0.2, l=0.6, g=9.81)
+    r = repr(sim)
+    assert "CartPoleSim" in r
+    assert "nonlinear" in r
+    assert "rk4" in r
