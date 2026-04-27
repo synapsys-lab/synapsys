@@ -47,11 +47,20 @@ class TestFmtArr:
 
 
 class TestFmtMatrix:
-    def test_small_matrix(self):
+    def test_small_matrix_label_and_borders(self):
         M = np.array([[1.0, 2.0], [3.0, 4.0]])
         lines = fmt_matrix(M, "A")
-        assert any("A = " in line for line in lines)
-        assert len(lines) >= 1
+        assert lines[0].startswith("A = |")
+        assert lines[1].startswith("    |")
+        assert all(line.endswith("|") for line in lines)
+        assert len(lines) == 2
+
+    def test_sign_alignment(self):
+        M = np.array([[0.0, 1.0], [-2.0, -5.0]])
+        lines = fmt_matrix(M, "A")
+        # Positive values get a leading space, negative get '-'
+        assert " 0.0000" in lines[0]
+        assert "-2.0000" in lines[1]
 
     def test_large_matrix_fallback(self):
         M = np.zeros((9, 9))

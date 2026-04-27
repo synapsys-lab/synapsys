@@ -44,26 +44,32 @@ def fmt_arr(a: np.ndarray, digits: int = 5) -> str:
 
 
 def fmt_matrix(M: np.ndarray, label: str, digits: int = 4) -> list[str]:
-    """Format a 2-D matrix as indented multi-line block under *label*.
+    """Format a 2-D matrix as a bordered table under *label*.
 
-    Returns a list of strings (one per line) ready to pass to ``box()``.
-    For large matrices (beyond _MAT_THRESHOLD rows/cols) falls back to a
-    compact shape description.
+    Uses sign-aware fixed-point formatting with column-aligned values::
+
+        A = |  0.0000   1.0000 |
+            | -2.0000  -5.0000 |
+
+    Falls back to a compact shape description for large matrices.
     """
     rows, cols = M.shape
     if rows > _MAT_THRESHOLD or cols > _MAT_THRESHOLD:
         return [f"{label} : ({rows}×{cols}) array"]
 
-    with np.printoptions(precision=digits, suppress=True, linewidth=120):
-        mat_str = str(M)
+    # Sign-aware fixed-point: positive values get a leading space so columns align
+    cells = [
+        [f"{float(M[r, c]): .{digits}f}" for c in range(cols)] for r in range(rows)
+    ]
+    col_w = [max(len(cells[r][c]) for r in range(rows)) for c in range(cols)]
 
-    mat_lines = mat_str.split("\n")
     prefix_first = f"{label} = "
     prefix_rest = " " * len(prefix_first)
     out = []
-    for i, ml in enumerate(mat_lines):
-        prefix = prefix_first if i == 0 else prefix_rest
-        out.append(f"{prefix}{ml}")
+    for r, row_cells in enumerate(cells):
+        inner = "  ".join(v.rjust(col_w[c]) for c, v in enumerate(row_cells))
+        prefix = prefix_first if r == 0 else prefix_rest
+        out.append(f"{prefix}| {inner} |")
     return out
 
 
