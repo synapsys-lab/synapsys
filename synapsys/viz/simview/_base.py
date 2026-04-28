@@ -12,7 +12,18 @@ from typing import Callable
 
 import matplotlib
 
-matplotlib.use("QtAgg")
+# Only switch to QtAgg when we are NOT inside an IPython/Jupyter kernel.
+# Inside a kernel the inline backend is already active and must not be
+# overridden — doing so is exactly what causes figures to pop up in external
+# windows when this module is imported from a notebook.
+try:
+    _ip = get_ipython()  # type: ignore[name-defined]  # noqa: F821
+    _in_jupyter = _ip is not None
+except NameError:
+    _in_jupyter = False
+
+if not _in_jupyter:
+    matplotlib.use("QtAgg")
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
 import numpy as np
