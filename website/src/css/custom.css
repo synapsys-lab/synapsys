@@ -166,10 +166,17 @@ a {
 }
 
 /* ── Navbar ─────────────────────────────────────────────────────────────────── */
+/* backdrop-filter traps position:fixed children (Chrome bug) — use opaque bg instead */
 .navbar {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--port-line);
+}
+
+[data-theme='dark'] .navbar {
+  background: rgba(13,12,11,0.96);
+}
+
+[data-theme='light'] .navbar {
+  background: rgba(248,245,238,0.96);
 }
 
 .navbar__title {
