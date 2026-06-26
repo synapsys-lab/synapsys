@@ -12,7 +12,6 @@ import CodeBlock from '@theme/CodeBlock';
 import LibraryMap from '@site/src/components/LibraryMap';
 import HomeBlogSection from '@site/src/components/HomeBlogSection';
 import SimulatorsShowcase from '@site/src/components/SimulatorsShowcase';
-import NeuralNetBackground from '@site/src/components/NeuralNetBackground';
 import GridBackground from '@site/src/components/GridBackground';
 import {
   BookOpen,
@@ -110,8 +109,6 @@ export default function Home(): ReactElement {
     >
 
       <GridBackground />
-
-      <NeuralNetBackground />
 
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <header className="doc-header">
