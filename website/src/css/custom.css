@@ -187,65 +187,36 @@ a {
   color: var(--port-accent) !important;
 }
 
-/* ── Mobile sidebar — fully opaque, scrollable, above grid ───────────────── */
-html[data-theme='dark'] .navbar-sidebar,
-html[data-theme='dark'] .navbar-sidebar__brand,
-html[data-theme='dark'] .navbar-sidebar__items,
-html[data-theme='dark'] .navbar-sidebar__item {
+/* ── Mobile sidebar ──────────────────────────────────────────────────────── */
+/* Keep Docusaurus z-index (400) intact — do NOT override it */
+.navbar-sidebar {
+  --ifm-navbar-background-color: #0f0e0d;
   background-color: #0f0e0d !important;
 }
 
-html[data-theme='light'] .navbar-sidebar,
-html[data-theme='light'] .navbar-sidebar__brand,
-html[data-theme='light'] .navbar-sidebar__items,
-html[data-theme='light'] .navbar-sidebar__item {
+[data-theme='light'] .navbar-sidebar {
+  --ifm-navbar-background-color: #f5f1e8;
   background-color: #f5f1e8 !important;
 }
 
-.navbar-sidebar {
-  z-index: 200 !important;
-}
-
 .navbar-sidebar__brand {
-  border-bottom: 1px solid var(--port-line) !important;
+  background-color: inherit;
+  border-bottom: 1px solid var(--port-line);
 }
 
+.navbar-sidebar__items,
 .navbar-sidebar__item {
-  overflow-y: auto !important;
-}
-
-/* Ensure menu links are always visible */
-.navbar-sidebar .menu__link,
-.navbar-sidebar .menu__list-item-collapsible {
-  color: var(--port-fg) !important;
-}
-
-.navbar-sidebar .menu__link:hover,
-.navbar-sidebar .menu__link--active {
-  color: var(--port-accent) !important;
-  background: rgba(232,81,58,.08) !important;
+  background-color: inherit;
 }
 
 .navbar-sidebar .menu__link {
   color: var(--port-fg);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
 }
 
 .navbar-sidebar .menu__link:hover,
 .navbar-sidebar .menu__link--active {
   color: var(--port-accent);
   background: rgba(232,81,58,.08);
-}
-
-.navbar-sidebar .navbar-sidebar__back {
-  color: var(--port-fg-muted);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 13px;
-}
-
-.navbar-sidebar__close svg {
-  color: var(--port-fg-muted);
 }
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────────── */
