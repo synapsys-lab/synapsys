@@ -187,6 +187,54 @@ a {
   color: var(--port-accent) !important;
 }
 
+/* ── Mobile sidebar — must be opaque so items are readable ───────────────── */
+.navbar-sidebar {
+  background-color: var(--port-panel) !important;
+}
+
+[data-theme='dark'] .navbar-sidebar {
+  background-color: #0f0e0d !important;
+}
+
+.navbar-sidebar__brand {
+  background-color: var(--port-panel);
+  border-bottom: 1px solid var(--port-line);
+}
+
+[data-theme='dark'] .navbar-sidebar__brand {
+  background-color: #0f0e0d;
+}
+
+.navbar-sidebar__item {
+  background-color: var(--port-panel);
+}
+
+[data-theme='dark'] .navbar-sidebar__item {
+  background-color: #0f0e0d;
+}
+
+.navbar-sidebar .menu__link {
+  color: var(--port-fg);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+}
+
+.navbar-sidebar .menu__link:hover,
+.navbar-sidebar .menu__link--active {
+  color: var(--port-accent);
+  background: rgba(232,81,58,.08);
+}
+
+.navbar-sidebar .navbar-sidebar__back {
+  color: var(--port-fg-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+
+.navbar-sidebar__close svg {
+  color: var(--port-fg-muted);
+}
+
 /* ── Sidebar ─────────────────────────────────────────────────────────────────── */
 .menu__link--active,
 .menu__link:hover {
