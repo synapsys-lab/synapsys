@@ -22,7 +22,7 @@ const PACKAGES: Package[] = [
     classes: ['tf()', 'ss()', 'c2d()', 'feedback()', 'series()', 'parallel()', 'bode()', 'step()', 'lsim()'],
     status: 'Stable',
     href: '/docs/api/matlab-compat',
-    accent: '#c8a870',
+    accent: '#e8513a',
     delay: 0,
   },
   {
@@ -32,7 +32,7 @@ const PACKAGES: Package[] = [
     classes: ['TransferFunction', 'StateSpace', 'TransferFunctionMatrix', 'LTIModel'],
     status: 'Stable',
     href: '/docs/api/core',
-    accent: '#c8a870',
+    accent: '#e8513a',
     delay: 1,
   },
   {
@@ -42,7 +42,7 @@ const PACKAGES: Package[] = [
     classes: ['PID', 'lqr()'],
     status: 'Stable',
     href: '/docs/api/algorithms',
-    accent: '#c8a870',
+    accent: '#e8513a',
     delay: 2,
   },
   {
@@ -52,7 +52,7 @@ const PACKAGES: Package[] = [
     classes: ['BaseAgent', 'PlantAgent', 'ControllerAgent', 'SyncEngine', 'SyncMode', 'ACLMessage'],
     status: 'Functional',
     href: '/docs/api/agents',
-    accent: '#0d9488',
+    accent: '#60a5fa',
     delay: 3,
   },
   {
@@ -62,7 +62,7 @@ const PACKAGES: Package[] = [
     classes: ['MessageBroker', 'Topic', 'SharedMemoryBackend', 'ZMQBrokerBackend'],
     status: 'Functional',
     href: '/docs/guide/transport/broker',
-    accent: '#0d9488',
+    accent: '#60a5fa',
     delay: 4,
   },
   {
@@ -72,7 +72,7 @@ const PACKAGES: Package[] = [
     classes: ['SharedMemoryTransport', 'ZMQTransport', 'ZMQReqRepTransport', 'TransportStrategy'],
     status: 'Functional',
     href: '/docs/api/transport',
-    accent: '#0d9488',
+    accent: '#60a5fa',
     delay: 5,
   },
   {
@@ -82,7 +82,7 @@ const PACKAGES: Package[] = [
     classes: ['StateEquations', 'mat()', 'col()', 'row()'],
     status: 'Stable',
     href: '/docs/api/utils',
-    accent: '#c8a870',
+    accent: '#e8513a',
     delay: 6,
   },
   {
@@ -92,7 +92,7 @@ const PACKAGES: Package[] = [
     classes: ['HardwareInterface', 'MockHardwareInterface'],
     status: 'Interface',
     href: '/docs/api/hw',
-    accent: '#d97706',
+    accent: '#fbbf24',
     delay: 7,
   },
   {
