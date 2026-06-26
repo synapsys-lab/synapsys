@@ -188,42 +188,42 @@ a {
 }
 
 /* ── Mobile sidebar — fully opaque, scrollable, above grid ───────────────── */
-.navbar-sidebar {
+html[data-theme='dark'] .navbar-sidebar,
+html[data-theme='dark'] .navbar-sidebar__brand,
+html[data-theme='dark'] .navbar-sidebar__items,
+html[data-theme='dark'] .navbar-sidebar__item {
   background-color: #0f0e0d !important;
+}
+
+html[data-theme='light'] .navbar-sidebar,
+html[data-theme='light'] .navbar-sidebar__brand,
+html[data-theme='light'] .navbar-sidebar__items,
+html[data-theme='light'] .navbar-sidebar__item {
+  background-color: #f5f1e8 !important;
+}
+
+.navbar-sidebar {
   z-index: 200 !important;
 }
 
-[data-theme='light'] .navbar-sidebar {
-  background-color: #f8f5ee !important;
-}
-
 .navbar-sidebar__brand {
-  background-color: #0f0e0d !important;
   border-bottom: 1px solid var(--port-line) !important;
 }
 
-[data-theme='light'] .navbar-sidebar__brand {
-  background-color: #f8f5ee !important;
-}
-
-.navbar-sidebar__items {
-  background-color: #0f0e0d !important;
-  overflow-x: hidden !important;
-}
-
-[data-theme='light'] .navbar-sidebar__items {
-  background-color: #f8f5ee !important;
-}
-
-/* Each panel must fill height and scroll independently */
 .navbar-sidebar__item {
-  background-color: #0f0e0d !important;
   overflow-y: auto !important;
-  height: 100% !important;
 }
 
-[data-theme='light'] .navbar-sidebar__item {
-  background-color: #f8f5ee !important;
+/* Ensure menu links are always visible */
+.navbar-sidebar .menu__link,
+.navbar-sidebar .menu__list-item-collapsible {
+  color: var(--port-fg) !important;
+}
+
+.navbar-sidebar .menu__link:hover,
+.navbar-sidebar .menu__link--active {
+  color: var(--port-accent) !important;
+  background: rgba(232,81,58,.08) !important;
 }
 
 .navbar-sidebar .menu__link {
