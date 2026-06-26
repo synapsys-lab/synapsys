@@ -142,6 +142,11 @@
 /* ── Global ─────────────────────────────────────────────────────────────────── */
 html { scroll-behavior: smooth; }
 
+/* Make main wrapper transparent so the fixed GridBackground shows through */
+.main-wrapper {
+  background: transparent !important;
+}
+
 ::selection {
   background: rgba(232,81,58,.22);
   color: var(--port-fg);
@@ -194,9 +199,13 @@ a {
 
 /* ── Footer ─────────────────────────────────────────────────────────────────── */
 .footer {
-  background: var(--port-panel) !important;
+  background: rgba(18,17,16,0.88) !important;
   border-top: 1px solid var(--port-line);
   padding: 2.5rem 2rem 1.5rem;
+}
+
+[data-theme='light'] .footer {
+  background: rgba(248,245,238,0.92) !important;
 }
 
 .footer__title {
@@ -465,7 +474,11 @@ img.doc-header__logo {
   gap: 0.5rem;
   border: 1px solid var(--port-line);
   padding: 6px 12px;
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.75);
+}
+
+[data-theme='light'] .install-col {
+  background: rgba(235,230,217,0.80);
 }
 
 .install-col__label {
@@ -554,14 +567,22 @@ img.doc-header__logo {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1.4rem 1.5rem;
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.72);
   text-decoration: none !important;
   transition: background 0.15s ease;
   border: none;
 }
 
+[data-theme='light'] .nav-card {
+  background: rgba(243,239,230,0.80);
+}
+
 .nav-card:hover {
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.88);
+}
+
+[data-theme='light'] .nav-card:hover {
+  background: rgba(235,230,217,0.92);
 }
 
 .nav-card__icon {
@@ -613,7 +634,11 @@ img.doc-header__logo {
 }
 
 .content-section--alt {
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.78);
+}
+
+[data-theme='light'] .content-section--alt {
+  background: rgba(235,230,217,0.82);
 }
 
 .content-section__inner {
@@ -658,7 +683,7 @@ img.doc-header__logo {
   gap: 0.2rem;
   border: 1px solid var(--port-line);
   padding: 0.75rem 1.25rem;
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.72);
   min-width: 140px;
   transition: border-color 0.15s ease;
 }
@@ -719,7 +744,7 @@ img.doc-header__logo {
   padding: 10px 16px;
   text-align: left;
   border-bottom: 1px solid var(--port-line);
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.82);
 }
 
 .module-table td {
@@ -830,7 +855,11 @@ img.doc-header__logo {
   flex-direction: column;
   gap: 0.4rem;
   padding: 1rem 1.25rem;
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.72);
+}
+
+[data-theme='light'] .ai-showcase__card {
+  background: rgba(243,239,230,0.80);
 }
 
 .ai-showcase__card-title {
@@ -868,12 +897,20 @@ img.doc-header__logo {
 .sim-card {
   display: flex;
   flex-direction: column;
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.72);
   transition: background 0.15s ease;
 }
 
+[data-theme='light'] .sim-card {
+  background: rgba(243,239,230,0.80);
+}
+
 .sim-card:hover {
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.88);
+}
+
+[data-theme='light'] .sim-card:hover {
+  background: rgba(235,230,217,0.92);
 }
 
 .sim-card__media {
@@ -1140,7 +1177,11 @@ img.doc-header__logo {
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid var(--port-line);
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.70);
+}
+
+[data-theme='light'] .hbc__controls {
+  background: rgba(235,230,217,0.80);
 }
 
 .hbc__btn {
@@ -1150,7 +1191,7 @@ img.doc-header__logo {
   width: 28px;
   height: 28px;
   border: 1px solid var(--port-line);
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.60);
   color: var(--port-fg-muted);
   cursor: pointer;
   transition: border-color 0.15s, color 0.15s;
@@ -1201,7 +1242,7 @@ img.doc-header__logo {
   flex-direction: column;
   gap: 0.5rem;
   padding: 1.125rem 1.25rem;
-  background: var(--port-bg);
+  background: rgba(13,12,11,0.72);
   text-decoration: none !important;
   opacity: 0;
   transform: translateY(10px);
@@ -1218,8 +1259,12 @@ img.doc-header__logo {
   transform: translateY(0);
 }
 
+[data-theme='light'] .lib-map__card {
+  background: rgba(243,239,230,0.80);
+}
+
 .lib-map__card:hover {
-  background: var(--port-bg2);
+  background: rgba(19,18,16,0.88);
   border-left-color: var(--lm-accent, var(--port-accent));
 }
 
