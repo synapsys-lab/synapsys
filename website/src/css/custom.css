@@ -187,30 +187,23 @@ a {
   color: var(--port-accent) !important;
 }
 
-/* ── Mobile sidebar — must be opaque so items are readable ───────────────── */
-.navbar-sidebar {
-  background-color: var(--port-panel) !important;
-}
-
-[data-theme='dark'] .navbar-sidebar {
+/* ── Mobile sidebar — fully opaque ───────────────────────────────────────── */
+.navbar-sidebar,
+.navbar-sidebar__brand,
+.navbar-sidebar__item,
+.navbar-sidebar__items {
   background-color: #0f0e0d !important;
 }
 
+[data-theme='light'] .navbar-sidebar,
+[data-theme='light'] .navbar-sidebar__brand,
+[data-theme='light'] .navbar-sidebar__item,
+[data-theme='light'] .navbar-sidebar__items {
+  background-color: #f8f5ee !important;
+}
+
 .navbar-sidebar__brand {
-  background-color: var(--port-panel);
-  border-bottom: 1px solid var(--port-line);
-}
-
-[data-theme='dark'] .navbar-sidebar__brand {
-  background-color: #0f0e0d;
-}
-
-.navbar-sidebar__item {
-  background-color: var(--port-panel);
-}
-
-[data-theme='dark'] .navbar-sidebar__item {
-  background-color: #0f0e0d;
+  border-bottom: 1px solid var(--port-line) !important;
 }
 
 .navbar-sidebar .menu__link {
