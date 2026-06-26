@@ -30,24 +30,24 @@ export default function NeuralNetBackground(): ReactElement {
 
     const C = dark
       ? {
-          node:       '#c8a870',
+          node:       '#e8513a',
           nodeAlpha:  0.45,
-          edge:       'rgba(200,168,112,0.18)',
-          edgeActive: 'rgba(200,168,112,0.55)',
-          edgeIO:     'rgba(200,168,112,0.28)',
-          particle:   '#c8a870',
-          glow:       'rgba(200,168,112,0.22)',
-          label:      'rgba(200,168,112,0.18)',
+          edge:       'rgba(232,81,58,0.18)',
+          edgeActive: 'rgba(232,81,58,0.55)',
+          edgeIO:     'rgba(232,81,58,0.28)',
+          particle:   '#e8513a',
+          glow:       'rgba(232,81,58,0.22)',
+          label:      'rgba(232,81,58,0.18)',
         }
       : {
-          node:       '#8a6e30',
+          node:       '#e8513a',
           nodeAlpha:  0.28,
-          edge:       'rgba(138,110,48,0.12)',
-          edgeActive: 'rgba(138,110,48,0.42)',
-          edgeIO:     'rgba(138,110,48,0.22)',
-          particle:   '#8a6e30',
-          glow:       'rgba(138,110,48,0.14)',
-          label:      'rgba(138,110,48,0.15)',
+          edge:       'rgba(232,81,58,0.12)',
+          edgeActive: 'rgba(232,81,58,0.42)',
+          edgeIO:     'rgba(232,81,58,0.22)',
+          particle:   '#e8513a',
+          glow:       'rgba(232,81,58,0.14)',
+          label:      'rgba(232,81,58,0.15)',
         };
 
     let nodes:         NodeT[][]    = [];
