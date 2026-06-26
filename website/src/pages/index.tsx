@@ -13,6 +13,7 @@ import LibraryMap from '@site/src/components/LibraryMap';
 import HomeBlogSection from '@site/src/components/HomeBlogSection';
 import SimulatorsShowcase from '@site/src/components/SimulatorsShowcase';
 import NeuralNetBackground from '@site/src/components/NeuralNetBackground';
+import GridBackground from '@site/src/components/GridBackground';
 import {
   BookOpen,
   Cpu,
@@ -107,6 +108,8 @@ export default function Home(): ReactElement {
         message: 'Python control systems library — LTI models, PID, LQR and distributed multi-agent simulation',
       })}
     >
+
+      <GridBackground />
 
       <NeuralNetBackground />
 
